@@ -97,6 +97,7 @@ export default class Engine {
                 continue;
             }
 
+
             console.log("for gir")
             for (const index in yesterdayProductList) {
                 let priceCollector = new PriceCollector()
