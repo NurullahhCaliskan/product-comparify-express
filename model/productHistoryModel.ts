@@ -1,0 +1,23 @@
+import {ObjectId} from "mongodb";
+
+export default class ProductHistoryModel {
+    constructor(public id: number,
+                public website: string,
+                public created_date_time: Date,
+                public collection: string,
+                public url: string,
+                public title: string,
+                public handle: string,
+                public body_html: string,
+                public published_at: string,
+                public created_at: string,
+                public updated_at: string,
+                public vendor: string,
+                public product_type: string,
+                public tags: string[],
+                public variants: object[],
+                public images: object[],
+                public options: object[],
+                public _id?: ObjectId) {
+    }
+}
