@@ -10,6 +10,7 @@ import UserWebsitesRelationModel from "../model/userWebsitesRelationModel";
 import AlarmService from "./alarmService";
 import UserModel from "../model/userModel";
 import {arrayIsEmpty} from "../utility/arrayUtility";
+import MailService from "../mail/mailService";
 
 
 export default class Engine {
@@ -17,7 +18,7 @@ export default class Engine {
     startEngine() {
         let engine = new Engine();
 
-        const job = schedule.scheduleJob('*/1 * * * * *', async function () {
+        const job = schedule.scheduleJob('0 0 * * *', async function () {
             if (!runPermission) {
                 return;
             }
@@ -27,16 +28,16 @@ export default class Engine {
             console.log('start engine1')
 
             try {
-                await engine.collectAllProducts()
+                 await engine.collectAllProducts()
 
-                //await engine.prepareAlarmToSendMail()
+                 await engine.prepareAlarmToSendMail()
 
             } catch (e) {
                 console.log(e)
             }
 
             console.log('end engine1')
-            //setRunPermission(true)
+            setRunPermission(true)
         })
     }
 
@@ -47,8 +48,6 @@ export default class Engine {
 
         await this.syncWebsites()
 
-
-        return;
 
         //get websites for collect data
         let websites = await websiteService.getWebsites()
@@ -89,29 +88,32 @@ export default class Engine {
             let yesterdayProductList = productList.filter(product => product.created_date_time > yesterdayMidnight && product.created_date_time < todayMidnight)
             let todayProductList = productList.filter(product => product.created_date_time > todayMidnight)
 
-            console.log(website.url + "   " + yesterdayProductList.length)
-            console.log("test2")
-            console.log(arrayIsEmpty(todayProductList))
             //if today or yesterday product lis is empty, go back.
             if (arrayIsEmpty(yesterdayProductList) || arrayIsEmpty(todayProductList)) {
                 continue;
             }
 
 
-            console.log("for gir")
             for (const index in yesterdayProductList) {
                 let priceCollector = new PriceCollector()
 
                 let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayProductList[index])
 
                 //find users which cache product alarm
-                alarmService.setToUserCachedAlarm(usersWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
+                await alarmService.setToUserCachedAlarm(usersWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
 
             }
         }
 
         console.log(JSON.stringify(usersWhichSendingAlarmList))
         console.log('sorunsuz bir sekilde bitti, hayirli olsun')
+
+        console.log("send mail to users")
+        console.log(usersWhichSendingAlarmList.length)
+        for (const userModel of usersWhichSendingAlarmList){
+            let mailService = new MailService()
+            await mailService.sendMail(userModel)
+        }
     }
 
 

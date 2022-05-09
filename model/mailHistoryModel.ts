@@ -1,10 +1,12 @@
 import {ObjectId} from "mongodb";
 
-export default class UserModel {
+export default class MailHistoryModel {
     constructor(public userId: string,
-                public mail?: string,
-                public alarm?: [{ website: string, alarm: number, value: number }],
+                public createDateTime: Date,
+                public mailBody: string,
+                public status: number,
+                public result: object,
                 public cachedAlarm?: [{ website: string, url: string, newValue: number, oldValue: number, priceChangeRate: number, productTitle: string, src: string }],
-                public id?: ObjectId) {
+                public _id?: ObjectId) {
     }
 }

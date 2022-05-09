@@ -10,9 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
+const stringUtility_1 = require("../utility/stringUtility");
 class WebsiteRepository {
     upsertWebSitesAllCollections(url, collection) {
         return __awaiter(this, void 0, void 0, function* () {
+            url = (0, stringUtility_1.urlFormatter)(url);
             let query = { url: url };
             let newRecord = { $set: { url: url, collection: collection } };
             // @ts-ignore
@@ -21,6 +23,7 @@ class WebsiteRepository {
     }
     upsertWebSitesFavicon(url, faviconUrl) {
         return __awaiter(this, void 0, void 0, function* () {
+            url = (0, stringUtility_1.urlFormatter)(url);
             let query = { url: url };
             let newRecord = { $set: { url: url, faviconUrl: faviconUrl } };
             // @ts-ignore

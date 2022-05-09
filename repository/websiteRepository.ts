@@ -1,11 +1,12 @@
 import {collections} from "../database.service";
 import UserWebsitesRelationModel from "../model/userWebsitesRelationModel";
 import WebsiteModel from "../model/websiteModel";
+import {urlFormatter} from "../utility/stringUtility";
 
 export default class WebsiteRepository {
 
     async upsertWebSitesAllCollections(url: string, collection: object) {
-
+        url = urlFormatter(url)
         let query = {url: url};
         let newRecord = {$set: {url: url, collection: collection}};
         // @ts-ignore
@@ -13,7 +14,7 @@ export default class WebsiteRepository {
     }
 
     async upsertWebSitesFavicon(url: string, faviconUrl: string | null) {
-
+        url = urlFormatter(url)
         let query = {url: url};
         let newRecord = {$set: {url: url, faviconUrl: faviconUrl}};
         // @ts-ignore

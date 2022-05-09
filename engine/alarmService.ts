@@ -1,12 +1,13 @@
 import UserWebsitesRelationModel from "../model/userWebsitesRelationModel";
 import UserModel from "../model/userModel";
 import ProductHistoryModel from "../model/productHistoryModel";
+import UserService from "../service/userService";
 
 export default class AlarmService {
 
-    setToUserCachedAlarm(usersWhichSendingAlarmList: UserModel[], userWebsiteRelationList: UserWebsitesRelationModel[],
-                         priceIdCouple: [{ productId: number, priceRate: number }], yesterdayProduct: ProductHistoryModel,
-                         todayProduct: ProductHistoryModel) {
+    async setToUserCachedAlarm(usersWhichSendingAlarmList: UserModel[], userWebsiteRelationList: UserWebsitesRelationModel[],
+                               priceIdCouple: [{ productId: number, priceRate: number }], yesterdayProduct: ProductHistoryModel,
+                               todayProduct: ProductHistoryModel) {
 
 
         for (const priceRateCoupleEntity of priceIdCouple) {
@@ -23,37 +24,43 @@ export default class AlarmService {
 
             if (newUserWebsiteRelationList.length > 0) {
 
-                AlarmService.mergeUsersWithNewAlarm(usersWhichSendingAlarmList, newUserWebsiteRelationList, priceRateCoupleEntity, yesterdayProduct, todayProduct)
+                await AlarmService.mergeUsersWithNewAlarm(usersWhichSendingAlarmList, newUserWebsiteRelationList, priceRateCoupleEntity, yesterdayProduct, todayProduct)
             }
 
         }
     }
 
 
-    private static mergeUsersWithNewAlarm(usersWhichSendingAlarmList: UserModel[], userWebsiteRelationList: UserWebsitesRelationModel[],
-                                          priceIdCouple: { productId: number, priceRate: number }, yesterdayProduct: ProductHistoryModel,
-                                          todayProduct: ProductHistoryModel) {
+    private static async mergeUsersWithNewAlarm(usersWhichSendingAlarmList: UserModel[], userWebsiteRelationList: UserWebsitesRelationModel[],
+                                                priceIdCouple: { productId: number, priceRate: number }, yesterdayProduct: ProductHistoryModel,
+                                                todayProduct: ProductHistoryModel) {
 
         for (const userWebsiteRelation of userWebsiteRelationList) {
+            let userService = new UserService()
+
+
             let website = userWebsiteRelation.website;
             let alarmValue = priceIdCouple.priceRate;
             let userId = userWebsiteRelation.userId;
 
             let userIndex = usersWhichSendingAlarmList.findIndex(user => user.userId === userId);
 
+            console.log("userIndex = " + userIndex + "  UserId = " + userId)
+
             //if user exists
-            if (userIndex > 0) {
+            if (userIndex > -1) {
                 // @ts-ignore
                 let todayProductVariant = todayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
                 // @ts-ignore
                 let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
 
+
                 // @ts-ignore
-                let newAlarmJson = {website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title}
+                let newAlarmJson = {website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: todayProduct?.images[0]?.src}
 
 
                 usersWhichSendingAlarmList[userIndex].cachedAlarm?.push(newAlarmJson)
-            }else{
+            } else {
 
                 // @ts-ignore
                 let todayProductVariant = todayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
@@ -61,10 +68,11 @@ export default class AlarmService {
                 let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
 
                 // @ts-ignore
-                let newAlarmJson = {website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title}
+                let newAlarmJson = {website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: todayProduct?.images[0]?.src}
 
+                let user = await userService.getUserByUserId(userId)
 
-                usersWhichSendingAlarmList.push({userId:userId , cachedAlarm:[newAlarmJson]})
+                usersWhichSendingAlarmList.push({userId: userId, cachedAlarm: [newAlarmJson], mail: user.mail})
             }
         }
     }

@@ -20,8 +20,6 @@ export default class PriceCollector {
                 continue;
             }
 
-            console.log(todayProductEntity)
-            console.log(yesterdayProductEntity)
             // @ts-ignore
             let priceRate = rateAsPercentage(todayProductEntity.price, yesterdayProductEntity.price) as number
 

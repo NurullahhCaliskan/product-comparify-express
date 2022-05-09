@@ -13,8 +13,6 @@ class PriceCollector {
             if (!yesterdayProductEntity) {
                 continue;
             }
-            console.log(todayProductEntity);
-            console.log(yesterdayProductEntity);
             // @ts-ignore
             let priceRate = (0, mathUtility_1.rateAsPercentage)(todayProductEntity.price, yesterdayProductEntity.price);
             response.push({ productId: id, priceRate: priceRate });

@@ -43,6 +43,7 @@ const mail_service_1 = require("./mail.service");
 const mongoDB = __importStar(require("mongodb"));
 // @ts-ignore
 const nodemailer_1 = __importDefault(require("nodemailer"));
+const mailService_1 = __importDefault(require("./mail/mailService"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 function loadDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -57,6 +58,9 @@ function loadDb() {
             database_service_1.collections.userWebsitesRelationModel = db.collection("user-websites-relation");
             database_service_1.collections.websitesModel = db.collection("websites");
             database_service_1.collections.productHistoryModel = db.collection("product-history");
+            database_service_1.collections.userModel = db.collection("user");
+            database_service_1.collections.userSessionModel = db.collection("user-session");
+            database_service_1.collections.mailHistoryModel = db.collection("mail-history");
             console.log('success load db2');
         }
         catch (e) {
@@ -91,19 +95,15 @@ app.get('/test', (req, res) => {
     console.log('test console');
     res.send('test2');
 });
-app.post('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    let body = req.body;
-    // send mail with defined transport object
-    // @ts-ignore
-    let info = yield mail_service_1.mailService.service.sendMail({
-        from: '"Product Competitify 👻"' + process.env.MAILNAME,
-        to: "nurullahhcaliskan@gmail.com",
-        subject: "Test Mail✔",
-        text: "Hi, This is test mail. Thank you",
-        html: "<b>Hello world?</b>", // html body
-    });
-    console.log('test console');
-    res.send('test2');
+app.get('/set-website', (req, res) => {
+    console.log('set-website');
+    res.send('set-website');
+});
+app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("mail/test");
+    let mailService = new mailService_1.default();
+    yield mailService.sendTestMail(req.query.id);
+    res.send(JSON.stringify({ result: "success" }));
 }));
 app.listen(port, () => {
     console.log(`[server]: Test9 Server is running at https://localhost:${port}`);

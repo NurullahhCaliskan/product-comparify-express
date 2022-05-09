@@ -44,6 +44,7 @@ const priceCollector_1 = __importDefault(require("./priceCollector"));
 const engineConfig_1 = __importStar(require("./engineConfig"));
 const alarmService_1 = __importDefault(require("./alarmService"));
 const arrayUtility_1 = require("../utility/arrayUtility");
+const mailService_1 = __importDefault(require("../mail/mailService"));
 class Engine {
     startEngine() {
         let engine = new Engine();
@@ -55,7 +56,7 @@ class Engine {
                 (0, engineConfig_1.default)(false);
                 console.log('start engine1');
                 try {
-                    yield engine.collectAllProducts();
+                    //await engine.collectAllProducts()
                     //await engine.prepareAlarmToSendMail()
                 }
                 catch (e) {
@@ -72,7 +73,6 @@ class Engine {
             let userWebsitesRelationService = new userWebsitesRelationService_1.default();
             let websiteService = new websiteService_1.default();
             yield this.syncWebsites();
-            return;
             //get websites for collect data
             let websites = yield websiteService.getWebsites();
             console.log(websites);
@@ -103,23 +103,25 @@ class Engine {
                 //productList = productList.filter(product => product.id === 6774978412614);
                 let yesterdayProductList = productList.filter(product => product.created_date_time > yesterdayMidnight && product.created_date_time < todayMidnight);
                 let todayProductList = productList.filter(product => product.created_date_time > todayMidnight);
-                console.log(website.url + "   " + yesterdayProductList.length);
-                console.log("test2");
-                console.log((0, arrayUtility_1.arrayIsEmpty)(todayProductList));
                 //if today or yesterday product lis is empty, go back.
                 if ((0, arrayUtility_1.arrayIsEmpty)(yesterdayProductList) || (0, arrayUtility_1.arrayIsEmpty)(todayProductList)) {
                     continue;
                 }
-                console.log("for gir");
                 for (const index in yesterdayProductList) {
                     let priceCollector = new priceCollector_1.default();
                     let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayProductList[index]);
                     //find users which cache product alarm
-                    alarmService.setToUserCachedAlarm(usersWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
+                    yield alarmService.setToUserCachedAlarm(usersWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
                 }
             }
             console.log(JSON.stringify(usersWhichSendingAlarmList));
             console.log('sorunsuz bir sekilde bitti, hayirli olsun');
+            console.log("send mail to users");
+            console.log(usersWhichSendingAlarmList.length);
+            for (const userModel of usersWhichSendingAlarmList) {
+                let mailService = new mailService_1.default();
+                yield mailService.sendMail(userModel);
+            }
         });
     }
     syncWebsites() {

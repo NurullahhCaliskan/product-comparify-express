@@ -8,6 +8,8 @@ import * as mongoDB from "mongodb";
 import nodemailer from "nodemailer";
 // @ts-ignore
 import smtpTransport from "nodemailer-smtp-transport";
+import ProductUploader from "./mail/productUploader";
+import MailService from "./mail/mailService";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
@@ -27,6 +29,9 @@ async function loadDb() {
         collections.userWebsitesRelationModel = db.collection("user-websites-relation");
         collections.websitesModel = db.collection("websites");
         collections.productHistoryModel = db.collection("product-history");
+        collections.userModel = db.collection("user");
+        collections.userSessionModel = db.collection("user-session");
+        collections.mailHistoryModel = db.collection("mail-history");
 
         console.log('success load db2')
     } catch (e) {
@@ -81,22 +86,11 @@ app.get('/set-website', (req: Request, res: Response) => {
     res.send('set-website');
 });
 
-app.post('/mail/test', async (req: Request, res: Response) => {
-    let body = req.body
-
-    // send mail with defined transport object
-
-    // @ts-ignore
-    let info = await mailService.service.sendMail({
-        from: '"Product Competitify 👻"' + process.env.MAILNAME, // sender address
-        to: "nurullahhcaliskan@gmail.com", // list of receivers
-        subject: "Test Mail✔", // Subject line
-        text: "Hi, This is test mail. Thank you", // plain text body
-        html: "<b>Hello world?</b>", // html body
-    });
-
-    console.log('test console')
-    res.send('test2');
+app.get('/mail/test', async (req: Request, res: Response) => {
+    console.log("mail/test")
+    let mailService = new MailService()
+    await mailService.sendTestMail(req.query.id as string)
+    res.send(JSON.stringify({result : "success"}));
 });
 
 
