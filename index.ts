@@ -76,7 +76,7 @@ const port = 3000;
 
 app.get('/test', (req: Request, res: Response) => {
     console.log('test console')
-    res.send('test2');
+    res.send('test3');
 });
 
 app.get('/set-website', (req: Request, res: Response) => {

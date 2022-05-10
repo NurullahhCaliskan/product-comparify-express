@@ -48,7 +48,7 @@ const mailService_1 = __importDefault(require("../mail/mailService"));
 class Engine {
     startEngine() {
         let engine = new Engine();
-        const job = node_schedule_1.default.scheduleJob('*/1 * * * * *', function () {
+        const job = node_schedule_1.default.scheduleJob('0 0 * * *', function () {
             return __awaiter(this, void 0, void 0, function* () {
                 if (!engineConfig_1.runPermission) {
                     return;
@@ -56,14 +56,14 @@ class Engine {
                 (0, engineConfig_1.default)(false);
                 console.log('start engine1');
                 try {
-                    //await engine.collectAllProducts()
-                    //await engine.prepareAlarmToSendMail()
+                    yield engine.collectAllProducts();
+                    yield engine.prepareAlarmToSendMail();
                 }
                 catch (e) {
                     console.log(e);
                 }
                 console.log('end engine1');
-                //setRunPermission(true)
+                (0, engineConfig_1.default)(true);
             });
         });
     }
