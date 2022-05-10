@@ -2,8 +2,6 @@ version: "3"
 services:
   start-app:
     build: .
-    volumes:
-      - ./:/app
     ports:
       - "3000:3000"
     links:
@@ -12,3 +10,5 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+    volumes:
+      - ./:/app
