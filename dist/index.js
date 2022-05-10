@@ -93,7 +93,7 @@ const app = (0, express_1.default)();
 const port = 3000;
 app.get('/test', (req, res) => {
     console.log('test console');
-    res.send('test3');
+    res.send('test4');
 });
 app.get('/set-website', (req, res) => {
     console.log('set-website');
