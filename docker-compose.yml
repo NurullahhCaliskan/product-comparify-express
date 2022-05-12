@@ -7,6 +7,9 @@ services:
     links:
       - mongo
   mongo:
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: butterfly123root
+      MONGO_INITDB_ROOT_PASSWORD: Vvnp9j27sroot
     image: mongo
     ports:
       - "27017:27017"
