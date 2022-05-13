@@ -45,10 +45,11 @@ const engineConfig_1 = __importStar(require("./engineConfig"));
 const alarmService_1 = __importDefault(require("./alarmService"));
 const arrayUtility_1 = require("../utility/arrayUtility");
 const mailService_1 = __importDefault(require("../mail/mailService"));
+const cronUtility_1 = require("../utility/cronUtility");
 class Engine {
     startEngine() {
         let engine = new Engine();
-        const job = node_schedule_1.default.scheduleJob('0 0 * * *', function () {
+        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_DAY_AT_MIDNIGHT)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
                 if (!engineConfig_1.runPermission) {
                     return;

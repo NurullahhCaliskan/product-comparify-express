@@ -18,9 +18,9 @@ class ProductHistoryService {
     saveProductsFromWebByUrl(url, collections) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
-            let loopContinue = true;
             let pagination = 1;
             for (const collection of collections) {
+                let loopContinue = true;
                 while (loopContinue) {
                     try {
                         // @ts-ignore

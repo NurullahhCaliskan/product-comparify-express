@@ -8,12 +8,11 @@ export default class ProductHistoryService {
 
     async saveProductsFromWebByUrl(url: string, collections: object[]) {
         let productHistoryRepository = new ProductHistoryRepository()
-        let loopContinue = true
 
         let pagination = 1
 
         for (const collection of collections) {
-
+            let loopContinue = true
             while (loopContinue) {
                 try {
                     // @ts-ignore

@@ -11,6 +11,7 @@ import AlarmService from "./alarmService";
 import UserModel from "../model/userModel";
 import {arrayIsEmpty} from "../utility/arrayUtility";
 import MailService from "../mail/mailService";
+import {EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND} from "../utility/cronUtility";
 
 
 export default class Engine {
@@ -18,7 +19,7 @@ export default class Engine {
     startEngine() {
         let engine = new Engine();
 
-        const job = schedule.scheduleJob('0 0 * * *', async function () {
+        const job = schedule.scheduleJob(EVERY_DAY_AT_MIDNIGHT(), async function () {
             if (!runPermission) {
                 return;
             }
