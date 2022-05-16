@@ -15,12 +15,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const productHistoryRepository_1 = __importDefault(require("../repository/productHistoryRepository"));
 class ProductHistoryService {
+    /**
+     * save product history
+     * @param url url
+     * @param collections collection
+     */
     saveProductsFromWebByUrl(url, collections) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
-            let pagination = 1;
             for (const collection of collections) {
                 let loopContinue = true;
+                let pagination = 1;
                 while (loopContinue) {
                     try {
                         // @ts-ignore
@@ -54,6 +59,10 @@ class ProductHistoryService {
             }
         });
     }
+    /***
+     * get Product History data
+     * @param website website
+     */
     getProductHistoryByDaysAndWebsite(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();

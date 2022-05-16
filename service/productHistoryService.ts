@@ -6,13 +6,17 @@ import ProductHistoryModel from "../model/productHistoryModel";
 
 export default class ProductHistoryService {
 
+    /**
+     * save product history
+     * @param url url
+     * @param collections collection
+     */
     async saveProductsFromWebByUrl(url: string, collections: object[]) {
         let productHistoryRepository = new ProductHistoryRepository()
 
-        let pagination = 1
-
         for (const collection of collections) {
             let loopContinue = true
+            let pagination = 1
             while (loopContinue) {
                 try {
                     // @ts-ignore
@@ -53,8 +57,11 @@ export default class ProductHistoryService {
         }
     }
 
-
-    async getProductHistoryByDaysAndWebsite(website: string) : Promise<ProductHistoryModel[]>{
+    /***
+     * get Product History data
+     * @param website website
+     */
+    async getProductHistoryByDaysAndWebsite(website: string): Promise<ProductHistoryModel[]> {
         let productHistoryRepository = new ProductHistoryRepository()
 
         return await productHistoryRepository.getProductHistoryByDaysAndWebsite(website)

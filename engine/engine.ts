@@ -20,6 +20,7 @@ export default class Engine {
         let engine = new Engine();
 
         const job = schedule.scheduleJob(EVERY_DAY_AT_MIDNIGHT(), async function () {
+
             if (!runPermission) {
                 return;
             }
@@ -48,7 +49,6 @@ export default class Engine {
         let websiteService = new WebsiteService()
 
         await this.syncWebsites()
-
 
         //get websites for collect data
         let websites = await websiteService.getWebsites()
