@@ -9,3 +9,7 @@ export function EVERY_SECOND() {
 export function EVERY_TEN_SECOND() {
     return '*/10 * * * * *'
 }
+
+export function EVERY_20_SECOND() {
+    return '*/20 * * * * *'
+}
