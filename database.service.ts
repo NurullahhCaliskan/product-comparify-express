@@ -6,5 +6,6 @@ export let collections: {
     productHistoryModel?: mongoDB.Collection,
     userModel?: mongoDB.Collection,
     userSessionModel?: mongoDB.Collection,
-    mailHistoryModel?: mongoDB.Collection
+    mailHistoryModel?: mongoDB.Collection,
+    engineHistoryModel?: mongoDB.Collection
 } = {}

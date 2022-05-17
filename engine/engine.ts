@@ -12,6 +12,8 @@ import UserModel from "../model/userModel";
 import {arrayIsEmpty} from "../utility/arrayUtility";
 import MailService from "../mail/mailService";
 import {EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND} from "../utility/cronUtility";
+import EngineHistoryService from "../service/engineHistoryService";
+import EngineHistoryModel from "../model/engineHistoryModel";
 
 
 export default class Engine {
@@ -19,7 +21,7 @@ export default class Engine {
     startEngine() {
         let engine = new Engine();
 
-        const job = schedule.scheduleJob(EVERY_DAY_AT_MIDNIGHT(), async function () {
+        const job = schedule.scheduleJob(EVERY_TEN_SECOND(), async function () {
 
             if (!runPermission) {
                 return;
@@ -30,9 +32,18 @@ export default class Engine {
             console.log('start engine1')
 
             try {
-                 await engine.collectAllProducts()
+                let engineHistoryService = new EngineHistoryService()
 
-                 await engine.prepareAlarmToSendMail()
+                let engineHistoryModelStart = new EngineHistoryModel(new Date(), "Start Run Engine")
+                await engineHistoryService.saveEngineHistory(engineHistoryModelStart)
+
+                await engine.collectAllProducts()
+
+                await engine.prepareAlarmToSendMail()
+
+
+                let engineHistoryModelEnd = new EngineHistoryModel(new Date(), "End Run Engine")
+                await engineHistoryService.saveEngineHistory(engineHistoryModelEnd)
 
             } catch (e) {
                 console.log(e)
@@ -107,11 +118,10 @@ export default class Engine {
         }
 
         console.log(JSON.stringify(usersWhichSendingAlarmList))
-        console.log('sorunsuz bir sekilde bitti, hayirli olsun')
 
         console.log("send mail to users")
         console.log(usersWhichSendingAlarmList.length)
-        for (const userModel of usersWhichSendingAlarmList){
+        for (const userModel of usersWhichSendingAlarmList) {
             let mailService = new MailService()
             await mailService.sendMail(userModel)
         }

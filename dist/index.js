@@ -61,6 +61,7 @@ function loadDb() {
             database_service_1.collections.userModel = db.collection("user");
             database_service_1.collections.userSessionModel = db.collection("user-session");
             database_service_1.collections.mailHistoryModel = db.collection("mail-history");
+            database_service_1.collections.engineHistoryModel = db.collection("engine-history");
             console.log('success load db2');
         }
         catch (e) {

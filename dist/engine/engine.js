@@ -46,10 +46,12 @@ const alarmService_1 = __importDefault(require("./alarmService"));
 const arrayUtility_1 = require("../utility/arrayUtility");
 const mailService_1 = __importDefault(require("../mail/mailService"));
 const cronUtility_1 = require("../utility/cronUtility");
+const engineHistoryService_1 = __importDefault(require("../service/engineHistoryService"));
+const engineHistoryModel_1 = __importDefault(require("../model/engineHistoryModel"));
 class Engine {
     startEngine() {
         let engine = new Engine();
-        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_DAY_AT_MIDNIGHT)(), function () {
+        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_TEN_SECOND)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
                 if (!engineConfig_1.runPermission) {
                     return;
@@ -57,8 +59,13 @@ class Engine {
                 (0, engineConfig_1.default)(false);
                 console.log('start engine1');
                 try {
+                    let engineHistoryService = new engineHistoryService_1.default();
+                    let engineHistoryModelStart = new engineHistoryModel_1.default(new Date(), "Start Run Engine");
+                    yield engineHistoryService.saveEngineHistory(engineHistoryModelStart);
                     yield engine.collectAllProducts();
                     yield engine.prepareAlarmToSendMail();
+                    let engineHistoryModelEnd = new engineHistoryModel_1.default(new Date(), "End Run Engine");
+                    yield engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
                 }
                 catch (e) {
                     console.log(e);
@@ -116,7 +123,6 @@ class Engine {
                 }
             }
             console.log(JSON.stringify(usersWhichSendingAlarmList));
-            console.log('sorunsuz bir sekilde bitti, hayirli olsun');
             console.log("send mail to users");
             console.log(usersWhichSendingAlarmList.length);
             for (const userModel of usersWhichSendingAlarmList) {
