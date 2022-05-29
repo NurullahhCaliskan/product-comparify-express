@@ -1,4 +1,8 @@
-import express, {Express, Request, Response} from 'express';
+// @ts-ignore
+// @ts-ignore
+// @ts-ignore
+
+import express, {Express, NextFunction, Request, Response} from 'express';
 import dotenv from 'dotenv';
 import Engine from './engine/engine';
 import {collections} from "./database.service";
@@ -10,6 +14,10 @@ import nodemailer from "nodemailer";
 import smtpTransport from "nodemailer-smtp-transport";
 import ProductUploader from "./mail/productUploader";
 import MailService from "./mail/mailService";
+import {callbackify} from "util";
+import {callbackPromise} from "nodemailer/lib/shared";
+import logger from "./logger.middleware";
+import morgan from "morgan";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
@@ -47,9 +55,6 @@ async function loadDb() {
 function initializeMailEngine() {
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
-
-    console.log(process.env.MAILNAME)
-    console.log(process.env.MAILPW)
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -60,10 +65,7 @@ function initializeMailEngine() {
     })
 
     mailService.service = transporter
-
-
 }
-
 
 initializeMailEngine();
 loadDb().then(r => r)
@@ -74,16 +76,30 @@ engine.startEngine();
 const app: Express = express();
 const port = 3000;
 
+const initVerify = async (req: Request, res: Response, next: NextFunction) => {
+    console.log("initVerify")
+    if (!collections.userWebsitesRelationModel) {
 
-app.get('/test', (req: Request, res: Response) => {
+        await loadDb()
+    }
+
+    if (!mailService.service) {
+        initializeMailEngine()
+    }
+    next();
+}
+
+app.use(morgan('combined'), logger)
+
+app.get('/test', initVerify, (req: Request, res: Response) => {
+    //logger(req,res)
+
     console.log('test console')
     res.send('test4');
 });
 
 app.get('/set-website', (req: Request, res: Response) => {
     console.log('set-website')
-
-
     res.send('set-website');
 });
 
@@ -91,10 +107,10 @@ app.get('/mail/test', async (req: Request, res: Response) => {
     console.log("mail/test")
     let mailService = new MailService()
     await mailService.sendTestMail(req.query.id as string)
-    res.send(JSON.stringify({result : "success"}));
+    res.send(JSON.stringify({result: "success"}));
 });
 
 
-app.listen(port, () => {
+export default  app.listen(port, () => {
     console.log(`[server]: Test9 Server is running at https://localhost:${port}`);
 });

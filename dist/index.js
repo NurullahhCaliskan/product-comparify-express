@@ -1,4 +1,7 @@
 "use strict";
+// @ts-ignore
+// @ts-ignore
+// @ts-ignore
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -44,6 +47,8 @@ const mongoDB = __importStar(require("mongodb"));
 // @ts-ignore
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const mailService_1 = __importDefault(require("./mail/mailService"));
+const logger_middleware_1 = __importDefault(require("./logger.middleware"));
+const morgan_1 = __importDefault(require("morgan"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 function loadDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -74,8 +79,6 @@ function loadDb() {
 function initializeMailEngine() {
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
-    console.log(process.env.MAILNAME);
-    console.log(process.env.MAILPW);
     // create reusable transporter object using the default SMTP transport
     let transporter = nodemailer_1.default.createTransport({
         service: 'gmail',
@@ -92,7 +95,19 @@ const engine = new engine_1.default();
 engine.startEngine();
 const app = (0, express_1.default)();
 const port = 3000;
-app.get('/test', (req, res) => {
+const initVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log("initVerify");
+    if (!database_service_1.collections.userWebsitesRelationModel) {
+        yield loadDb();
+    }
+    if (!mail_service_1.mailService.service) {
+        initializeMailEngine();
+    }
+    next();
+});
+app.use((0, morgan_1.default)('combined'), logger_middleware_1.default);
+app.get('/test', initVerify, (req, res) => {
+    //logger(req,res)
     console.log('test console');
     res.send('test4');
 });
@@ -106,6 +121,6 @@ app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     yield mailService.sendTestMail(req.query.id);
     res.send(JSON.stringify({ result: "success" }));
 }));
-app.listen(port, () => {
+exports.default = app.listen(port, () => {
     console.log(`[server]: Test9 Server is running at https://localhost:${port}`);
 });

@@ -21,7 +21,7 @@ export default class Engine {
     startEngine() {
         let engine = new Engine();
 
-        const job = schedule.scheduleJob(EVERY_DAY_AT_MIDNIGHT(), async function () {
+        const job = schedule.scheduleJob(EVERY_TEN_SECOND(), async function () {
 
             if (!runPermission) {
                 return;
@@ -41,7 +41,6 @@ export default class Engine {
 
                 await engine.prepareAlarmToSendMail()
 
-
                 let engineHistoryModelEnd = new EngineHistoryModel(new Date(), "End Run Engine")
                 await engineHistoryService.saveEngineHistory(engineHistoryModelEnd)
 
@@ -50,7 +49,7 @@ export default class Engine {
             }
 
             console.log('end engine1')
-            setRunPermission(true)
+            //setRunPermission(true)
         })
     }
 
