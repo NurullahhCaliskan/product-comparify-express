@@ -18,6 +18,8 @@ import {callbackify} from "util";
 import {callbackPromise} from "nodemailer/lib/shared";
 import logger from "./logger.middleware";
 import morgan from "morgan";
+import EngineHistoryService from "./service/engineHistoryService";
+import EngineHistoryModel from "./model/engineHistoryModel";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
@@ -98,9 +100,30 @@ app.get('/test', initVerify, (req: Request, res: Response) => {
     res.send('test4');
 });
 
-app.get('/set-website', (req: Request, res: Response) => {
-    console.log('set-website')
-    res.send('set-website');
+app.get('/engine/start', async (req: Request, res: Response) => {
+    let engine = new Engine();
+
+    console.log('start engine1')
+
+    try {
+        let engineHistoryService = new EngineHistoryService()
+
+        let engineHistoryModelStart = new EngineHistoryModel(new Date(), "Start Run Engine")
+        await engineHistoryService.saveEngineHistory(engineHistoryModelStart)
+
+        await engine.collectAllProducts()
+
+        await engine.prepareAlarmToSendMail()
+
+        let engineHistoryModelEnd = new EngineHistoryModel(new Date(), "End Run Engine")
+        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd)
+
+    } catch (e) {
+        console.log(e)
+    }
+
+    console.log('end engine1')
+    res.send(JSON.stringify({result: "success"}));
 });
 
 app.get('/mail/test', async (req: Request, res: Response) => {

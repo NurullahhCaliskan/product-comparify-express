@@ -21,7 +21,7 @@ export default class Engine {
     startEngine() {
         let engine = new Engine();
 
-        const job = schedule.scheduleJob(EVERY_TEN_SECOND(), async function () {
+        const job = schedule.scheduleJob(EVERY_DAY_AT_MIDNIGHT(), async function () {
 
             if (!runPermission) {
                 return;

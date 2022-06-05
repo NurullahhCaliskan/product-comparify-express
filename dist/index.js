@@ -49,6 +49,8 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 const mailService_1 = __importDefault(require("./mail/mailService"));
 const logger_middleware_1 = __importDefault(require("./logger.middleware"));
 const morgan_1 = __importDefault(require("morgan"));
+const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
+const engineHistoryModel_1 = __importDefault(require("./model/engineHistoryModel"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 function loadDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -111,10 +113,24 @@ app.get('/test', initVerify, (req, res) => {
     console.log('test console');
     res.send('test4');
 });
-app.get('/set-website', (req, res) => {
-    console.log('set-website');
-    res.send('set-website');
-});
+app.get('/engine/start', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let engine = new engine_1.default();
+    console.log('start engine1');
+    try {
+        let engineHistoryService = new engineHistoryService_1.default();
+        let engineHistoryModelStart = new engineHistoryModel_1.default(new Date(), "Start Run Engine");
+        yield engineHistoryService.saveEngineHistory(engineHistoryModelStart);
+        yield engine.collectAllProducts();
+        yield engine.prepareAlarmToSendMail();
+        let engineHistoryModelEnd = new engineHistoryModel_1.default(new Date(), "End Run Engine");
+        yield engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
+    }
+    catch (e) {
+        console.log(e);
+    }
+    console.log('end engine1');
+    res.send(JSON.stringify({ result: "success" }));
+}));
 app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("mail/test");
     let mailService = new mailService_1.default();
