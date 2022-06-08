@@ -46,10 +46,11 @@ export default class Engine {
 
             } catch (e) {
                 console.log(e)
+
             }
 
             console.log('end engine1')
-            //setRunPermission(true)
+            setRunPermission(true)
         })
     }
 

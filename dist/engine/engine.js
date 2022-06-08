@@ -71,7 +71,7 @@ class Engine {
                     console.log(e);
                 }
                 console.log('end engine1');
-                //setRunPermission(true)
+                (0, engineConfig_1.default)(true);
             });
         });
     }
