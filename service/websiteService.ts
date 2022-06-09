@@ -18,6 +18,12 @@ export default class WebsiteService {
         await websiteRepository.upsertWebSitesFavicon(url, collections);
     }
 
+    async upsertWebSitesCart(url: string, cart: object) {
+        let websiteRepository = new WebsiteRepository();
+
+        await websiteRepository.upsertWebSitesCart(url, cart);
+    }
+
     async getCollectionByWebsiteNameFromWeb(url: string): Promise<any[]> {
         try {
 
@@ -30,9 +36,26 @@ export default class WebsiteService {
         return [];
     }
 
+    async getCartByWebsiteNameFromWeb(url: string): Promise<object> {
+        try {
+
+            let response = await axios.get(url + '/cart.json');
+
+            return response.data;
+        } catch (e) {
+
+        }
+        return {};
+    }
+
     async getWebsites() : Promise<WebsiteModel[]>{
         let websiteRepository = new WebsiteRepository()
         return await websiteRepository.getWebsites()
+    }
+
+    async getWebsiteByUrl(url:string) : Promise<WebsiteModel>{
+        let websiteRepository = new WebsiteRepository()
+        return await websiteRepository.getWebsiteByUrl(url)
     }
 
     async getFaviconUrlByWebsiteNameFromWeb(url: string): Promise<string | null> {

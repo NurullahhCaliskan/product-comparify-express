@@ -7,11 +7,11 @@ export default class ProductUploader {
      * @param productList product List
      * @return {string|*}
      */
-    getMailResult(productList: [{ website: string, url: string, newValue: string, oldValue: string, priceChangeRate: string, productTitle: string, src: string }]) {
+    getMailResult(productList: [{ website: string, url: string, newValue: string, oldValue: string, priceChangeRate: string, productTitle: string, src: string,currency:string }]) {
         let productHtml = "";
 
         for (const product of productList) {
-            productHtml += getProductTemplate(product.src, product.oldValue.toString(), product.newValue, product.priceChangeRate, product.url, product.productTitle);
+            productHtml += getProductTemplate(product.src, product.oldValue.toString(), product.newValue, product.priceChangeRate, product.url, product.productTitle, product.currency);
             productHtml += getProductSeparator();
         }
 

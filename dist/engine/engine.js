@@ -51,7 +51,7 @@ const engineHistoryModel_1 = __importDefault(require("../model/engineHistoryMode
 class Engine {
     startEngine() {
         let engine = new Engine();
-        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_DAY_AT_MIDNIGHT)(), function () {
+        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_TEN_SECOND)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
                 if (!engineConfig_1.runPermission) {
                     return;
@@ -83,7 +83,6 @@ class Engine {
             yield this.syncWebsites();
             //get websites for collect data
             let websites = yield websiteService.getWebsites();
-            console.log(websites);
             for (const website of websites) {
                 let productHistoryService = new productHistoryService_1.default();
                 yield productHistoryService.saveProductsFromWebByUrl(website.url, website.collection);
@@ -151,6 +150,11 @@ class Engine {
             for (const website of uniqueWebsites) {
                 let collectionResponse = yield websiteService.getFaviconUrlByWebsiteNameFromWeb(website);
                 yield websiteService.upsertWebSitesFavicon(website, collectionResponse);
+            }
+            //load websites cart
+            for (const website of uniqueWebsites) {
+                let collectionResponse = yield websiteService.getCartByWebsiteNameFromWeb(website);
+                yield websiteService.upsertWebSitesCart(website, collectionResponse);
             }
         });
     }

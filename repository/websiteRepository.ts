@@ -2,6 +2,7 @@ import {collections} from "../database.service";
 import UserWebsitesRelationModel from "../model/userWebsitesRelationModel";
 import WebsiteModel from "../model/websiteModel";
 import {urlFormatter} from "../utility/stringUtility";
+import UserModel from "../model/userModel";
 
 export default class WebsiteRepository {
 
@@ -21,6 +22,14 @@ export default class WebsiteRepository {
         await collections.websitesModel.updateOne(query, newRecord, {upsert: true});
     }
 
+    async upsertWebSitesCart(url: string, cart: object) {
+        url = urlFormatter(url)
+        let query = {url: url};
+        let newRecord = {$set: {url: url, cart: cart}};
+        // @ts-ignore
+        await collections.websitesModel.updateOne(query, newRecord, {upsert: true});
+    }
+
     /**
      * get User websites relations
      * @return unique website list
@@ -28,5 +37,15 @@ export default class WebsiteRepository {
     async getWebsites(): Promise<WebsiteModel[]> {
         // @ts-ignore
         return await collections.websitesModel.find({}).toArray() as WebsiteModel[]
+    }
+
+    /**
+     * get User websites relations
+     * @return unique website list
+     */
+    async getWebsiteByUrl(url : string): Promise<WebsiteModel> {
+
+        console.log(url)
+        return await collections.websitesModel?.findOne({url: url}) as WebsiteModel;
     }
 }

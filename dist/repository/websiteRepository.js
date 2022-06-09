@@ -30,6 +30,15 @@ class WebsiteRepository {
             yield database_service_1.collections.websitesModel.updateOne(query, newRecord, { upsert: true });
         });
     }
+    upsertWebSitesCart(url, cart) {
+        return __awaiter(this, void 0, void 0, function* () {
+            url = (0, stringUtility_1.urlFormatter)(url);
+            let query = { url: url };
+            let newRecord = { $set: { url: url, cart: cart } };
+            // @ts-ignore
+            yield database_service_1.collections.websitesModel.updateOne(query, newRecord, { upsert: true });
+        });
+    }
     /**
      * get User websites relations
      * @return unique website list
@@ -38,6 +47,17 @@ class WebsiteRepository {
         return __awaiter(this, void 0, void 0, function* () {
             // @ts-ignore
             return yield database_service_1.collections.websitesModel.find({}).toArray();
+        });
+    }
+    /**
+     * get User websites relations
+     * @return unique website list
+     */
+    getWebsiteByUrl(url) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log(url);
+            return yield ((_a = database_service_1.collections.websitesModel) === null || _a === void 0 ? void 0 : _a.findOne({ url: url }));
         });
     }
 }

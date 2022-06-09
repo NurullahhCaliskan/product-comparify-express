@@ -29,6 +29,12 @@ class WebsiteService {
             yield websiteRepository.upsertWebSitesFavicon(url, collections);
         });
     }
+    upsertWebSitesCart(url, cart) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let websiteRepository = new websiteRepository_1.default();
+            yield websiteRepository.upsertWebSitesCart(url, cart);
+        });
+    }
     getCollectionByWebsiteNameFromWeb(url) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -40,10 +46,27 @@ class WebsiteService {
             return [];
         });
     }
+    getCartByWebsiteNameFromWeb(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                let response = yield axios_1.default.get(url + '/cart.json');
+                return response.data;
+            }
+            catch (e) {
+            }
+            return {};
+        });
+    }
     getWebsites() {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();
             return yield websiteRepository.getWebsites();
+        });
+    }
+    getWebsiteByUrl(url) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let websiteRepository = new websiteRepository_1.default();
+            return yield websiteRepository.getWebsiteByUrl(url);
         });
     }
     getFaviconUrlByWebsiteNameFromWeb(url) {

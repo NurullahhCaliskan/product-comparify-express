@@ -11,6 +11,7 @@ class PriceCollector {
             let yesterdayProductEntity = yesterdayProduct.variants.find(variant => variant.id == id);
             //if yesterday is not exists, this product added new
             if (!yesterdayProductEntity) {
+                console.log("yesterdayProductEntity");
                 continue;
             }
             // @ts-ignore

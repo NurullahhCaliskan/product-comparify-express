@@ -8,6 +8,7 @@ function rateAsPercentage(partialValue, totalValue) {
     }
     catch (e) {
     }
+    result = Number(result.toFixed(2));
     return result;
 }
 exports.rateAsPercentage = rateAsPercentage;

@@ -1,76 +1,86 @@
-export function getProductTemplate(src: string, oldPrice: string, newPrice: string, priceChangeRate: string, url: string, title:string) {
-    let template = " <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"row row-6\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-position: center top;\" width=\"100%\">\n" +
-        "                <tbody>\n" +
-        "                <tr>\n" +
-        "                    <td>\n" +
-        "                        <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"row-content stack\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #30304c; color: #000000; width: 680px;\" width=\"680\">\n" +
-        "                            <tbody>\n" +
-        "                            <tr>\n" +
-        "                                <td classname=\"column column-1\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; background-color: #30304c; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"25%\">\n" +
-        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"image_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"100%\">\n" +
-        "                                        <tbody>\n" +
-        "                                        <tr>\n" +
-        "                                            <td style=\"width:100%;padding-right:0px;padding-left:0px;padding-top:25px;padding-bottom:25px;\">\n" +
-        "                                                <div align=\"center\" style=\"line-height:10px\"><img classname=\"fullMobileWidth big\" src=\" :src \" style=\"display: block; height: auto; border: 0; width: 136px; max-width: 100%; border-radius: 15px;\" width=\"136\"></div>\n" +
-        "                                            </td>\n" +
-        "                                        </tr>\n" +
-        "                                        </tbody>\n" +
-        "                                    </table>\n" +
-        "                                </td>\n" +
-        "                                <td classname=\"column column-2\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"41.666666666666664%\">\n" +
-        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"heading_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"100%\">\n" +
-        "                                        <tbody>\n" +
-        "                                        <tr>\n" +
-        "                                            <td style=\"padding-bottom:10px;padding-left:15px;padding-right:10px;text-align:center;width:100%;padding-top:35px;\">\n" +
-        "                                                <h1 style=\"margin: 0; color: #ffffff; direction: ltr; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 400; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0;\"><strong>Product: :title</strong></h1>\n" +
-        "                                            </td>\n" +
-        "                                        </tr>\n" +
-        "                                        </tbody>\n" +
-        "                                    </table>\n" +
-        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"text_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;\" width=\"100%\">\n" +
-        "                                        <tbody>\n" +
-        "                                        <tr>\n" +
-        "                                            <td style=\"padding-bottom:15px;padding-left:15px;padding-right:10px;padding-top:10px;\">\n" +
-        "                                                <div style=\"font-family: sans-serif\">\n" +
-        "                                                    <div classname=\"txtTinyMce-wrapper\" style=\"font-size: 14px; mso-line-height-alt: 21px; color: #ffffff; line-height: 1.5; font-family: Helvetica Neue, Helvetica, Arial, sans-serif;\">\n" +
-        "                                                        <p style=\"margin: 0; font-size: 14px; text-align: left;\">Old Price: :oldPrice</p>\n" +
-        "                                                        <p style=\"margin: 0; font-size: 14px; text-align: left;\">New Price: :newPrice</p>\n" +
-        "                                                        <p style=\"margin: 0; font-size: 14px; text-align: left;\">Price Change Rate: %:priceChangeRate</p>\n" +
-        "                                                    </div>\n" +
-        "                                                </div>\n" +
-        "                                            </td>\n" +
-        "                                        </tr>\n" +
-        "                                        </tbody>\n" +
-        "                                    </table>\n" +
-        "                                </td>\n" +
-        "                                 <td classname=\"column column-3\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"33.333333333333336%\">\n" +
-        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"button_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"100%\">\n" +
-        "                                        <tbody>\n" +
-        "                                        <tr>\n" +
-        "                                            <td style=\"padding-bottom:15px;padding-left:10px;padding-right:10px;padding-top:65px;text-align:left;\">\n" +
-        "                                                <!--[if mso]>\n" +
-        "                                                <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"www.example.com\" style=\"height:44px;width:176px;v-text-anchor:middle;\" arcsize=\"10%\" strokeweight=\"0.75pt\" strokecolor=\"#0057B7\" fillcolor=\"#0057b7\">\n" +
-        "                                                    <w:anchorlock/>\n" +
-        "                                                    <v:textbox inset=\"0px,0px,0px,0px\">\n" +
-        "                                                        <center style=\"color:#ffffff; font-family:Arial, sans-serif; font-size:16px\"><![endif]--><a href=\":url\" style=\"text-decoration:none;display:inline-block;color:#ffffff;background-color: #6667ab;border-radius:4px;width:auto;border-top: 1px solid #6667ab;font-weight:400;border-right: 1px solid #6667ab;border-bottom: 1px solid #6667ab;border-left: 1px solid #6667ab;padding-top:5px;padding-bottom:5px;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;text-align:center;mso-border-alt:none;word-break:keep-all;\" target=\"_blank\"><span style=\"padding-left:40px;padding-right:40px;font-size:16px;display:inline-block;letter-spacing:normal;\"><span style=\"font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;\">Go To Product</span></span></a>\n" +
-        "                                                <!--[if mso]></center></v:textbox></v:roundrect><![endif]-->\n" +
-        "                                            </td>\n" +
-        "                                        </tr>\n" +
-        "                                        </tbody>\n" +
-        "                                    </table>\n" +
+export function getProductTemplate(src: string, oldPrice: string, newPrice: string, priceChangeRate: string, url: string, title:string, currency:string) {
+    let template = " <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"row row-6\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-position: center top;\" width=\"100%\"> " +
+        "                <tbody> " +
+        "                <tr> " +
+        "                    <td> " +
+        "                        <table align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"row-content stack\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #30304c; color: #000000; width: 680px;\" width=\"680\"> " +
+        "                            <tbody> " +
+        "                            <tr> " +
+        "                                <td classname=\"column column-1\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; background-color: #30304c; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"25%\"> " +
+        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"image_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"100%\"> " +
+        "                                        <tbody> " +
+        "                                        <tr> " +
+        "                                            <td style=\"width:100%;padding-right:0px;padding-left:0px;padding-top:25px;padding-bottom:25px;\"> " +
+        "                                                <div align=\"center\" style=\"line-height:10px\"><img classname=\"fullMobileWidth big\" src=\" :src \" style=\"display: block; height: auto; border: 0; width: 136px; max-width: 100%; border-radius: 15px;\" width=\"136\"></div> " +
+        "                                            </td> " +
+        "                                        </tr> " +
+        "                                        </tbody> " +
+        "                                    </table> " +
+        "                                </td> " +
+        "                                <td classname=\"column column-2\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"41.666666666666664%\"> " +
+        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"heading_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"100%\"> " +
+        "                                        <tbody> " +
+        "                                        <tr> " +
+        "                                            <td style=\"padding-bottom:10px;padding-left:15px;padding-right:10px;text-align:center;width:100%;padding-top:35px;\"> " +
+        "                                                <h1 style=\"margin: 0; color: #ffffff; direction: ltr; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 400; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0;\"><strong>Product: :title</strong></h1> " +
+        "                                            </td> " +
+        "                                        </tr> " +
+        "                                        </tbody> " +
+        "                                    </table> " +
+        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"text_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;\" width=\"100%\"> " +
+        "                                        <tbody> " +
+        "                                        <tr> " +
+        "                                            <td style=\"padding-bottom:15px;padding-left:15px;padding-right:10px;padding-top:10px;\"> " +
+        "                                                <div style=\"font-family: sans-serif\"> " +
+        "                                                    <div classname=\"txtTinyMce-wrapper\" style=\"font-size: 14px; mso-line-height-alt: 21px; color: #ffffff; line-height: 1.5; font-family: Helvetica Neue, Helvetica, Arial, sans-serif;\"> " +
+        "                                                        <p style=\"margin: 0; font-size: 14px; text-align: left;\">Old Price: :oldPrice</p> " +
+        "                                                        <p style=\"margin: 0; font-size: 14px; text-align: left;\">New Price: :newPrice</p> " +
+        "                                                        <p style=\"margin: 0; font-size: 14px; text-align: left;\">Price Change Rate: %:priceChangeRate</p> " +
+        "                                                    </div> " +
+        "                                                </div> " +
+        "                                            </td> " +
+        "                                        </tr> " +
+        "                                        </tbody> " +
+        "                                    </table> " +
+        "                                </td> " +
+        "                                 <td classname=\"column column-3\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"33.333333333333336%\"> " +
+        "                                    <table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" classname=\"button_block\" role=\"presentation\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt;\" width=\"100%\"> " +
+        "                                        <tbody> " +
+        "                                        <tr> " +
+        "                                            <td style=\"padding-bottom:15px;padding-left:10px;padding-right:10px;padding-top:65px;text-align:left;\"> " +
+        "                                                <!--[if mso]> " +
+        "                                                <v:roundrect xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:w=\"urn:schemas-microsoft-com:office:word\" href=\"www.example.com\" style=\"height:44px;width:176px;v-text-anchor:middle;\" arcsize=\"10%\" strokeweight=\"0.75pt\" strokecolor=\"#0057B7\" fillcolor=\"#0057b7\"> " +
+        "                                                    <w:anchorlock/> " +
+        "                                                    <v:textbox inset=\"0px,0px,0px,0px\"> " +
+        "                                                        <center style=\"color:#ffffff; font-family:Arial, sans-serif; font-size:16px\"><![endif]--><a href=\":url\" style=\"text-decoration:none;display:inline-block;color:#ffffff;background-color: #6667ab;border-radius:4px;width:auto;border-top: 1px solid #6667ab;font-weight:400;border-right: 1px solid #6667ab;border-bottom: 1px solid #6667ab;border-left: 1px solid #6667ab;padding-top:5px;padding-bottom:5px;font-family:Helvetica Neue, Helvetica, Arial, sans-serif;text-align:center;mso-border-alt:none;word-break:keep-all;\" target=\"_blank\"><span style=\"padding-left:40px;padding-right:40px;font-size:16px;display:inline-block;letter-spacing:normal;\"><span style=\"font-size: 16px; line-height: 2; word-break: break-word; mso-line-height-alt: 32px;\">Go To Product</span></span></a> " +
+        "                                                <!--[if mso]></center></v:textbox></v:roundrect><![endif]--> " +
+        "                                            </td> " +
+        "                                        </tr> " +
+        "                                        </tbody> " +
+        "                                    </table> " +
         "                                </td>  " +
-        "                            </tr>\n" +
-        "                            </tbody>\n" +
-        "                        </table>\n" +
-        "                    </td>\n" +
-        "                </tr>\n" +
-        "                </tbody>\n" +
+        "                            </tr> " +
+        "                            </tbody> " +
+        "                        </table> " +
+        "                    </td> " +
+        "                </tr> " +
+        "                </tbody> " +
         "            </table> ";
+
+    let oldPriceWithCurrency = oldPrice;
+    let newPriceWithCurrency = newPrice;
+
+    try{
+        oldPriceWithCurrency = new Intl.NumberFormat('de-DE', { style: 'currency', currency: currency }).format(Number(oldPrice))
+        newPriceWithCurrency = new Intl.NumberFormat('de-DE', { style: 'currency', currency: currency }).format(Number(newPrice))
+    }catch (e) {
+
+    }
 
 
     template = template.replace(":src", src)
-    template = template.replace(":oldPrice", oldPrice)
-    template = template.replace(":newPrice", newPrice)
+    template = template.replace(":oldPrice", oldPriceWithCurrency)
+    template = template.replace(":newPrice", newPriceWithCurrency)
     template = template.replace(":priceChangeRate", priceChangeRate)
     template = template.replace(":url", url)
     template = template.replace(":title", title)
@@ -88,7 +98,7 @@ export function getProductSeparator() {
         "                            <tbody> " +
         "                            <tr> " +
         "                                <td classname=\"column column-1\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"100%\"> " +
-        "                                    <div classname=\"spacer_block\" style=\"height:10px;line-height:10px;font-size:1px;\">ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦&nbsp;</div> " +
+        "                                    <div classname=\"spacer_block\" style=\"height:10px;line-height:10px;font-size:1px;\">&nbsp;</div> " +
         "                                </td> " +
         "                            </tr> " +
         "                            </tbody> " +
@@ -213,7 +223,7 @@ export default function getMailTemplate() {
         "                            <tbody> " +
         "                            <tr> " +
         "                                <td className=\"column column-1\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"100%\"> " +
-        "                                    <div className=\"spacer_block\" style=\"height:60px;line-height:60px;font-size:1px;\">ÃƒÂ¢Ã¢â€šÂ¬Ã…&nbsp;</div> " +
+        "                                    <div className=\"spacer_block\" style=\"height:60px;line-height:60px;font-size:1px;\">&nbsp;</div> " +
         "                                </td> " +
         "                            </tr> " +
         "                            </tbody> " +
@@ -265,7 +275,7 @@ export default function getMailTemplate() {
         "                            <tbody> " +
         "                            <tr> " +
         "                                <td className=\"column column-1\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"100%\"> " +
-        "                                    <div className=\"spacer_block\" style=\"height:30px;line-height:30px;font-size:1px;\">ÃƒÂ¢Ã¢â€šÂ¬Ã…&nbsp;</div> " +
+        "                                    <div className=\"spacer_block\" style=\"height:30px;line-height:30px;font-size:1px;\">&nbsp;</div> " +
         "                                </td> " +
         "                            </tr> " +
         "                            </tbody> " +
@@ -285,7 +295,7 @@ export default function getMailTemplate() {
         "                            <tbody> " +
         "                            <tr> " +
         "                                <td className=\"column column-1\" style=\"mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; vertical-align: top; padding-top: 5px; padding-bottom: 5px; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;\" width=\"100%\"> " +
-        "                                    <div className=\"spacer_block\" style=\"height:60px;line-height:60px;font-size:1px;\">ÃƒÂ¢Ã¢â€šÂ¬Ã…&nbsp;</div> " +
+        "                                    <div className=\"spacer_block\" style=\"height:60px;line-height:60px;font-size:1px;\">&nbsp;</div> " +
         "                                </td> " +
         "                            </tr> " +
         "                            </tbody> " +

@@ -51,6 +51,7 @@ const logger_middleware_1 = __importDefault(require("./logger.middleware"));
 const morgan_1 = __importDefault(require("morgan"));
 const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
 const engineHistoryModel_1 = __importDefault(require("./model/engineHistoryModel"));
+const userService_1 = __importDefault(require("./service/userService"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 function loadDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -133,9 +134,14 @@ app.get('/engine/start', (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("mail/test");
+    let userService = new userService_1.default();
     let mailService = new mailService_1.default();
+    let user = yield userService.getUserByUserId(req.query.id);
+    if (!user.mail) {
+        return res.status(422).send(JSON.stringify({ result: "Please add valid mail" }));
+    }
     yield mailService.sendTestMail(req.query.id);
-    res.send(JSON.stringify({ result: "success" }));
+    return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
 }));
 exports.default = app.listen(port, () => {
     console.log(`[server]: Test9 Server is running at https://localhost:${port}`);

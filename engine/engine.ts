@@ -46,7 +46,6 @@ export default class Engine {
 
             } catch (e) {
                 console.log(e)
-
             }
 
             console.log('end engine1')
@@ -64,7 +63,6 @@ export default class Engine {
         //get websites for collect data
         let websites = await websiteService.getWebsites()
 
-        console.log(websites)
         for (const website of websites) {
             let productHistoryService = new ProductHistoryService()
             await productHistoryService.saveProductsFromWebByUrl(website.url, website.collection)
@@ -104,7 +102,6 @@ export default class Engine {
             if (arrayIsEmpty(yesterdayProductList) || arrayIsEmpty(todayProductList)) {
                 continue;
             }
-
 
             for (const index in yesterdayProductList) {
                 let priceCollector = new PriceCollector()
@@ -150,6 +147,12 @@ export default class Engine {
         for (const website of uniqueWebsites) {
             let collectionResponse = await websiteService.getFaviconUrlByWebsiteNameFromWeb(website);
             await websiteService.upsertWebSitesFavicon(website, collectionResponse);
+        }
+
+        //load websites cart
+        for (const website of uniqueWebsites) {
+            let collectionResponse = await websiteService.getCartByWebsiteNameFromWeb(website);
+            await websiteService.upsertWebSitesCart(website, collectionResponse);
         }
     }
 

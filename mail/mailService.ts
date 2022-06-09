@@ -20,7 +20,7 @@ export default class MailService {
                 from: '"Product Comparify 👻"' + process.env.MAILNAME, // sender address
                 to: userModel.mail, // list of receivers
                 subject: "Product Comparify Alarm System✔", // Subject line
-                text: "Hi, Here is new products. Thank you", // plain text body
+                text: "Hi, Here is products. Thank you", // plain text body
                 html: mailTemplate, // html body
             });
 

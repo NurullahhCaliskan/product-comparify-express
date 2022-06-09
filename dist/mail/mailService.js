@@ -29,7 +29,7 @@ class MailService {
                     from: '"Product Comparify 👻"' + process.env.MAILNAME,
                     to: userModel.mail,
                     subject: "Product Comparify Alarm System✔",
-                    text: "Hi, Here is new products. Thank you",
+                    text: "Hi, Here is products. Thank you",
                     html: mailTemplate, // html body
                 });
                 let mailHistoryModel = new mailHistoryModel_1.default(userModel.userId, new Date, mailTemplate, 1, info, userModel.cachedAlarm);

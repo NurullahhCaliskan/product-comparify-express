@@ -17,6 +17,7 @@ export default class PriceCollector {
 
             //if yesterday is not exists, this product added new
             if (!yesterdayProductEntity) {
+                console.log("yesterdayProductEntity")
                 continue;
             }
 

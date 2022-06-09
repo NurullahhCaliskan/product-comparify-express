@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const userService_1 = __importDefault(require("../service/userService"));
+const websiteService_1 = __importDefault(require("../service/websiteService"));
 class AlarmService {
     setToUserCachedAlarm(usersWhichSendingAlarmList, userWebsiteRelationList, priceIdCouple, yesterdayProduct, todayProduct) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -34,12 +35,16 @@ class AlarmService {
     static mergeUsersWithNewAlarm(usersWhichSendingAlarmList, userWebsiteRelationList, priceIdCouple, yesterdayProduct, todayProduct) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
+            let websiteService = new websiteService_1.default();
+            let userService = new userService_1.default();
             for (const userWebsiteRelation of userWebsiteRelationList) {
-                let userService = new userService_1.default();
                 let website = userWebsiteRelation.website;
                 let alarmValue = priceIdCouple.priceRate;
                 let userId = userWebsiteRelation.userId;
                 let userIndex = usersWhichSendingAlarmList.findIndex(user => user.userId === userId);
+                //get website currency
+                let websiteService = new websiteService_1.default();
+                let websiteEntity = yield websiteService.getWebsiteByUrl(website);
                 console.log("userIndex = " + userIndex + "  UserId = " + userId);
                 //if user exists
                 if (userIndex > -1) {
@@ -48,7 +53,7 @@ class AlarmService {
                     // @ts-ignore
                     let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId);
                     // @ts-ignore
-                    let newAlarmJson = { website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: (_a = todayProduct === null || todayProduct === void 0 ? void 0 : todayProduct.images[0]) === null || _a === void 0 ? void 0 : _a.src };
+                    let newAlarmJson = { website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: (_a = todayProduct === null || todayProduct === void 0 ? void 0 : todayProduct.images[0]) === null || _a === void 0 ? void 0 : _a.src, currency: websiteEntity.cart.currency };
                     (_b = usersWhichSendingAlarmList[userIndex].cachedAlarm) === null || _b === void 0 ? void 0 : _b.push(newAlarmJson);
                 }
                 else {
@@ -57,7 +62,7 @@ class AlarmService {
                     // @ts-ignore
                     let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId);
                     // @ts-ignore
-                    let newAlarmJson = { website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: (_c = todayProduct === null || todayProduct === void 0 ? void 0 : todayProduct.images[0]) === null || _c === void 0 ? void 0 : _c.src };
+                    let newAlarmJson = { website: website, url: yesterdayProduct.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: (_c = todayProduct === null || todayProduct === void 0 ? void 0 : todayProduct.images[0]) === null || _c === void 0 ? void 0 : _c.src, currency: websiteEntity.cart.currency };
                     let user = yield userService.getUserByUserId(userId);
                     usersWhichSendingAlarmList.push({ userId: userId, cachedAlarm: [newAlarmJson], mail: user.mail });
                 }

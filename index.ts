@@ -20,6 +20,7 @@ import logger from "./logger.middleware";
 import morgan from "morgan";
 import EngineHistoryService from "./service/engineHistoryService";
 import EngineHistoryModel from "./model/engineHistoryModel";
+import UserService from "./service/userService";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
@@ -128,9 +129,18 @@ app.get('/engine/start', async (req: Request, res: Response) => {
 
 app.get('/mail/test', async (req: Request, res: Response) => {
     console.log("mail/test")
+
+    let userService = new UserService()
     let mailService = new MailService()
+
+    let user = await userService.getUserByUserId(req.query.id as string)
+
+    if (!user.mail) {
+        return res.status(422).send(JSON.stringify({result: "Please add valid mail"}))
+    }
+
     await mailService.sendTestMail(req.query.id as string)
-    res.send(JSON.stringify({result: "success"}));
+    return res.send(JSON.stringify({result: "Mail Send Successfully"}));
 });
 
 

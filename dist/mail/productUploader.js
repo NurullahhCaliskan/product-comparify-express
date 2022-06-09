@@ -33,7 +33,7 @@ class ProductUploader {
     getMailResult(productList) {
         let productHtml = "";
         for (const product of productList) {
-            productHtml += (0, mailTemplate_1.getProductTemplate)(product.src, product.oldValue.toString(), product.newValue, product.priceChangeRate, product.url, product.productTitle);
+            productHtml += (0, mailTemplate_1.getProductTemplate)(product.src, product.oldValue.toString(), product.newValue, product.priceChangeRate, product.url, product.productTitle, product.currency);
             productHtml += (0, mailTemplate_1.getProductSeparator)();
         }
         let mailTemplate = (0, mailTemplate_1.default)();
