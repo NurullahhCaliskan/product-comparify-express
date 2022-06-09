@@ -51,7 +51,7 @@ const engineHistoryModel_1 = __importDefault(require("../model/engineHistoryMode
 class Engine {
     startEngine() {
         let engine = new Engine();
-        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_TEN_SECOND)(), function () {
+        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_DAY_AT_MIDNIGHT)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
                 if (!engineConfig_1.runPermission) {
                     return;
@@ -70,7 +70,7 @@ class Engine {
                 catch (e) {
                     console.log(e);
                 }
-                console.log('end engine1');
+                console.log('end engine2');
                 (0, engineConfig_1.default)(true);
             });
         });
