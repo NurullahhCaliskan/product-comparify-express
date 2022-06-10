@@ -29,4 +29,15 @@ export default class ProductHistoryRepository {
         // @ts-ignore
         return await collections.productHistoryModel?.find(findJson).sort({id: 1, created_date_time: -1}).toArray() as ProductHistoryModel[];
     }
+
+    async removeTodayProducts(){
+        let start = new Date();
+        start.setHours(0,0,0,0);
+
+        let end = new Date();
+        end.setHours(23,59,59,999);
+
+        await collections.productHistoryModel?.findOneAndDelete({created_date_time: {$gte: start, $lt: end}})
+
+    }
 }

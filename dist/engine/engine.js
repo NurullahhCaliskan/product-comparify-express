@@ -80,6 +80,8 @@ class Engine {
             console.log('start collectAllProducts');
             let userWebsitesRelationService = new userWebsitesRelationService_1.default();
             let websiteService = new websiteService_1.default();
+            let productHistoryService = new productHistoryService_1.default();
+            yield productHistoryService.removeTodayProducts();
             yield this.syncWebsites();
             //get websites for collect data
             let websites = yield websiteService.getWebsites();

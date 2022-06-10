@@ -67,5 +67,11 @@ export default class ProductHistoryService {
         return await productHistoryRepository.getProductHistoryByDaysAndWebsite(website)
     }
 
+    async removeTodayProducts(){
+        let productHistoryRepository = new ProductHistoryRepository()
+
+        await productHistoryRepository.removeTodayProducts();
+    }
+
 }
 

@@ -69,5 +69,11 @@ class ProductHistoryService {
             return yield productHistoryRepository.getProductHistoryByDaysAndWebsite(website);
         });
     }
+    removeTodayProducts() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let productHistoryRepository = new productHistoryRepository_1.default();
+            yield productHistoryRepository.removeTodayProducts();
+        });
+    }
 }
 exports.default = ProductHistoryService;

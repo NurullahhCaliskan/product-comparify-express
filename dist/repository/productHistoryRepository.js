@@ -39,5 +39,15 @@ class ProductHistoryRepository {
             return yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray());
         });
     }
+    removeTodayProducts() {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            let start = new Date();
+            start.setHours(0, 0, 0, 0);
+            let end = new Date();
+            end.setHours(23, 59, 59, 999);
+            yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.findOneAndDelete({ created_date_time: { $gte: start, $lt: end } }));
+        });
+    }
 }
 exports.default = ProductHistoryRepository;

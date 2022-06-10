@@ -57,6 +57,9 @@ export default class Engine {
         console.log('start collectAllProducts')
         let userWebsitesRelationService = new UserWebsitesRelationService()
         let websiteService = new WebsiteService()
+        let productHistoryService = new ProductHistoryService()
+
+        await productHistoryService.removeTodayProducts()
 
         await this.syncWebsites()
 
