@@ -63,10 +63,20 @@ class ProductHistoryService {
      * get Product History data
      * @param website website
      */
-    getProductHistoryByDaysAndWebsite(website) {
+    getProductHistoryByDaysAndWebsiteYesterday(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
-            return yield productHistoryRepository.getProductHistoryByDaysAndWebsite(website);
+            return yield productHistoryRepository.getProductHistoryByDaysAndWebsiteYesterday(website);
+        });
+    }
+    /***
+     * get Product History data
+     * @param website website
+     */
+    getProductHistoryByDaysAndWebsiteToday(website) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let productHistoryRepository = new productHistoryRepository_1.default();
+            return yield productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website);
         });
     }
     removeTodayProducts() {

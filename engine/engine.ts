@@ -83,23 +83,13 @@ export default class Engine {
         let UserWebsitesRelationList = await userWebsitesRelationService.getUserWebsitesRelations();
         let websitesList = await websiteService.getWebsites()
 
-        let yesterdayMidnight = getYesterdayMidnight()
-        let todayMidnight = getTodayMidnight()
-
-
         //get unique website list
         for (const website of websitesList) {
 
             let relevantUserByWebsite = userWebsitesRelationService.getUserFilterWebsiteAndAlarmStatus(UserWebsitesRelationList, website.url)
 
-            //start loop
-            let productList = await productHistoryService.getProductHistoryByDaysAndWebsite(website.url)
-
-            //console.log( productList.filter(product => product.id === 6774978412614).length)
-            //productList = productList.filter(product => product.id === 6774978412614);
-
-            let yesterdayProductList = productList.filter(product => product.created_date_time > yesterdayMidnight && product.created_date_time < todayMidnight)
-            let todayProductList = productList.filter(product => product.created_date_time > todayMidnight)
+            let yesterdayProductList = await productHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
+            let todayProductList = await productHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
 
             //if today or yesterday product lis is empty, go back.
             if (arrayIsEmpty(yesterdayProductList) || arrayIsEmpty(todayProductList)) {

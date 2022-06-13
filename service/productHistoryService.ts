@@ -61,10 +61,20 @@ export default class ProductHistoryService {
      * get Product History data
      * @param website website
      */
-    async getProductHistoryByDaysAndWebsite(website: string): Promise<ProductHistoryModel[]> {
+    async getProductHistoryByDaysAndWebsiteYesterday(website: string): Promise<ProductHistoryModel[]> {
         let productHistoryRepository = new ProductHistoryRepository()
 
-        return await productHistoryRepository.getProductHistoryByDaysAndWebsite(website)
+        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteYesterday(website)
+    }
+
+    /***
+     * get Product History data
+     * @param website website
+     */
+    async getProductHistoryByDaysAndWebsiteToday(website: string): Promise<ProductHistoryModel[]> {
+        let productHistoryRepository = new ProductHistoryRepository()
+
+        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website)
     }
 
     async removeTodayProducts(){

@@ -39,7 +39,6 @@ const node_schedule_1 = __importDefault(require("node-schedule"));
 const userWebsitesRelationService_1 = __importDefault(require("../service/userWebsitesRelationService"));
 const websiteService_1 = __importDefault(require("../service/websiteService"));
 const productHistoryService_1 = __importDefault(require("../service/productHistoryService"));
-const dayUtility_1 = require("../utility/dayUtility");
 const priceCollector_1 = __importDefault(require("./priceCollector"));
 const engineConfig_1 = __importStar(require("./engineConfig"));
 const alarmService_1 = __importDefault(require("./alarmService"));
@@ -101,17 +100,11 @@ class Engine {
             let usersWhichSendingAlarmList = [];
             let UserWebsitesRelationList = yield userWebsitesRelationService.getUserWebsitesRelations();
             let websitesList = yield websiteService.getWebsites();
-            let yesterdayMidnight = (0, dayUtility_1.getYesterdayMidnight)();
-            let todayMidnight = (0, dayUtility_1.getTodayMidnight)();
             //get unique website list
             for (const website of websitesList) {
                 let relevantUserByWebsite = userWebsitesRelationService.getUserFilterWebsiteAndAlarmStatus(UserWebsitesRelationList, website.url);
-                //start loop
-                let productList = yield productHistoryService.getProductHistoryByDaysAndWebsite(website.url);
-                //console.log( productList.filter(product => product.id === 6774978412614).length)
-                //productList = productList.filter(product => product.id === 6774978412614);
-                let yesterdayProductList = productList.filter(product => product.created_date_time > yesterdayMidnight && product.created_date_time < todayMidnight);
-                let todayProductList = productList.filter(product => product.created_date_time > todayMidnight);
+                let yesterdayProductList = yield productHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
+                let todayProductList = yield productHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
                 //if today or yesterday product lis is empty, go back.
                 if ((0, arrayUtility_1.arrayIsEmpty)(yesterdayProductList) || (0, arrayUtility_1.arrayIsEmpty)(todayProductList)) {
                     continue;
