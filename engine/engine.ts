@@ -54,6 +54,7 @@ export default class Engine {
     }
 
     async collectAllProducts() {
+
         console.log('start collectAllProducts')
         let userWebsitesRelationService = new UserWebsitesRelationService()
         let websiteService = new WebsiteService()
