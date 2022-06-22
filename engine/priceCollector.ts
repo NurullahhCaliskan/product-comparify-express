@@ -1,9 +1,10 @@
 import ProductHistoryModel from "../model/productHistoryModel";
 import {rateAsPercentage} from "../utility/mathUtility";
+import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 
 export default class PriceCollector {
 
-    getPriceChangeVariantListByProduct(todayProduct: ProductHistoryModel, yesterdayProduct: ProductHistoryModel): [{ productId: number, priceRate: number }] {
+    getPriceChangeVariantListByProduct(todayProduct: ProductPriceHistoryModel, yesterdayProduct: ProductPriceHistoryModel): [{ productId: number, priceRate: number }] {
 
         let response = []
 

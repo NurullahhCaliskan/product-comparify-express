@@ -44,6 +44,7 @@ async function loadDb() {
         collections.userSessionModel = db.collection("user-session");
         collections.mailHistoryModel = db.collection("mail-history");
         collections.engineHistoryModel = db.collection("engine-history");
+        collections.productPriceHistoryModel = db.collection("product-price-history");
 
         console.log('success load db2')
     } catch (e) {

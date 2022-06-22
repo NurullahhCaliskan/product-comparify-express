@@ -8,4 +8,5 @@ export let collections: {
     userSessionModel?: mongoDB.Collection,
     mailHistoryModel?: mongoDB.Collection,
     engineHistoryModel?: mongoDB.Collection
+    productPriceHistoryModel?: mongoDB.Collection
 } = {}

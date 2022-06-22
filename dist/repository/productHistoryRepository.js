@@ -10,8 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
-const dayUtility_1 = require("../utility/dayUtility");
-const stringUtility_1 = require("../utility/stringUtility");
 class ProductHistoryRepository {
     /***
      * save Product by url
@@ -23,39 +21,6 @@ class ProductHistoryRepository {
             yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
         });
     }
-    /***
-     * get Product History By days and website
-     * @param website website
-     */
-    getProductHistoryByDaysAndWebsiteYesterday(website) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            //find example = { $and: [ { website:"https://www.pipsnacks.com/" }, {created_date_time : { $gte : new ISODate("2022-05-04T00:00:00.000Z") } } ] }
-            website = (0, stringUtility_1.urlFormatter)(website);
-            let yesterdayMidnight = (0, dayUtility_1.getYesterdayMidnight)();
-            let todayMidnight = (0, dayUtility_1.getTodayMidnight)();
-            let findJson = { $and: [{ website: website }, { created_date_time: { $gte: yesterdayMidnight, $lt: todayMidnight } }] };
-            // @ts-ignore
-            return yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray());
-        });
-    }
-    /***
-     * get Product History By days and website
-     * @param website website
-     */
-    getProductHistoryByDaysAndWebsiteToday(website) {
-        var _a;
-        return __awaiter(this, void 0, void 0, function* () {
-            //find example = { $and: [ { website:"https://www.pipsnacks.com/" }, {created_date_time : { $gte : new ISODate("2022-05-04T00:00:00.000Z") } } ] }
-            website = (0, stringUtility_1.urlFormatter)(website);
-            let yesterdayMidnight = (0, dayUtility_1.getYesterdayMidnight)();
-            let todayMidnight = (0, dayUtility_1.getTodayMidnight)();
-            let tomorrowMidnight = (0, dayUtility_1.getTomorrowMidnight)();
-            let findJson = { $and: [{ website: website }, { created_date_time: { $gte: todayMidnight, $lt: tomorrowMidnight } }] };
-            // @ts-ignore
-            return yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray());
-        });
-    }
     removeTodayProducts() {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -64,6 +29,22 @@ class ProductHistoryRepository {
             let end = new Date();
             end.setHours(23, 59, 59, 999);
             yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ created_date_time: { $gte: start, $lt: end } }));
+        });
+    }
+    /**
+     * get User websites relations
+     * @return unique website list
+     */
+    getProductHistoryByProductId(id) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.findOne({ id: id }));
+        });
+    }
+    deleteProductsByWebsite(website) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ website: website }));
         });
     }
 }

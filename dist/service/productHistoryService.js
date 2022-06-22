@@ -14,6 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = __importDefault(require("axios"));
 const productHistoryRepository_1 = __importDefault(require("../repository/productHistoryRepository"));
+const productPriceHistoryService_1 = __importDefault(require("./productPriceHistoryService"));
+const productPriceHistoryModel_1 = __importDefault(require("../model/productPriceHistoryModel"));
 class ProductHistoryService {
     /**
      * save product history
@@ -23,6 +25,7 @@ class ProductHistoryService {
     saveProductsFromWebByUrl(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
+            let productPriceHistoryService = new productPriceHistoryService_1.default();
             let url = website.url;
             let collections = website.collection;
             let products = [];
@@ -61,32 +64,32 @@ class ProductHistoryService {
                 }
             }
             yield productHistoryRepository.saveProductsFromWebByUrl(products);
+            let productPrices = [];
+            //convert product to product prices
+            products.forEach(product => {
+                productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, product.created_date_time, product.variants));
+            });
+            yield productPriceHistoryService.saveProductPriceHistory(productPrices);
         });
     }
-    /***
-     * get Product History data
-     * @param website website
-     */
-    getProductHistoryByDaysAndWebsiteYesterday(website) {
+    getProductHistoryByProductId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
-            return yield productHistoryRepository.getProductHistoryByDaysAndWebsiteYesterday(website);
+            return yield productHistoryRepository.getProductHistoryByProductId(id);
         });
     }
-    /***
-     * get Product History data
-     * @param website website
-     */
-    getProductHistoryByDaysAndWebsiteToday(website) {
+    deleteProductsByWebsite(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
-            return yield productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website);
+            yield productHistoryRepository.deleteProductsByWebsite(website);
         });
     }
     removeTodayProducts() {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
+            let productPriceHistoryRepository = new productPriceHistoryService_1.default();
             yield productHistoryRepository.removeTodayProducts();
+            yield productPriceHistoryRepository.removeTodayProducts();
         });
     }
     mergeProducts(mainList, tmpList) {

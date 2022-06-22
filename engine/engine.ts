@@ -14,6 +14,8 @@ import MailService from "../mail/mailService";
 import {EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND} from "../utility/cronUtility";
 import EngineHistoryService from "../service/engineHistoryService";
 import EngineHistoryModel from "../model/engineHistoryModel";
+import ProductPriceHistoryService from "../service/productPriceHistoryService";
+import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 
 
 export default class Engine {
@@ -68,8 +70,10 @@ export default class Engine {
         let websites = await websiteService.getWebsites()
 
         for (const website of websites) {
-            let productHistoryService = new ProductHistoryService()
+
+            await productHistoryService.deleteProductsByWebsite(website.url)
             await productHistoryService.saveProductsFromWebByUrl(website)
+
         }
     }
 
@@ -77,6 +81,7 @@ export default class Engine {
         console.log("prepareAlarmToSendMail")
         let userWebsitesRelationService = new UserWebsitesRelationService()
         let productHistoryService = new ProductHistoryService()
+        let productPriceHistoryService = new ProductPriceHistoryService()
         let websiteService = new WebsiteService()
         let alarmService = new AlarmService()
 
@@ -89,8 +94,8 @@ export default class Engine {
 
             let relevantUserByWebsite = userWebsitesRelationService.getUserFilterWebsiteAndAlarmStatus(UserWebsitesRelationList, website.url)
 
-            let yesterdayProductList = await productHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
-            let todayProductList = await productHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
+            let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
+            let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
 
             //if today or yesterday product lis is empty, go back.
             if (arrayIsEmpty(yesterdayProductList) || arrayIsEmpty(todayProductList)) {

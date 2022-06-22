@@ -3,6 +3,8 @@ import axios from "axios";
 import WebsiteModel from "../model/websiteModel";
 import ProductHistoryRepository from "../repository/productHistoryRepository";
 import ProductHistoryModel from "../model/productHistoryModel";
+import ProductPriceHistoryService from "./productPriceHistoryService";
+import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 
 export default class ProductHistoryService {
 
@@ -13,6 +15,7 @@ export default class ProductHistoryService {
      */
     async saveProductsFromWebByUrl(website: WebsiteModel) {
         let productHistoryRepository = new ProductHistoryRepository()
+        let productPriceHistoryService = new ProductPriceHistoryService()
 
         let url = website.url
         let collections = website.collection
@@ -61,32 +64,34 @@ export default class ProductHistoryService {
         }
 
         await productHistoryRepository.saveProductsFromWebByUrl(products)
+
+        let productPrices: ProductPriceHistoryModel[] = []
+
+        //convert product to product prices
+        products.forEach(product => {
+            productPrices.push(new ProductPriceHistoryModel(product.id,product.website,product.created_date_time,product.variants))
+        })
+
+        await productPriceHistoryService.saveProductPriceHistory(productPrices)
+
     }
 
-    /***
-     * get Product History data
-     * @param website website
-     */
-    async getProductHistoryByDaysAndWebsiteYesterday(website: string): Promise<ProductHistoryModel[]> {
+    async getProductHistoryByProductId(id:number): Promise<ProductHistoryModel>{
         let productHistoryRepository = new ProductHistoryRepository()
-
-        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteYesterday(website)
+        return await productHistoryRepository.getProductHistoryByProductId(id)
     }
 
-    /***
-     * get Product History data
-     * @param website website
-     */
-    async getProductHistoryByDaysAndWebsiteToday(website: string): Promise<ProductHistoryModel[]> {
+    async deleteProductsByWebsite(website: string) {
         let productHistoryRepository = new ProductHistoryRepository()
-
-        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website)
+        await productHistoryRepository.deleteProductsByWebsite(website)
     }
 
     async removeTodayProducts() {
         let productHistoryRepository = new ProductHistoryRepository()
+        let productPriceHistoryRepository = new ProductPriceHistoryService()
 
         await productHistoryRepository.removeTodayProducts();
+        await productPriceHistoryRepository.removeTodayProducts();
     }
 
 

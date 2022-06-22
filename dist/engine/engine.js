@@ -47,6 +47,7 @@ const mailService_1 = __importDefault(require("../mail/mailService"));
 const cronUtility_1 = require("../utility/cronUtility");
 const engineHistoryService_1 = __importDefault(require("../service/engineHistoryService"));
 const engineHistoryModel_1 = __importDefault(require("../model/engineHistoryModel"));
+const productPriceHistoryService_1 = __importDefault(require("../service/productPriceHistoryService"));
 class Engine {
     startEngine() {
         let engine = new Engine();
@@ -85,7 +86,7 @@ class Engine {
             //get websites for collect data
             let websites = yield websiteService.getWebsites();
             for (const website of websites) {
-                let productHistoryService = new productHistoryService_1.default();
+                yield productHistoryService.deleteProductsByWebsite(website.url);
                 yield productHistoryService.saveProductsFromWebByUrl(website);
             }
         });
@@ -95,6 +96,7 @@ class Engine {
             console.log("prepareAlarmToSendMail");
             let userWebsitesRelationService = new userWebsitesRelationService_1.default();
             let productHistoryService = new productHistoryService_1.default();
+            let productPriceHistoryService = new productPriceHistoryService_1.default();
             let websiteService = new websiteService_1.default();
             let alarmService = new alarmService_1.default();
             let usersWhichSendingAlarmList = [];
@@ -103,8 +105,8 @@ class Engine {
             //get unique website list
             for (const website of websitesList) {
                 let relevantUserByWebsite = userWebsitesRelationService.getUserFilterWebsiteAndAlarmStatus(UserWebsitesRelationList, website.url);
-                let yesterdayProductList = yield productHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
-                let todayProductList = yield productHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
+                let yesterdayProductList = yield productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
+                let todayProductList = yield productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
                 //if today or yesterday product lis is empty, go back.
                 if ((0, arrayUtility_1.arrayIsEmpty)(yesterdayProductList) || (0, arrayUtility_1.arrayIsEmpty)(todayProductList)) {
                     continue;
