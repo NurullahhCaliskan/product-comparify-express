@@ -86,7 +86,7 @@ class Engine {
             let websites = yield websiteService.getWebsites();
             for (const website of websites) {
                 let productHistoryService = new productHistoryService_1.default();
-                yield productHistoryService.saveProductsFromWebByUrl(website.url, website.collection);
+                yield productHistoryService.saveProductsFromWebByUrl(website);
             }
         });
     }

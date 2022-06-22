@@ -69,7 +69,7 @@ export default class Engine {
 
         for (const website of websites) {
             let productHistoryService = new ProductHistoryService()
-            await productHistoryService.saveProductsFromWebByUrl(website.url, website.collection)
+            await productHistoryService.saveProductsFromWebByUrl(website)
         }
     }
 

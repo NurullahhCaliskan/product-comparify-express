@@ -11,8 +11,13 @@ export default class ProductHistoryService {
      * @param url url
      * @param collections collection
      */
-    async saveProductsFromWebByUrl(url: string, collections: object[]) {
+    async saveProductsFromWebByUrl(website: WebsiteModel) {
         let productHistoryRepository = new ProductHistoryRepository()
+
+        let url = website.url
+        let collections = website.collection
+
+        let products: ProductHistoryModel[] = []
 
         for (const collection of collections) {
             let loopContinue = true
@@ -20,7 +25,7 @@ export default class ProductHistoryService {
             while (loopContinue) {
                 try {
                     // @ts-ignore
-                    let readyToRequestUrl = url + "/collections/" + collection.handle + '/products.json?page=' + pagination
+                    let readyToRequestUrl = url + "/collections/" + collection.handle + '/products.json?limit=250&page=' + pagination
 
                     let response = await axios.get(readyToRequestUrl);
 
@@ -34,10 +39,9 @@ export default class ProductHistoryService {
                         productResponse.products.forEach(product => {
                             product.website = url
                             // @ts-ignore
-                            product.collection = collection.handle
+                            product.collection = [collection.handle]
 
                             let date = new Date()
-
 
                             //for test yesterday
                             //date.setDate(date.getDate() - 1);
@@ -47,7 +51,7 @@ export default class ProductHistoryService {
                             product.url = url + "/collections/" + collection.handle + '/products/' + product.handle
                         })
 
-                        await productHistoryRepository.saveProductsFromWebByUrl(productResponse.products)
+                        this.mergeProducts(products, productResponse.products)
                     }
                     pagination++
                 } catch (e) {
@@ -77,11 +81,22 @@ export default class ProductHistoryService {
         return await productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website)
     }
 
-    async removeTodayProducts(){
+    async removeTodayProducts() {
         let productHistoryRepository = new ProductHistoryRepository()
 
         await productHistoryRepository.removeTodayProducts();
     }
 
+
+    mergeProducts(mainList: ProductHistoryModel[], tmpList: ProductHistoryModel[]) {
+        tmpList.forEach(item => {
+            if (mainList.find(mainItem => mainItem.id === item.id)) {
+                // @ts-ignore
+                mainList.find(mainItem => mainItem.id === item.id).collection.push(item.collection[0])
+            } else {
+                mainList.push(item)
+            }
+        })
+    }
 }
 

@@ -4,7 +4,7 @@ export default class ProductHistoryModel {
     constructor(public id: number,
                 public website: string,
                 public created_date_time: Date,
-                public collection: string,
+                public collection: string[],
                 public url: string,
                 public title: string,
                 public handle: string,
