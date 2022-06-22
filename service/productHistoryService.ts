@@ -59,6 +59,8 @@ export default class ProductHistoryService {
                 }
             }
         }
+
+        await productHistoryRepository.saveProductsFromWebByUrl(products)
     }
 
     /***
