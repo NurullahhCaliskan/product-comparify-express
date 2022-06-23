@@ -16,6 +16,8 @@ import EngineHistoryService from "../service/engineHistoryService";
 import EngineHistoryModel from "../model/engineHistoryModel";
 import ProductPriceHistoryService from "../service/productPriceHistoryService";
 import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
+import ProductHistoryCrawlerQueueService from "../service/productHistoryCrawlerQueueService";
+import EnginePermissionService from "../service/enginePermissionService";
 
 
 export default class Engine {
@@ -50,7 +52,7 @@ export default class Engine {
                 console.log(e)
             }
 
-            console.log('end engine2')
+            console.log('end engine')
             setRunPermission(true)
         })
     }
@@ -76,6 +78,8 @@ export default class Engine {
 
         }
     }
+
+
 
     async prepareAlarmToSendMail() {
         console.log("prepareAlarmToSendMail")

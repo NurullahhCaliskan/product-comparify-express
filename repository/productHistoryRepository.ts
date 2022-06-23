@@ -3,6 +3,7 @@ import {getTodayMidnight, getTomorrowMidnight, getYesterdayMidnight} from "../ut
 import ProductHistoryModel from "../model/productHistoryModel";
 import {urlFormatter} from "../utility/stringUtility";
 import WebsiteModel from "../model/websiteModel";
+import _ from "lodash";
 
 export default class ProductHistoryRepository {
 
@@ -22,7 +23,6 @@ export default class ProductHistoryRepository {
         end.setHours(23, 59, 59, 999);
 
         await collections.productHistoryModel?.deleteMany({created_date_time: {$gte: start, $lt: end}})
-
     }
 
     /**
@@ -36,5 +36,21 @@ export default class ProductHistoryRepository {
 
     async deleteProductsByWebsite(website: string) {
         await collections.productHistoryModel?.deleteMany({website: website})
+    }
+
+    async isCrawledTodayByWebsite(website : string) : Promise<boolean>{
+        let start = new Date();
+        start.setHours(0, 0, 0, 0);
+
+        let end = new Date();
+        end.setHours(23, 59, 59, 999);
+
+        let result = await collections.productHistoryModel?.findOne({created_date_time: {$gte: start, $lt: end}, website:website}) as ProductHistoryModel
+
+
+        console.log("result")
+        console.log(result)
+        console.log(!_.isEmpty(result))
+        return !_.isEmpty(result);
     }
 }

@@ -63,6 +63,12 @@ class WebsiteService {
             return yield websiteRepository.getWebsites();
         });
     }
+    getWebsitesFromQueue() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let websiteRepository = new websiteRepository_1.default();
+            return yield websiteRepository.getWebsitesFromQueue();
+        });
+    }
     getWebsiteByUrl(url) {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();

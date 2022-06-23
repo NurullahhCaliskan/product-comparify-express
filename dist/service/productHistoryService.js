@@ -92,6 +92,12 @@ class ProductHistoryService {
             yield productPriceHistoryRepository.removeTodayProducts();
         });
     }
+    isCrawledTodayByWebsite(website) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let productHistoryRepository = new productHistoryRepository_1.default();
+            return yield productHistoryRepository.isCrawledTodayByWebsite(website);
+        });
+    }
     mergeProducts(mainList, tmpList) {
         tmpList.forEach(item => {
             if (mainList.find(mainItem => mainItem.id === item.id)) {

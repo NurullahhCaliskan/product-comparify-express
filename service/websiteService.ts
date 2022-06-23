@@ -53,6 +53,11 @@ export default class WebsiteService {
         return await websiteRepository.getWebsites()
     }
 
+    async getWebsitesFromQueue() : Promise<WebsiteModel[]>{
+        let websiteRepository = new WebsiteRepository()
+        return await websiteRepository.getWebsitesFromQueue()
+    }
+
     async getWebsiteByUrl(url:string) : Promise<WebsiteModel>{
         let websiteRepository = new WebsiteRepository()
         return await websiteRepository.getWebsiteByUrl(url)

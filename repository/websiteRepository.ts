@@ -39,11 +39,28 @@ export default class WebsiteRepository {
         return await collections.websitesModel.find({}).toArray() as WebsiteModel[]
     }
 
+    async getWebsitesFromQueue() : Promise<WebsiteModel[]> {
+        return await collections.websitesModel?.aggregate([
+            {
+                $lookup: {
+                    from: 'product-history-crawler-queue',
+                    localField: 'url',
+                    foreignField: 'website',
+                    as: 'websiteData'
+                }
+            },
+            {$match: {websiteData: {$not: {$size: 0}}}}
+
+        ]).toArray() as WebsiteModel[]
+
+
+    }
+
     /**
      * get User websites relations
      * @return unique website list
      */
-    async getWebsiteByUrl(url : string): Promise<WebsiteModel> {
+    async getWebsiteByUrl(url: string): Promise<WebsiteModel> {
 
         console.log(url)
         return await collections.websitesModel?.findOne({url: url}) as WebsiteModel;

@@ -70,7 +70,7 @@ class Engine {
                 catch (e) {
                     console.log(e);
                 }
-                console.log('end engine2');
+                console.log('end engine');
                 (0, engineConfig_1.default)(true);
             });
         });

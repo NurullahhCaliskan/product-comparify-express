@@ -49,6 +49,22 @@ class WebsiteRepository {
             return yield database_service_1.collections.websitesModel.find({}).toArray();
         });
     }
+    getWebsitesFromQueue() {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            return yield ((_a = database_service_1.collections.websitesModel) === null || _a === void 0 ? void 0 : _a.aggregate([
+                {
+                    $lookup: {
+                        from: 'product-history-crawler-queue',
+                        localField: 'url',
+                        foreignField: 'website',
+                        as: 'websiteData'
+                    }
+                },
+                { $match: { websiteData: { $not: { $size: 0 } } } }
+            ]).toArray());
+        });
+    }
     /**
      * get User websites relations
      * @return unique website list

@@ -21,6 +21,10 @@ import morgan from "morgan";
 import EngineHistoryService from "./service/engineHistoryService";
 import EngineHistoryModel from "./model/engineHistoryModel";
 import UserService from "./service/userService";
+import WebsiteModel from "./model/websiteModel";
+import {getTodayMidnight, getYesterdayMidnight} from "./utility/dayUtility";
+import EnginePermissionModel from "./model/enginePermissionModel";
+import QueueProductEngine from "./engine/queueProductEngine";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
@@ -45,6 +49,8 @@ async function loadDb() {
         collections.mailHistoryModel = db.collection("mail-history");
         collections.engineHistoryModel = db.collection("engine-history");
         collections.productPriceHistoryModel = db.collection("product-price-history");
+        collections.productHistoryCrawlerQueueModel = db.collection("product-history-crawler-queue");
+        collections.enginePermissionModel = db.collection("engine-permission");
 
         console.log('success load db2')
     } catch (e) {
@@ -76,6 +82,9 @@ loadDb().then(r => r)
 
 const engine = new Engine();
 engine.startEngine();
+
+const queueProductEngine = new QueueProductEngine();
+queueProductEngine.startEngine();
 
 const app: Express = express();
 const port = 3000;
@@ -128,6 +137,7 @@ app.get('/engine/start', async (req: Request, res: Response) => {
     res.send(JSON.stringify({result: "success"}));
 });
 
+
 app.get('/mail/test', async (req: Request, res: Response) => {
     console.log("mail/test")
 
@@ -144,7 +154,19 @@ app.get('/mail/test', async (req: Request, res: Response) => {
     return res.send(JSON.stringify({result: "Mail Send Successfully"}));
 });
 
+app.get('/query/test', async (req: Request, res: Response) => {
+    console.log("query/test")
 
-export default  app.listen(port, () => {
+    let yesterdayMidnight = getYesterdayMidnight()
+
+    let findJson = {$and: [{collection: "product-history-crawler-queue"}, {status: 1}, {last_run_time: {$gte: yesterdayMidnight}}]}
+
+    let response = await collections.enginePermissionModel?.find(findJson).toArray() as EnginePermissionModel[]
+
+    console.log(response)
+    return res.send(JSON.stringify(response));
+});
+
+export default app.listen(port, () => {
     console.log(`[server]: Test9 Server is running at https://localhost:${port}`);
 });

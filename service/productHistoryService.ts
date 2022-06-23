@@ -69,14 +69,14 @@ export default class ProductHistoryService {
 
         //convert product to product prices
         products.forEach(product => {
-            productPrices.push(new ProductPriceHistoryModel(product.id,product.website,product.created_date_time,product.variants))
+            productPrices.push(new ProductPriceHistoryModel(product.id, product.website, product.created_date_time, product.variants))
         })
 
         await productPriceHistoryService.saveProductPriceHistory(productPrices)
 
     }
 
-    async getProductHistoryByProductId(id:number): Promise<ProductHistoryModel>{
+    async getProductHistoryByProductId(id: number): Promise<ProductHistoryModel> {
         let productHistoryRepository = new ProductHistoryRepository()
         return await productHistoryRepository.getProductHistoryByProductId(id)
     }
@@ -94,6 +94,10 @@ export default class ProductHistoryService {
         await productPriceHistoryRepository.removeTodayProducts();
     }
 
+    async isCrawledTodayByWebsite(website: string): Promise<boolean> {
+        let productHistoryRepository = new ProductHistoryRepository()
+        return await productHistoryRepository.isCrawledTodayByWebsite(website);
+    }
 
     mergeProducts(mainList: ProductHistoryModel[], tmpList: ProductHistoryModel[]) {
         tmpList.forEach(item => {

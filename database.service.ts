@@ -9,4 +9,6 @@ export let collections: {
     mailHistoryModel?: mongoDB.Collection,
     engineHistoryModel?: mongoDB.Collection
     productPriceHistoryModel?: mongoDB.Collection
+    productHistoryCrawlerQueueModel?: mongoDB.Collection
+    enginePermissionModel?: mongoDB.Collection
 } = {}

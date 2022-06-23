@@ -52,6 +52,8 @@ const morgan_1 = __importDefault(require("morgan"));
 const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
 const engineHistoryModel_1 = __importDefault(require("./model/engineHistoryModel"));
 const userService_1 = __importDefault(require("./service/userService"));
+const dayUtility_1 = require("./utility/dayUtility");
+const queueProductEngine_1 = __importDefault(require("./engine/queueProductEngine"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 function loadDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -71,6 +73,8 @@ function loadDb() {
             database_service_1.collections.mailHistoryModel = db.collection("mail-history");
             database_service_1.collections.engineHistoryModel = db.collection("engine-history");
             database_service_1.collections.productPriceHistoryModel = db.collection("product-price-history");
+            database_service_1.collections.productHistoryCrawlerQueueModel = db.collection("product-history-crawler-queue");
+            database_service_1.collections.enginePermissionModel = db.collection("engine-permission");
             console.log('success load db2');
         }
         catch (e) {
@@ -97,6 +101,8 @@ initializeMailEngine();
 loadDb().then(r => r);
 const engine = new engine_1.default();
 engine.startEngine();
+const queueProductEngine = new queueProductEngine_1.default();
+queueProductEngine.startEngine();
 const app = (0, express_1.default)();
 const port = 3000;
 const initVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
@@ -143,6 +149,15 @@ app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
     yield mailService.sendTestMail(req.query.id);
     return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
+}));
+app.get('/query/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    console.log("query/test");
+    let yesterdayMidnight = (0, dayUtility_1.getYesterdayMidnight)();
+    let findJson = { $and: [{ collection: "product-history-crawler-queue" }, { status: 1 }, { last_run_time: { $gte: yesterdayMidnight } }] };
+    let response = yield ((_a = database_service_1.collections.enginePermissionModel) === null || _a === void 0 ? void 0 : _a.find(findJson).toArray());
+    console.log(response);
+    return res.send(JSON.stringify(response));
 }));
 exports.default = app.listen(port, () => {
     console.log(`[server]: Test9 Server is running at https://localhost:${port}`);
