@@ -1,8 +1,7 @@
 import {collections} from "../database.service";
-import UserWebsitesRelationModel from "../model/userWebsitesRelationModel";
+import StoreWebsitesRelationModel from "../model/storeWebsitesRelationModel";
 import WebsiteModel from "../model/websiteModel";
 import {urlFormatter} from "../utility/stringUtility";
-import UserModel from "../model/userModel";
 
 export default class WebsiteRepository {
 
@@ -39,7 +38,7 @@ export default class WebsiteRepository {
         return await collections.websitesModel.find({}).toArray() as WebsiteModel[]
     }
 
-    async getWebsitesFromQueue() : Promise<WebsiteModel[]> {
+    async getWebsitesFromQueue(): Promise<WebsiteModel[]> {
         return await collections.websitesModel?.aggregate([
             {
                 $lookup: {

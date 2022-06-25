@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class MailHistoryModel {
-    constructor(userId, createDateTime, mailBody, status, result, cachedAlarm, _id) {
-        this.userId = userId;
+    constructor(storeId, createDateTime, mailBody, status, result, cachedAlarm, _id) {
+        this.storeId = storeId;
         this.createDateTime = createDateTime;
         this.mailBody = mailBody;
         this.status = status;

@@ -10,13 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
-class UserRepository {
-    getUserByUserId(storeId) {
-        var _a;
+class StoreWebsitesRelationRepository {
+    /**
+     * get User websites relations
+     * @return unique website list
+     */
+    getStoreWebsitesRelations() {
         return __awaiter(this, void 0, void 0, function* () {
             // @ts-ignore
-            return yield ((_a = database_service_1.collections.storeModel) === null || _a === void 0 ? void 0 : _a.findOne({ id: storeId }));
+            return yield database_service_1.collections.storeWebsitesRelationModel.find({}).toArray();
         });
     }
 }
-exports.default = UserRepository;
+exports.default = StoreWebsitesRelationRepository;

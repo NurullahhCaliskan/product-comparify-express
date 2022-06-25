@@ -20,11 +20,12 @@ import logger from "./logger.middleware";
 import morgan from "morgan";
 import EngineHistoryService from "./service/engineHistoryService";
 import EngineHistoryModel from "./model/engineHistoryModel";
-import UserService from "./service/userService";
 import WebsiteModel from "./model/websiteModel";
 import {getTodayMidnight, getYesterdayMidnight} from "./utility/dayUtility";
 import EnginePermissionModel from "./model/enginePermissionModel";
 import QueueProductEngine from "./engine/queueProductEngine";
+import StoreService from "./service/storeService";
+import {parseInt} from "lodash";
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
@@ -41,10 +42,10 @@ async function loadDb() {
 
         console.log(process.env.DBNAME)
         const db: mongoDB.Db = client.db(process.env.DBNAME);
-        collections.userWebsitesRelationModel = db.collection("user-websites-relation");
+        collections.storeWebsitesRelationModel = db.collection("store-websites-relation");
         collections.websitesModel = db.collection("websites");
         collections.productHistoryModel = db.collection("product-history");
-        collections.userModel = db.collection("user");
+        collections.storeModel = db.collection("store");
         collections.userSessionModel = db.collection("user-session");
         collections.mailHistoryModel = db.collection("mail-history");
         collections.engineHistoryModel = db.collection("engine-history");
@@ -91,7 +92,7 @@ const port = 3000;
 
 const initVerify = async (req: Request, res: Response, next: NextFunction) => {
     console.log("initVerify")
-    if (!collections.userWebsitesRelationModel) {
+    if (!collections.storeWebsitesRelationModel) {
 
         await loadDb()
     }
@@ -141,16 +142,18 @@ app.get('/engine/start', async (req: Request, res: Response) => {
 app.get('/mail/test', async (req: Request, res: Response) => {
     console.log("mail/test")
 
-    let userService = new UserService()
+    let storeService = new StoreService()
     let mailService = new MailService()
 
-    let user = await userService.getUserByUserId(req.query.id as string)
+    // @ts-ignore
+    let user = await storeService.getStoreByStoreId(parseInt(req.query.id) as number)
 
-    if (!user.mail) {
+    if (!user.selectedMail) {
         return res.status(422).send(JSON.stringify({result: "Please add valid mail"}))
     }
 
-    await mailService.sendTestMail(req.query.id as string)
+    // @ts-ignore
+    await mailService.sendTestMail(parseInt(req.query.id) as number)
     return res.send(JSON.stringify({result: "Mail Send Successfully"}));
 });
 

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_schedule_1 = __importDefault(require("node-schedule"));
 const cronUtility_1 = require("../utility/cronUtility");
 const enginePermissionService_1 = __importDefault(require("../service/enginePermissionService"));
-const userWebsitesRelationService_1 = __importDefault(require("../service/userWebsitesRelationService"));
+const storeWebsitesRelationService_1 = __importDefault(require("../service/storeWebsitesRelationService"));
 const websiteService_1 = __importDefault(require("../service/websiteService"));
 const productHistoryService_1 = __importDefault(require("../service/productHistoryService"));
 const productHistoryCrawlerQueueService_1 = __importDefault(require("../service/productHistoryCrawlerQueueService"));
@@ -45,7 +45,7 @@ class QueueProductEngine {
             //set unavailable
             yield enginePermissionService.setUnavailableQueueEngine();
             console.log('start collect queue products');
-            let userWebsitesRelationService = new userWebsitesRelationService_1.default();
+            let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
             let websiteService = new websiteService_1.default();
             let productHistoryService = new productHistoryService_1.default();
             let productHistoryCrawlerQueueService = new productHistoryCrawlerQueueService_1.default();

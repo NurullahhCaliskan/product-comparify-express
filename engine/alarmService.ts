@@ -1,20 +1,20 @@
-import UserWebsitesRelationModel from "../model/userWebsitesRelationModel";
-import UserModel from "../model/userModel";
+import StoreWebsitesRelationModel from "../model/storeWebsitesRelationModel";
+import StoreModel from "../model/storeModel";
 import ProductHistoryModel from "../model/productHistoryModel";
-import UserService from "../service/userService";
 import WebsiteService from "../service/websiteService";
 import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 import ProductHistoryService from "../service/productHistoryService";
+import StoreService from "../service/storeService";
 
 export default class AlarmService {
 
-    async setToUserCachedAlarm(usersWhichSendingAlarmList: UserModel[], userWebsiteRelationList: UserWebsitesRelationModel[],
+    async setToUserCachedAlarm(usersWhichSendingAlarmList: StoreModel[], userWebsiteRelationList: StoreWebsitesRelationModel[],
                                priceIdCouple: [{ productId: number, priceRate: number }], yesterdayProduct: ProductPriceHistoryModel,
                                todayProduct: ProductPriceHistoryModel) {
 
         for (const priceRateCoupleEntity of priceIdCouple) {
 
-            let newUserWebsiteRelationList = [] as UserWebsitesRelationModel[]
+            let newUserWebsiteRelationList = [] as StoreWebsitesRelationModel[]
             //if priceRateCoupleEntity = 0 means nothing change
             if (priceRateCoupleEntity.priceRate > 0) {
                 newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => priceRateCoupleEntity.priceRate > entity.value));
@@ -32,30 +32,30 @@ export default class AlarmService {
     }
 
 
-    private static async mergeUsersWithNewAlarm(usersWhichSendingAlarmList: UserModel[], userWebsiteRelationList: UserWebsitesRelationModel[],
+    private static async mergeUsersWithNewAlarm(storessWhichSendingAlarmList: StoreModel[], userWebsiteRelationList: StoreWebsitesRelationModel[],
                                                 priceIdCouple: { productId: number, priceRate: number }, yesterdayProduct: ProductPriceHistoryModel,
                                                 todayProduct: ProductPriceHistoryModel) {
 
         let websiteService = new WebsiteService()
         let productHistoryService = new ProductHistoryService()
-        let userService = new UserService()
+        let storeService = new StoreService()
 
         for (const userWebsiteRelation of userWebsiteRelationList) {
 
             let website = userWebsiteRelation.website;
             let alarmValue = priceIdCouple.priceRate;
-            let userId = userWebsiteRelation.userId;
+            let storeId = userWebsiteRelation.storeId;
 
-            let userIndex = usersWhichSendingAlarmList.findIndex(user => user.userId === userId);
+            let storeIndex = storessWhichSendingAlarmList.findIndex(user => user.id === storeId);
 
             //get website currency
             let websiteService = new WebsiteService()
             let websiteEntity = await websiteService.getWebsiteByUrl(website)
 
-            console.log("userIndex = " + userIndex + "  UserId = " + userId)
+            console.log("storeIndex = " + storeIndex + "  UserId = " + storeId)
 
             //if user exists
-            if (userIndex > -1) {
+            if (storeIndex > -1) {
                 // @ts-ignore
                 let todayProductVariant = todayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
                 // @ts-ignore
@@ -66,7 +66,7 @@ export default class AlarmService {
                 // @ts-ignore
                 let newAlarmJson = {website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency}
 
-                usersWhichSendingAlarmList[userIndex].cachedAlarm?.push(newAlarmJson)
+                storessWhichSendingAlarmList[storeIndex].cachedAlarm?.push(newAlarmJson)
             } else {
 
                 // @ts-ignore
@@ -80,9 +80,9 @@ export default class AlarmService {
                 // @ts-ignore
                 let newAlarmJson = {website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency}
 
-                let user = await userService.getUserByUserId(userId)
+                let storeModel = await storeService.getStoreByStoreId(storeId)
 
-                usersWhichSendingAlarmList.push({userId: userId, cachedAlarm: [newAlarmJson], mail: user.mail})
+                storessWhichSendingAlarmList.push({id: storeId, cachedAlarm: [newAlarmJson], selectedMail: storeModel.selectedMail})
             }
         }
     }

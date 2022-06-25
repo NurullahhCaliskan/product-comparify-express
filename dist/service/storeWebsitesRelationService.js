@@ -8,15 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const database_service_1 = require("../database.service");
-class UserRepository {
-    getUserByUserId(storeId) {
-        var _a;
+const storeWebsitesRelationRepository_1 = __importDefault(require("../repository/storeWebsitesRelationRepository"));
+class StoreWebsitesRelationService {
+    /**
+     * get User Website Relations
+     */
+    getUserWebsitesRelations() {
         return __awaiter(this, void 0, void 0, function* () {
-            // @ts-ignore
-            return yield ((_a = database_service_1.collections.storeModel) === null || _a === void 0 ? void 0 : _a.findOne({ id: storeId }));
+            let storeWebsitesRelationRepository = new storeWebsitesRelationRepository_1.default();
+            return yield storeWebsitesRelationRepository.getStoreWebsitesRelations();
         });
     }
+    getStoreFilterWebsiteAndAlarmStatus(storeWebsiteRelationList, website) {
+        return storeWebsiteRelationList.filter(entity => entity.website === website && entity.alarm);
+    }
 }
-exports.default = UserRepository;
+exports.default = StoreWebsitesRelationService;

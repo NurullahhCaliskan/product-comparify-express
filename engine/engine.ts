@@ -1,14 +1,13 @@
 import schedule from 'node-schedule';
-import UserWebsitesRelationService from "../service/userWebsitesRelationService";
+import StoreWebsitesRelationService from "../service/storeWebsitesRelationService";
 import WebsiteService from "../service/websiteService";
 import ProductHistoryService from "../service/productHistoryService";
 import {getYesterdayMidnight, getTodayMidnight} from "../utility/dayUtility";
 import {roughSizeOfObject} from "../utility/stackUtility";
 import PriceCollector from "./priceCollector";
 import setRunPermission, {runPermission} from "./engineConfig";
-import UserWebsitesRelationModel from "../model/userWebsitesRelationModel";
+import StoreWebsitesRelationModel from "../model/storeWebsitesRelationModel";
 import AlarmService from "./alarmService";
-import UserModel from "../model/userModel";
 import {arrayIsEmpty} from "../utility/arrayUtility";
 import MailService from "../mail/mailService";
 import {EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND} from "../utility/cronUtility";
@@ -18,6 +17,7 @@ import ProductPriceHistoryService from "../service/productPriceHistoryService";
 import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 import ProductHistoryCrawlerQueueService from "../service/productHistoryCrawlerQueueService";
 import EnginePermissionService from "../service/enginePermissionService";
+import StoreModel from "../model/storeModel";
 
 
 export default class Engine {
@@ -60,7 +60,7 @@ export default class Engine {
     async collectAllProducts() {
 
         console.log('start collectAllProducts')
-        let userWebsitesRelationService = new UserWebsitesRelationService()
+        let userWebsitesRelationService = new StoreWebsitesRelationService()
         let websiteService = new WebsiteService()
         let productHistoryService = new ProductHistoryService()
 
@@ -83,20 +83,20 @@ export default class Engine {
 
     async prepareAlarmToSendMail() {
         console.log("prepareAlarmToSendMail")
-        let userWebsitesRelationService = new UserWebsitesRelationService()
+        let storeWebsitesRelationService = new StoreWebsitesRelationService()
         let productHistoryService = new ProductHistoryService()
         let productPriceHistoryService = new ProductPriceHistoryService()
         let websiteService = new WebsiteService()
         let alarmService = new AlarmService()
 
-        let usersWhichSendingAlarmList = [] as UserModel[]
-        let UserWebsitesRelationList = await userWebsitesRelationService.getUserWebsitesRelations();
+        let storesWhichSendingAlarmList = [] as StoreModel[]
+        let storeWebsitesRelationList = await storeWebsitesRelationService.getUserWebsitesRelations();
         let websitesList = await websiteService.getWebsites()
 
         //get unique website list
         for (const website of websitesList) {
 
-            let relevantUserByWebsite = userWebsitesRelationService.getUserFilterWebsiteAndAlarmStatus(UserWebsitesRelationList, website.url)
+            let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url)
 
             let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
             let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
@@ -112,24 +112,24 @@ export default class Engine {
                 let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayProductList[index])
 
                 //find users which cache product alarm
-                await alarmService.setToUserCachedAlarm(usersWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
+                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
 
             }
         }
 
-        console.log(JSON.stringify(usersWhichSendingAlarmList))
+        console.log(JSON.stringify(storesWhichSendingAlarmList))
 
         console.log("send mail to users")
-        console.log(usersWhichSendingAlarmList.length)
-        for (const userModel of usersWhichSendingAlarmList) {
+        console.log(storesWhichSendingAlarmList.length)
+        for (const storeModel of storesWhichSendingAlarmList) {
             let mailService = new MailService()
-            await mailService.sendMail(userModel)
+            await mailService.sendMail(storeModel)
         }
     }
 
 
     async syncWebsites() {
-        let userWebsitesRelationService = new UserWebsitesRelationService()
+        let userWebsitesRelationService = new StoreWebsitesRelationService()
         let UserWebsitesRelationList = await userWebsitesRelationService.getUserWebsitesRelations();
         //console.log(UserWebsitesRelationList)
         //get unique website list

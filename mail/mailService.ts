@@ -1,31 +1,31 @@
-import UserModel from "../model/userModel";
 import ProductUploader from "./productUploader";
 import {mailService} from "../mail.service";
 import MailHistoryModel from "../model/mailHistoryModel";
 import MailHistoryService from "../service/mailHistoryService";
-import UserService from "../service/userService";
+import StoreModel from "../model/storeModel";
+import StoreService from "../service/storeService";
 
 export default class MailService {
 
-    async sendMail(userModel: UserModel) {
+    async sendMail(storeModel: StoreModel) {
         try {
 
 
             let productUploader = new ProductUploader()
             // @ts-ignore
-            let mailTemplate = productUploader.getMailResult(userModel.cachedAlarm)
+            let mailTemplate = productUploader.getMailResult(storeModel.cachedAlarm)
 
             // @ts-ignore
             let info = await mailService.service.sendMail({
                 from: '"Product Comparify 👻"' + process.env.MAILNAME, // sender address
-                to: userModel.mail, // list of receivers
+                to: storeModel.selectedMail, // list of receivers
                 subject: "Product Comparify Alarm System✔", // Subject line
                 text: "Hi, Here is products. Thank you", // plain text body
                 html: mailTemplate, // html body
             });
 
 
-            let mailHistoryModel = new MailHistoryModel(userModel.userId, new Date, mailTemplate, 1, info, userModel.cachedAlarm);
+            let mailHistoryModel = new MailHistoryModel(storeModel.id, new Date, mailTemplate, 1, info, storeModel.cachedAlarm);
 
             let mailHistoryService = new MailHistoryService();
             await mailHistoryService.saveMailHistory(mailHistoryModel);
@@ -34,12 +34,12 @@ export default class MailService {
         }
     }
 
-    async sendTestMail(userid: string) {
+    async sendTestMail(storeId: number) {
         let productUploader = new ProductUploader()
-        let userService = new UserService()
-        let userModel = await userService.getUserByUserId(userid)
+        let storeService = new StoreService()
+        let storeModel = await storeService.getStoreByStoreId(storeId)
 
-        if (!userModel) {
+        if (!storeModel) {
             console.log("user mode yok")
             return;
         }
@@ -50,8 +50,8 @@ export default class MailService {
         ]
 
         // @ts-ignore
-        userModel.cachedAlarm = mockData;
+        storeModel.cachedAlarm = mockData;
 
-        await this.sendMail(userModel);
+        await this.sendMail(storeModel);
     }
 }

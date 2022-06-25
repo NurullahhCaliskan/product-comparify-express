@@ -1,7 +1,7 @@
 import {ObjectId} from "mongodb";
 
 export default class MailHistoryModel {
-    constructor(public userId: string,
+    constructor(public storeId: number,
                 public createDateTime: Date,
                 public mailBody: string,
                 public status: number,

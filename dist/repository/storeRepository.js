@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
-class UserRepository {
+class StoreRepository {
     getUserByUserId(storeId) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -19,4 +19,4 @@ class UserRepository {
         });
     }
 }
-exports.default = UserRepository;
+exports.default = StoreRepository;

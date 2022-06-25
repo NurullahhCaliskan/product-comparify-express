@@ -51,9 +51,10 @@ const logger_middleware_1 = __importDefault(require("./logger.middleware"));
 const morgan_1 = __importDefault(require("morgan"));
 const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
 const engineHistoryModel_1 = __importDefault(require("./model/engineHistoryModel"));
-const userService_1 = __importDefault(require("./service/userService"));
 const dayUtility_1 = require("./utility/dayUtility");
 const queueProductEngine_1 = __importDefault(require("./engine/queueProductEngine"));
+const storeService_1 = __importDefault(require("./service/storeService"));
+const lodash_1 = require("lodash");
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 function loadDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -65,10 +66,10 @@ function loadDb() {
             yield client.connect();
             console.log(process.env.DBNAME);
             const db = client.db(process.env.DBNAME);
-            database_service_1.collections.userWebsitesRelationModel = db.collection("user-websites-relation");
+            database_service_1.collections.storeWebsitesRelationModel = db.collection("store-websites-relation");
             database_service_1.collections.websitesModel = db.collection("websites");
             database_service_1.collections.productHistoryModel = db.collection("product-history");
-            database_service_1.collections.userModel = db.collection("user");
+            database_service_1.collections.storeModel = db.collection("store");
             database_service_1.collections.userSessionModel = db.collection("user-session");
             database_service_1.collections.mailHistoryModel = db.collection("mail-history");
             database_service_1.collections.engineHistoryModel = db.collection("engine-history");
@@ -107,7 +108,7 @@ const app = (0, express_1.default)();
 const port = 3000;
 const initVerify = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("initVerify");
-    if (!database_service_1.collections.userWebsitesRelationModel) {
+    if (!database_service_1.collections.storeWebsitesRelationModel) {
         yield loadDb();
     }
     if (!mail_service_1.mailService.service) {
@@ -141,13 +142,15 @@ app.get('/engine/start', (req, res) => __awaiter(void 0, void 0, void 0, functio
 }));
 app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("mail/test");
-    let userService = new userService_1.default();
+    let storeService = new storeService_1.default();
     let mailService = new mailService_1.default();
-    let user = yield userService.getUserByUserId(req.query.id);
-    if (!user.mail) {
+    // @ts-ignore
+    let user = yield storeService.getStoreByStoreId((0, lodash_1.parseInt)(req.query.id));
+    if (!user.selectedMail) {
         return res.status(422).send(JSON.stringify({ result: "Please add valid mail" }));
     }
-    yield mailService.sendTestMail(req.query.id);
+    // @ts-ignore
+    yield mailService.sendTestMail((0, lodash_1.parseInt)(req.query.id));
     return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
 }));
 app.get('/query/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {

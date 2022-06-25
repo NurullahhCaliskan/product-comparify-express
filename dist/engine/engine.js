@@ -36,7 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const node_schedule_1 = __importDefault(require("node-schedule"));
-const userWebsitesRelationService_1 = __importDefault(require("../service/userWebsitesRelationService"));
+const storeWebsitesRelationService_1 = __importDefault(require("../service/storeWebsitesRelationService"));
 const websiteService_1 = __importDefault(require("../service/websiteService"));
 const productHistoryService_1 = __importDefault(require("../service/productHistoryService"));
 const priceCollector_1 = __importDefault(require("./priceCollector"));
@@ -78,7 +78,7 @@ class Engine {
     collectAllProducts() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log('start collectAllProducts');
-            let userWebsitesRelationService = new userWebsitesRelationService_1.default();
+            let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
             let websiteService = new websiteService_1.default();
             let productHistoryService = new productHistoryService_1.default();
             yield productHistoryService.removeTodayProducts();
@@ -94,17 +94,17 @@ class Engine {
     prepareAlarmToSendMail() {
         return __awaiter(this, void 0, void 0, function* () {
             console.log("prepareAlarmToSendMail");
-            let userWebsitesRelationService = new userWebsitesRelationService_1.default();
+            let storeWebsitesRelationService = new storeWebsitesRelationService_1.default();
             let productHistoryService = new productHistoryService_1.default();
             let productPriceHistoryService = new productPriceHistoryService_1.default();
             let websiteService = new websiteService_1.default();
             let alarmService = new alarmService_1.default();
-            let usersWhichSendingAlarmList = [];
-            let UserWebsitesRelationList = yield userWebsitesRelationService.getUserWebsitesRelations();
+            let storesWhichSendingAlarmList = [];
+            let storeWebsitesRelationList = yield storeWebsitesRelationService.getUserWebsitesRelations();
             let websitesList = yield websiteService.getWebsites();
             //get unique website list
             for (const website of websitesList) {
-                let relevantUserByWebsite = userWebsitesRelationService.getUserFilterWebsiteAndAlarmStatus(UserWebsitesRelationList, website.url);
+                let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
                 let yesterdayProductList = yield productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
                 let todayProductList = yield productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
                 //if today or yesterday product lis is empty, go back.
@@ -115,21 +115,21 @@ class Engine {
                     let priceCollector = new priceCollector_1.default();
                     let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayProductList[index]);
                     //find users which cache product alarm
-                    yield alarmService.setToUserCachedAlarm(usersWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
+                    yield alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
                 }
             }
-            console.log(JSON.stringify(usersWhichSendingAlarmList));
+            console.log(JSON.stringify(storesWhichSendingAlarmList));
             console.log("send mail to users");
-            console.log(usersWhichSendingAlarmList.length);
-            for (const userModel of usersWhichSendingAlarmList) {
+            console.log(storesWhichSendingAlarmList.length);
+            for (const storeModel of storesWhichSendingAlarmList) {
                 let mailService = new mailService_1.default();
-                yield mailService.sendMail(userModel);
+                yield mailService.sendMail(storeModel);
             }
         });
     }
     syncWebsites() {
         return __awaiter(this, void 0, void 0, function* () {
-            let userWebsitesRelationService = new userWebsitesRelationService_1.default();
+            let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
             let UserWebsitesRelationList = yield userWebsitesRelationService.getUserWebsitesRelations();
             //console.log(UserWebsitesRelationList)
             //get unique website list

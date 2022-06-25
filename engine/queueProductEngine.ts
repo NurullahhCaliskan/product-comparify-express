@@ -1,7 +1,7 @@
 import schedule from "node-schedule";
 import {EVERY_DAY_AT_MIDNIGHT, GET_QUEUE_SCHEDULED_AS_SECOND} from "../utility/cronUtility";
 import EnginePermissionService from "../service/enginePermissionService";
-import UserWebsitesRelationService from "../service/userWebsitesRelationService";
+import StoreWebsitesRelationService from "../service/storeWebsitesRelationService";
 import WebsiteService from "../service/websiteService";
 import ProductHistoryService from "../service/productHistoryService";
 import ProductHistoryCrawlerQueueService from "../service/productHistoryCrawlerQueueService";
@@ -39,7 +39,7 @@ export default class QueueProductEngine {
         await enginePermissionService.setUnavailableQueueEngine()
 
         console.log('start collect queue products')
-        let userWebsitesRelationService = new UserWebsitesRelationService()
+        let userWebsitesRelationService = new StoreWebsitesRelationService()
         let websiteService = new WebsiteService()
         let productHistoryService = new ProductHistoryService()
         let productHistoryCrawlerQueueService = new ProductHistoryCrawlerQueueService()
