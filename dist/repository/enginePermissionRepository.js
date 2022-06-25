@@ -41,5 +41,33 @@ class EnginePermissionRepository {
             yield database_service_1.collections.enginePermissionModel.updateOne(query, newRecord);
         });
     }
+    /***
+     * save mail history by url
+     * @param mailHistoryModel
+     */
+    isAvailableRunMainEngine() {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            let findJson = { $and: [{ collection: "product-history-main" }, { status: 1 }] };
+            let response = yield ((_a = database_service_1.collections.enginePermissionModel) === null || _a === void 0 ? void 0 : _a.find(findJson).toArray());
+            return response.length <= 0;
+        });
+    }
+    setAvailableMainEngine() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let query = { collection: "product-history-main" };
+            let newRecord = { $set: { status: 0, last_run_time: new Date() } };
+            // @ts-ignore
+            yield database_service_1.collections.enginePermissionModel.updateOne(query, newRecord);
+        });
+    }
+    setUnavailableMainEngine() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let query = { collection: "product-history-main" };
+            let newRecord = { $set: { status: 1, last_run_time: new Date() } };
+            // @ts-ignore
+            yield database_service_1.collections.enginePermissionModel.updateOne(query, newRecord);
+        });
+    }
 }
 exports.default = EnginePermissionRepository;

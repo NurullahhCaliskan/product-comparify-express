@@ -1,5 +1,3 @@
-import MailHistoryModel from "../model/mailHistoryModel";
-import MailHistoryRepository from "../repository/mailHistoryRepository";
 import EnginePermissionRepository from "../repository/enginePermissionRepository";
 
 export default class EnginePermissionService {
@@ -20,5 +18,25 @@ export default class EnginePermissionService {
     async setUnavailableQueueEngine(){
         let enginePermissionRepository = new EnginePermissionRepository()
         await enginePermissionRepository.setUnavailableQueueEngine()
+    }
+
+
+    /***
+     * save mail history by url
+     * @param mailHistoryModel
+     */
+    async isAvailableRunMainEngine(): Promise<boolean> {
+        let enginePermissionRepository = new EnginePermissionRepository()
+        return await enginePermissionRepository.isAvailableRunMainEngine();
+    }
+
+    async setAvailableMainEngine(){
+        let enginePermissionRepository = new EnginePermissionRepository()
+        await enginePermissionRepository.setAvailableMainEngine()
+    }
+
+    async setUnavailableMainEngine(){
+        let enginePermissionRepository = new EnginePermissionRepository()
+        await enginePermissionRepository.setUnavailableMainEngine()
     }
 }

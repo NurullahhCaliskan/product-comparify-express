@@ -1,8 +1,4 @@
 import {collections} from "../database.service";
-import {getTodayMidnight, getTomorrowMidnight, getYesterdayMidnight} from "../utility/dayUtility";
-import ProductHistoryModel from "../model/productHistoryModel";
-import {urlFormatter} from "../utility/stringUtility";
-import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 import ProductHistoryCrawlerQueueModel from "../model/productHistoryCrawlerQueueModel";
 import ProductHistoryService from "../service/productHistoryService";
 

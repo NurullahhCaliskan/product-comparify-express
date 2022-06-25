@@ -22,16 +22,15 @@ const productHistoryCrawlerQueueService_1 = __importDefault(require("../service/
 class QueueProductEngine {
     startEngine() {
         let engine = new QueueProductEngine();
+        // @ts-ignore
         const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_QUEUE_SCHEDULED_AS_SECOND)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
-                console.log('start queue engine');
                 try {
                     yield engine.collectQueueProducts();
                 }
                 catch (e) {
                     console.log(e);
                 }
-                console.log('end engine');
             });
         });
     }
@@ -42,6 +41,7 @@ class QueueProductEngine {
             if (!(yield enginePermissionService.isAvailableRunQueueEngine())) {
                 return;
             }
+            console.log("start collectQueueProducts");
             //set unavailable
             yield enginePermissionService.setUnavailableQueueEngine();
             console.log('start collect queue products');
@@ -65,6 +65,7 @@ class QueueProductEngine {
             }
             //set available
             yield enginePermissionService.setAvailableQueueEngine();
+            console.log("end collectQueueProducts");
         });
     }
 }

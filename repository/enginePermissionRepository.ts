@@ -1,4 +1,3 @@
-import MailHistoryModel from "../model/mailHistoryModel";
 import {collections} from "../database.service";
 import {getYesterdayMidnight} from "../utility/dayUtility";
 import EnginePermissionModel from "../model/enginePermissionModel";
@@ -29,6 +28,34 @@ export default class EnginePermissionRepository {
 
     async setUnavailableQueueEngine() {
         let query = {collection: "product-history-crawler-queue"};
+        let newRecord = {$set: {status: 1, last_run_time: new Date()}};
+        // @ts-ignore
+        await collections.enginePermissionModel.updateOne(query, newRecord);
+    }
+
+
+
+    /***
+     * save mail history by url
+     * @param mailHistoryModel
+     */
+    async isAvailableRunMainEngine(): Promise<boolean> {
+        let findJson = {$and: [{collection: "product-history-main"}, {status: 1}]}
+
+        let response = await collections.enginePermissionModel?.find(findJson).toArray() as EnginePermissionModel[]
+
+        return response.length <= 0;
+    }
+
+    async setAvailableMainEngine() {
+        let query = {collection: "product-history-main"};
+        let newRecord = {$set: {status: 0, last_run_time: new Date()}};
+        // @ts-ignore
+        await collections.enginePermissionModel.updateOne(query, newRecord);
+    }
+
+    async setUnavailableMainEngine() {
+        let query = {collection: "product-history-main"};
         let newRecord = {$set: {status: 1, last_run_time: new Date()}};
         // @ts-ignore
         await collections.enginePermissionModel.updateOne(query, newRecord);

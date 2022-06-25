@@ -59,7 +59,7 @@ class ProductHistoryService {
                         pagination++;
                     }
                     catch (e) {
-                        console.log(e);
+                        loopContinue = false;
                     }
                 }
             }

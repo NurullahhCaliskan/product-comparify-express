@@ -36,5 +36,27 @@ class EnginePermissionService {
             yield enginePermissionRepository.setUnavailableQueueEngine();
         });
     }
+    /***
+     * save mail history by url
+     * @param mailHistoryModel
+     */
+    isAvailableRunMainEngine() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let enginePermissionRepository = new enginePermissionRepository_1.default();
+            return yield enginePermissionRepository.isAvailableRunMainEngine();
+        });
+    }
+    setAvailableMainEngine() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let enginePermissionRepository = new enginePermissionRepository_1.default();
+            yield enginePermissionRepository.setAvailableMainEngine();
+        });
+    }
+    setUnavailableMainEngine() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let enginePermissionRepository = new enginePermissionRepository_1.default();
+            yield enginePermissionRepository.setUnavailableMainEngine();
+        });
+    }
 }
 exports.default = EnginePermissionService;

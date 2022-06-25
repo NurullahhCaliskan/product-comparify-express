@@ -2,20 +2,14 @@ import schedule from 'node-schedule';
 import StoreWebsitesRelationService from "../service/storeWebsitesRelationService";
 import WebsiteService from "../service/websiteService";
 import ProductHistoryService from "../service/productHistoryService";
-import {getYesterdayMidnight, getTodayMidnight} from "../utility/dayUtility";
-import {roughSizeOfObject} from "../utility/stackUtility";
 import PriceCollector from "./priceCollector";
-import setRunPermission, {runPermission} from "./engineConfig";
-import StoreWebsitesRelationModel from "../model/storeWebsitesRelationModel";
 import AlarmService from "./alarmService";
 import {arrayIsEmpty} from "../utility/arrayUtility";
 import MailService from "../mail/mailService";
-import {EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND} from "../utility/cronUtility";
+import {EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND, GET_MAIN_SCHEDULED_AS_SECOND} from "../utility/cronUtility";
 import EngineHistoryService from "../service/engineHistoryService";
 import EngineHistoryModel from "../model/engineHistoryModel";
 import ProductPriceHistoryService from "../service/productPriceHistoryService";
-import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
-import ProductHistoryCrawlerQueueService from "../service/productHistoryCrawlerQueueService";
 import EnginePermissionService from "../service/enginePermissionService";
 import StoreModel from "../model/storeModel";
 
@@ -23,15 +17,19 @@ import StoreModel from "../model/storeModel";
 export default class Engine {
 
     startEngine() {
+        let enginePermissionService = new EnginePermissionService()
         let engine = new Engine();
 
-        const job = schedule.scheduleJob(EVERY_DAY_AT_MIDNIGHT(), async function () {
+        // @ts-ignore
+        const job = schedule.scheduleJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function () {
 
-            if (!runPermission) {
-                return;
+            //if no available, exit
+            if (!(await enginePermissionService.isAvailableRunMainEngine())) {
+                return
             }
 
-            setRunPermission(false)
+            //set unavailable
+            await enginePermissionService.setUnavailableMainEngine()
 
             console.log('start engine1')
 
@@ -53,7 +51,8 @@ export default class Engine {
             }
 
             console.log('end engine')
-            setRunPermission(true)
+            //set available
+            await enginePermissionService.setAvailableMainEngine()
         })
     }
 
@@ -78,7 +77,6 @@ export default class Engine {
 
         }
     }
-
 
 
     async prepareAlarmToSendMail() {

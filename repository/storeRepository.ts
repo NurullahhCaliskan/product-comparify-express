@@ -1,5 +1,4 @@
 import {collections} from "../database.service";
-import ProductHistoryModel from "../model/productHistoryModel";
 import StoreModel from "../model/storeModel";
 
 export default class StoreRepository {

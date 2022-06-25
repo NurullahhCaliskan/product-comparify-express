@@ -1,4 +1,3 @@
-import MailHistoryModel from "../model/mailHistoryModel";
 import {collections} from "../database.service";
 import EngineHistoryModel from "../model/engineHistoryModel";
 

@@ -1,27 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -40,7 +17,6 @@ const storeWebsitesRelationService_1 = __importDefault(require("../service/store
 const websiteService_1 = __importDefault(require("../service/websiteService"));
 const productHistoryService_1 = __importDefault(require("../service/productHistoryService"));
 const priceCollector_1 = __importDefault(require("./priceCollector"));
-const engineConfig_1 = __importStar(require("./engineConfig"));
 const alarmService_1 = __importDefault(require("./alarmService"));
 const arrayUtility_1 = require("../utility/arrayUtility");
 const mailService_1 = __importDefault(require("../mail/mailService"));
@@ -48,15 +24,20 @@ const cronUtility_1 = require("../utility/cronUtility");
 const engineHistoryService_1 = __importDefault(require("../service/engineHistoryService"));
 const engineHistoryModel_1 = __importDefault(require("../model/engineHistoryModel"));
 const productPriceHistoryService_1 = __importDefault(require("../service/productPriceHistoryService"));
+const enginePermissionService_1 = __importDefault(require("../service/enginePermissionService"));
 class Engine {
     startEngine() {
+        let enginePermissionService = new enginePermissionService_1.default();
         let engine = new Engine();
-        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.EVERY_DAY_AT_MIDNIGHT)(), function () {
+        // @ts-ignore
+        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
-                if (!engineConfig_1.runPermission) {
+                //if no available, exit
+                if (!(yield enginePermissionService.isAvailableRunMainEngine())) {
                     return;
                 }
-                (0, engineConfig_1.default)(false);
+                //set unavailable
+                yield enginePermissionService.setUnavailableMainEngine();
                 console.log('start engine1');
                 try {
                     let engineHistoryService = new engineHistoryService_1.default();
@@ -71,7 +52,8 @@ class Engine {
                     console.log(e);
                 }
                 console.log('end engine');
-                (0, engineConfig_1.default)(true);
+                //set available
+                yield enginePermissionService.setAvailableMainEngine();
             });
         });
     }

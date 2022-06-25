@@ -1,5 +1,4 @@
 import {collections} from "../database.service";
-import StoreWebsitesRelationModel from "../model/storeWebsitesRelationModel";
 import WebsiteModel from "../model/websiteModel";
 import {urlFormatter} from "../utility/stringUtility";
 

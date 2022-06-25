@@ -12,7 +12,14 @@ export default class ProductHistoryRepository {
      * @param products
      */
     async saveProductsFromWebByUrl(products: object[]) {
-        await collections.productHistoryModel?.insertMany(products);
+        try {
+            if (products.length > 0) {
+                await collections.productHistoryModel?.insertMany(products);
+            }
+
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     async removeTodayProducts() {

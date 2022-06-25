@@ -11,9 +11,9 @@ export default class QueueProductEngine {
     startEngine() {
         let engine = new QueueProductEngine();
 
+        // @ts-ignore
         const job = schedule.scheduleJob(GET_QUEUE_SCHEDULED_AS_SECOND(), async function () {
 
-            console.log('start queue engine')
 
             try {
                 await engine.collectQueueProducts()
@@ -22,18 +22,20 @@ export default class QueueProductEngine {
                 console.log(e)
             }
 
-            console.log('end engine')
         })
     }
 
 
     async collectQueueProducts() {
+
         let enginePermissionService = new EnginePermissionService()
 
         //if no available, exit
         if (!(await enginePermissionService.isAvailableRunQueueEngine())) {
             return
         }
+
+        console.log("start collectQueueProducts")
 
         //set unavailable
         await enginePermissionService.setUnavailableQueueEngine()
@@ -65,5 +67,6 @@ export default class QueueProductEngine {
         //set available
         await enginePermissionService.setAvailableQueueEngine()
 
+        console.log("end collectQueueProducts")
     }
 }

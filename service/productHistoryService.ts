@@ -1,5 +1,4 @@
 import axios from "axios";
-// @ts-ignore
 import WebsiteModel from "../model/websiteModel";
 import ProductHistoryRepository from "../repository/productHistoryRepository";
 import ProductHistoryModel from "../model/productHistoryModel";
@@ -58,7 +57,7 @@ export default class ProductHistoryService {
                     }
                     pagination++
                 } catch (e) {
-                    console.log(e)
+                    loopContinue = false
                 }
             }
         }

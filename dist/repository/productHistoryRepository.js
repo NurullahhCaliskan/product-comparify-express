@@ -22,7 +22,14 @@ class ProductHistoryRepository {
     saveProductsFromWebByUrl(products) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
+            try {
+                if (products.length > 0) {
+                    yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
+                }
+            }
+            catch (e) {
+                console.log(e);
+            }
         });
     }
     removeTodayProducts() {

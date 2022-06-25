@@ -1,8 +1,3 @@
-import axios from "axios";
-// @ts-ignore
-import WebsiteModel from "../model/websiteModel";
-import ProductHistoryRepository from "../repository/productHistoryRepository";
-import ProductHistoryModel from "../model/productHistoryModel";
 import ProductPriceHistoryRepository from "../repository/productPriceHistoryRepository";
 import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 

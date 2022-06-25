@@ -23,8 +23,10 @@ export function EVERY_20_SECOND() {
 }
 
 export function GET_QUEUE_SCHEDULED_AS_SECOND() {
-    let response = '*/:second * * * * *'
-    // @ts-ignore
-    response = response.replace(":second",process.env.QUEUE_ENGINE_SCHEDULED_AS_SECOND)
-    return response
+    return process.env.QUEUE_ENGINE_SCHEDULED_AS_SECOND
+}
+
+export function GET_MAIN_SCHEDULED_AS_SECOND() {
+
+    return process.env.MAIN_ENGINE_SCHEDULED_AS_SECOND
 }

@@ -1,5 +1,3 @@
-import MailHistoryModel from "../model/mailHistoryModel";
-import MailHistoryRepository from "../repository/mailHistoryRepository";
 import EngineHistoryRepository from "../repository/engineHistoryRepository";
 import EngineHistoryModel from "../model/engineHistoryModel";
 

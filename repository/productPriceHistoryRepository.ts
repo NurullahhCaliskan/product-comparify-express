@@ -1,6 +1,5 @@
 import {collections} from "../database.service";
 import {getTodayMidnight, getTomorrowMidnight, getYesterdayMidnight} from "../utility/dayUtility";
-import ProductHistoryModel from "../model/productHistoryModel";
 import {urlFormatter} from "../utility/stringUtility";
 import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
 
@@ -11,7 +10,14 @@ export default class ProductPriceHistoryRepository {
      * @param products
      */
     async saveProductPricesFromWebByUrl(products: object[]) {
-        await collections.productPriceHistoryModel?.insertMany(products);
+        try {
+            if (products.length > 0) {
+                await collections.productPriceHistoryModel?.insertMany(products);
+
+            }
+        } catch (e) {
+
+        }
     }
 
     /***
