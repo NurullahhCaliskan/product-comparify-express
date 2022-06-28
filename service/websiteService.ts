@@ -2,7 +2,7 @@ import WebsiteRepository from "../repository/websiteRepository";
 import axios from "axios";
 // @ts-ignore
 import JSSoup from "jssoup";
-import WebsiteModel from "../model/websiteModel";
+import WebsiteModel from '../model/websiteModel';
 
 export default class WebsiteService {
 

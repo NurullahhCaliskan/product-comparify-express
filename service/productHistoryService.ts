@@ -1,9 +1,9 @@
-import axios from "axios";
-import WebsiteModel from "../model/websiteModel";
-import ProductHistoryRepository from "../repository/productHistoryRepository";
-import ProductHistoryModel from "../model/productHistoryModel";
-import ProductPriceHistoryService from "./productPriceHistoryService";
-import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
+import axios from 'axios';
+import WebsiteModel from '../model/websiteModel';
+import ProductHistoryRepository from '../repository/productHistoryRepository';
+import ProductHistoryModel from '../model/productHistoryModel';
+import ProductPriceHistoryService from './productPriceHistoryService';
+import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 
 export default class ProductHistoryService {
 
@@ -13,88 +13,126 @@ export default class ProductHistoryService {
      * @param collections collection
      */
     async saveProductsFromWebByUrl(website: WebsiteModel) {
-        let productHistoryRepository = new ProductHistoryRepository()
-        let productPriceHistoryService = new ProductPriceHistoryService()
+        let productHistoryRepository = new ProductHistoryRepository();
+        let productPriceHistoryService = new ProductPriceHistoryService();
 
-        let url = website.url
-        let collections = website.collection
+        let url = website.url;
+        let collections = website.collection;
 
-        let products: ProductHistoryModel[] = []
+        let products: ProductHistoryModel[] = [];
 
         for (const collection of collections) {
-            let loopContinue = true
-            let pagination = 1
+            let loopContinue = true;
+            let pagination = 1;
             while (loopContinue) {
                 try {
                     // @ts-ignore
-                    let readyToRequestUrl = url + "/collections/" + collection.handle + '/products.json?limit=250&page=' + pagination
+                    let readyToRequestUrl = url + '/collections/' + collection.handle + '/products.json?limit=250&page=' + pagination;
 
                     let response = await axios.get(readyToRequestUrl);
 
-                    let productResponse = response.data
+                    let productResponse = response.data;
 
                     if (productResponse.products.length === 0) {
-                        loopContinue = false
+                        loopContinue = false;
                     } else {
 
                         // @ts-ignore
                         productResponse.products.forEach(product => {
-                            product.website = url
+                            product.website = url;
                             // @ts-ignore
-                            product.collection = [collection.handle]
+                            product.collection = [collection.handle];
 
-                            let date = new Date()
+                            let date = new Date();
 
                             //for test yesterday
                             //date.setDate(date.getDate() - 1);
 
-                            product.created_date_time = date
+                            product.created_date_time = date;
                             // @ts-ignore
-                            product.url = url + "/collections/" + collection.handle + '/products/' + product.handle
-                        })
+                            product.url = url + '/collections/' + collection.handle + '/products/' + product.handle;
 
-                        this.mergeProducts(products, productResponse.products)
+                            try {
+                                product.published_at = new Date(product.published_at);
+                                product.created_at = new Date(product.created_at);
+                                product.updated_at = new Date(product.updated_at);
+                            } catch (e) {
+
+                            }
+
+                            try {
+                                // @ts-ignore
+                                product.variants.forEach(variant => {
+                                    if (variant.price) {
+
+                                        variant.price = parseFloat(variant.price);
+                                    }
+
+                                    if (variant.compare_at_price) {
+
+                                        variant.compare_at_price = parseFloat(variant.compare_at_price);
+                                    }
+
+                                    if (variant.created_at) {
+
+                                        variant.created_at = new Date(variant.created_at);
+                                    }
+
+                                    if (variant.updated_at) {
+
+                                        variant.updated_at = new Date(variant.updated_at);
+                                    }
+                                });
+                            } catch (e) {
+
+                            }
+
+                            product.search = this.prepareSearchColumn(product);
+
+                        });
+
+                        this.mergeProducts(products, productResponse.products);
                     }
-                    pagination++
+                    pagination++;
                 } catch (e) {
-                    loopContinue = false
+                    loopContinue = false;
                 }
             }
         }
 
-        await productHistoryRepository.saveProductsFromWebByUrl(products)
+        await productHistoryRepository.saveProductsFromWebByUrl(products);
 
-        let productPrices: ProductPriceHistoryModel[] = []
+        let productPrices: ProductPriceHistoryModel[] = [];
 
         //convert product to product prices
         products.forEach(product => {
-            productPrices.push(new ProductPriceHistoryModel(product.id, product.website, product.created_date_time, product.variants))
-        })
+            productPrices.push(new ProductPriceHistoryModel(product.id, product.website, product.created_date_time, product.variants));
+        });
 
-        await productPriceHistoryService.saveProductPriceHistory(productPrices)
+        await productPriceHistoryService.saveProductPriceHistory(productPrices);
 
     }
 
     async getProductHistoryByProductId(id: number): Promise<ProductHistoryModel> {
-        let productHistoryRepository = new ProductHistoryRepository()
-        return await productHistoryRepository.getProductHistoryByProductId(id)
+        let productHistoryRepository = new ProductHistoryRepository();
+        return await productHistoryRepository.getProductHistoryByProductId(id);
     }
 
     async deleteProductsByWebsite(website: string) {
-        let productHistoryRepository = new ProductHistoryRepository()
-        await productHistoryRepository.deleteProductsByWebsite(website)
+        let productHistoryRepository = new ProductHistoryRepository();
+        await productHistoryRepository.deleteProductsByWebsite(website);
     }
 
     async removeTodayProducts() {
-        let productHistoryRepository = new ProductHistoryRepository()
-        let productPriceHistoryRepository = new ProductPriceHistoryService()
+        let productHistoryRepository = new ProductHistoryRepository();
+        let productPriceHistoryRepository = new ProductPriceHistoryService();
 
         await productHistoryRepository.removeTodayProducts();
         await productPriceHistoryRepository.removeTodayProducts();
     }
 
     async isCrawledTodayByWebsite(website: string): Promise<boolean> {
-        let productHistoryRepository = new ProductHistoryRepository()
+        let productHistoryRepository = new ProductHistoryRepository();
         return await productHistoryRepository.isCrawledTodayByWebsite(website);
     }
 
@@ -102,11 +140,99 @@ export default class ProductHistoryService {
         tmpList.forEach(item => {
             if (mainList.find(mainItem => mainItem.id === item.id)) {
                 // @ts-ignore
-                mainList.find(mainItem => mainItem.id === item.id).collection.push(item.collection[0])
+                mainList.find(mainItem => mainItem.id === item.id).collection.push(item.collection[0]);
             } else {
-                mainList.push(item)
+                mainList.push(item);
             }
-        })
+        });
+    }
+
+    prepareSearchColumn(product: ProductHistoryModel) {
+
+        let searchArray = [];
+
+        if (product.title) {
+            searchArray.push(product.title);
+        }
+
+        if (product.handle) {
+            searchArray.push(product.handle);
+        }
+
+        if (product.body_html) {
+            searchArray.push(product.body_html);
+        }
+
+        if (product.vendor) {
+            searchArray.push(product.vendor);
+        }
+
+        if (product.product_type) {
+            searchArray.push(product.product_type);
+        }
+
+        if (product.website) {
+            searchArray.push(product.website);
+        }
+
+        if (product.url) {
+            searchArray.push(product.url);
+        }
+
+        if (product.tags) {
+            product.tags.forEach(tag => {
+                if (tag) {
+
+                    searchArray.push(tag);
+                }
+            });
+        }
+
+        if (product.collection) {
+            product.collection.forEach(collection => {
+                if (collection) {
+
+                    searchArray.push(collection);
+                }
+            });
+        }
+
+        if (product.variants) {
+            product.variants.forEach(variant => {
+
+                if (variant) {
+
+                    // @ts-ignore
+                    if (variant.title) {
+
+                        // @ts-ignore
+                        searchArray.push(variant.title);
+                    }
+
+                    // @ts-ignore
+                    if (variant.option1) {
+
+                        // @ts-ignore
+                        searchArray.push(variant.option1);
+                    }
+                    // @ts-ignore
+                    if (variant.option2) {
+
+                        // @ts-ignore
+                        searchArray.push(variant.option2);
+                    }
+
+                    // @ts-ignore
+                    if (variant.option3) {
+
+                        // @ts-ignore
+                        searchArray.push(variant.option3);
+                    }
+                }
+            });
+        }
+
+        return searchArray.join(' ');
     }
 }
 

@@ -50,8 +50,6 @@ export default class WebsiteRepository {
             {$match: {websiteData: {$not: {$size: 0}}}}
 
         ]).toArray() as WebsiteModel[]
-
-
     }
 
     /**

@@ -9,15 +9,16 @@ export default class ProductHistoryModel {
                 public title: string,
                 public handle: string,
                 public body_html: string,
-                public published_at: string,
-                public created_at: string,
-                public updated_at: string,
+                public published_at: Date,
+                public created_at: Date,
+                public updated_at: Date,
                 public vendor: string,
                 public product_type: string,
                 public tags: string[],
                 public variants: object[],
                 public images: object[],
                 public options: object[],
+                public search: string,
                 public _id?: ObjectId) {
     }
 }

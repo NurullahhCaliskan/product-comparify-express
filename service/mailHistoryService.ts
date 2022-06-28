@@ -1,5 +1,5 @@
-import MailHistoryModel from "../model/mailHistoryModel";
-import MailHistoryRepository from "../repository/mailHistoryRepository";
+import MailHistoryModel from '../model/mailHistoryModel';
+import MailHistoryRepository from '../repository/mailHistoryRepository';
 
 export default class MailHistoryService {
     /***
@@ -7,7 +7,7 @@ export default class MailHistoryService {
      * @param mailHistoryModel
      */
     async saveMailHistory(mailHistoryModel: MailHistoryModel) {
-        let mailHistoryRepository = new MailHistoryRepository()
+        let mailHistoryRepository = new MailHistoryRepository();
         await mailHistoryRepository.saveMailHistory(mailHistoryModel);
     }
 }

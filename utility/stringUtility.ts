@@ -1,15 +1,15 @@
-export function urlFormatter(value:string) {
+export function urlFormatter(value: string) {
     if (isBlankString(value)) {
-        return value
+        return value;
     }
 
-    let formattedValue = value.replace(/\s/g, '')
+    let formattedValue = value.replace(/\s/g, '');
 
-    formattedValue = formattedValue.replace(/([^:]\/)\/+/g, "$1");
+    formattedValue = formattedValue.replace(/([^:]\/)\/+/g, '$1');
 
-    let lastLetter = formattedValue.charAt(formattedValue.length - 1)
+    let lastLetter = formattedValue.charAt(formattedValue.length - 1);
 
-    if (lastLetter === "/") {
+    if (lastLetter === '/') {
         formattedValue = formattedValue.substring(0, formattedValue.length - 1);
 
     }
@@ -17,6 +17,6 @@ export function urlFormatter(value:string) {
     return formattedValue;
 }
 
-export function isBlankString(value:string) {
-    return (!value || value.length === 0)
+export function isBlankString(value: string) {
+    return (!value || value.length === 0);
 }

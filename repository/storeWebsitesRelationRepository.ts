@@ -1,5 +1,5 @@
-import StoreWebsitesRelationModel from "../model/storeWebsitesRelationModel";
-import {collections} from "../database.service";
+import StoreWebsitesRelationModel from '../model/storeWebsitesRelationModel';
+import { collections } from '../database.service';
 
 export default class StoreWebsitesRelationRepository {
 
@@ -10,6 +10,6 @@ export default class StoreWebsitesRelationRepository {
     async getStoreWebsitesRelations(): Promise<StoreWebsitesRelationModel[]> {
 
         // @ts-ignore
-        return await collections.storeWebsitesRelationModel.find({}).toArray() as StoreWebsitesRelationModel[]
+        return await collections.storeWebsitesRelationModel.find({}).toArray() as StoreWebsitesRelationModel[];
     }
 }

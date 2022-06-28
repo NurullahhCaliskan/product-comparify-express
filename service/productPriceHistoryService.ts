@@ -1,5 +1,5 @@
-import ProductPriceHistoryRepository from "../repository/productPriceHistoryRepository";
-import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
+import ProductPriceHistoryRepository from '../repository/productPriceHistoryRepository';
+import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 
 export default class ProductPriceHistoryService {
 
@@ -8,9 +8,9 @@ export default class ProductPriceHistoryService {
      * @param website website
      */
     async getProductHistoryByDaysAndWebsiteYesterday(website: string): Promise<ProductPriceHistoryModel[]> {
-        let productHistoryRepository = new ProductPriceHistoryRepository()
+        let productHistoryRepository = new ProductPriceHistoryRepository();
 
-        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteYesterday(website)
+        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteYesterday(website);
     }
 
     /***
@@ -18,18 +18,18 @@ export default class ProductPriceHistoryService {
      * @param website website
      */
     async getProductHistoryByDaysAndWebsiteToday(website: string): Promise<ProductPriceHistoryModel[]> {
-        let productHistoryRepository = new ProductPriceHistoryRepository()
+        let productHistoryRepository = new ProductPriceHistoryRepository();
 
-        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website)
+        return await productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website);
     }
 
     async saveProductPriceHistory(website: ProductPriceHistoryModel[]) {
-        let productHistoryRepository = new ProductPriceHistoryRepository()
-        await productHistoryRepository.saveProductPricesFromWebByUrl(website)
+        let productHistoryRepository = new ProductPriceHistoryRepository();
+        await productHistoryRepository.saveProductPricesFromWebByUrl(website);
     }
 
     async removeTodayProducts() {
-        let productHistoryRepository = new ProductPriceHistoryRepository()
+        let productHistoryRepository = new ProductPriceHistoryRepository();
 
         await productHistoryRepository.removeTodayProducts();
     }

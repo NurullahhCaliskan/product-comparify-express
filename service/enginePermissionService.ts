@@ -1,4 +1,4 @@
-import EnginePermissionRepository from "../repository/enginePermissionRepository";
+import EnginePermissionRepository from '../repository/enginePermissionRepository';
 
 export default class EnginePermissionService {
     /***
@@ -6,18 +6,18 @@ export default class EnginePermissionService {
      * @param mailHistoryModel
      */
     async isAvailableRunQueueEngine(): Promise<boolean> {
-        let enginePermissionRepository = new EnginePermissionRepository()
+        let enginePermissionRepository = new EnginePermissionRepository();
         return await enginePermissionRepository.isAvailableRunQueueEngine();
     }
 
-    async setAvailableQueueEngine(){
-        let enginePermissionRepository = new EnginePermissionRepository()
-        await enginePermissionRepository.setAvailableQueueEngine()
+    async setAvailableQueueEngine() {
+        let enginePermissionRepository = new EnginePermissionRepository();
+        await enginePermissionRepository.setAvailableQueueEngine();
     }
 
-    async setUnavailableQueueEngine(){
-        let enginePermissionRepository = new EnginePermissionRepository()
-        await enginePermissionRepository.setUnavailableQueueEngine()
+    async setUnavailableQueueEngine() {
+        let enginePermissionRepository = new EnginePermissionRepository();
+        await enginePermissionRepository.setUnavailableQueueEngine();
     }
 
 
@@ -26,17 +26,17 @@ export default class EnginePermissionService {
      * @param mailHistoryModel
      */
     async isAvailableRunMainEngine(): Promise<boolean> {
-        let enginePermissionRepository = new EnginePermissionRepository()
+        let enginePermissionRepository = new EnginePermissionRepository();
         return await enginePermissionRepository.isAvailableRunMainEngine();
     }
 
-    async setAvailableMainEngine(){
-        let enginePermissionRepository = new EnginePermissionRepository()
-        await enginePermissionRepository.setAvailableMainEngine()
+    async setAvailableMainEngine() {
+        let enginePermissionRepository = new EnginePermissionRepository();
+        await enginePermissionRepository.setAvailableMainEngine();
     }
 
-    async setUnavailableMainEngine(){
-        let enginePermissionRepository = new EnginePermissionRepository()
-        await enginePermissionRepository.setUnavailableMainEngine()
+    async setUnavailableMainEngine() {
+        let enginePermissionRepository = new EnginePermissionRepository();
+        await enginePermissionRepository.setUnavailableMainEngine();
     }
 }

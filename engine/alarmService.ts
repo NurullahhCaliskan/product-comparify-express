@@ -1,9 +1,9 @@
-import StoreWebsitesRelationModel from "../model/storeWebsitesRelationModel";
-import StoreModel from "../model/storeModel";
-import WebsiteService from "../service/websiteService";
-import ProductPriceHistoryModel from "../model/productPriceHistoryModel";
-import ProductHistoryService from "../service/productHistoryService";
-import StoreService from "../service/storeService";
+import StoreWebsitesRelationModel from '../model/storeWebsitesRelationModel';
+import StoreModel from '../model/storeModel';
+import WebsiteService from '../service/websiteService';
+import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
+import ProductHistoryService from '../service/productHistoryService';
+import StoreService from '../service/storeService';
 
 export default class AlarmService {
 
@@ -13,7 +13,7 @@ export default class AlarmService {
 
         for (const priceRateCoupleEntity of priceIdCouple) {
 
-            let newUserWebsiteRelationList = [] as StoreWebsitesRelationModel[]
+            let newUserWebsiteRelationList = [] as StoreWebsitesRelationModel[];
             //if priceRateCoupleEntity = 0 means nothing change
             if (priceRateCoupleEntity.priceRate > 0) {
                 newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => priceRateCoupleEntity.priceRate > entity.value));
@@ -24,20 +24,20 @@ export default class AlarmService {
             }
 
             if (newUserWebsiteRelationList.length > 0) {
-                await AlarmService.mergeUsersWithNewAlarm(usersWhichSendingAlarmList, newUserWebsiteRelationList, priceRateCoupleEntity, yesterdayProduct, todayProduct)
+                await AlarmService.mergeUsersWithNewAlarm(usersWhichSendingAlarmList, newUserWebsiteRelationList, priceRateCoupleEntity, yesterdayProduct, todayProduct);
             }
 
         }
     }
 
 
-    private static async mergeUsersWithNewAlarm(storessWhichSendingAlarmList: StoreModel[], userWebsiteRelationList: StoreWebsitesRelationModel[],
+    private static async mergeUsersWithNewAlarm(storesWhichSendingAlarmList: StoreModel[], userWebsiteRelationList: StoreWebsitesRelationModel[],
                                                 priceIdCouple: { productId: number, priceRate: number }, yesterdayProduct: ProductPriceHistoryModel,
                                                 todayProduct: ProductPriceHistoryModel) {
 
-        let websiteService = new WebsiteService()
-        let productHistoryService = new ProductHistoryService()
-        let storeService = new StoreService()
+        let websiteService = new WebsiteService();
+        let productHistoryService = new ProductHistoryService();
+        let storeService = new StoreService();
 
         for (const userWebsiteRelation of userWebsiteRelationList) {
 
@@ -45,43 +45,43 @@ export default class AlarmService {
             let alarmValue = priceIdCouple.priceRate;
             let storeId = userWebsiteRelation.storeId;
 
-            let storeIndex = storessWhichSendingAlarmList.findIndex(user => user.id === storeId);
+            let storeIndex = storesWhichSendingAlarmList.findIndex(user => user.id === storeId);
 
             //get website currency
-            let websiteService = new WebsiteService()
-            let websiteEntity = await websiteService.getWebsiteByUrl(website)
+            let websiteService = new WebsiteService();
+            let websiteEntity = await websiteService.getWebsiteByUrl(website);
 
-            console.log("storeIndex = " + storeIndex + "  UserId = " + storeId)
+            console.log('storeIndex = ' + storeIndex + '  UserId = ' + storeId);
 
             //if user exists
             if (storeIndex > -1) {
                 // @ts-ignore
-                let todayProductVariant = todayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
+                let todayProductVariant = todayProduct.variants.find(variant => variant.id === priceIdCouple.productId);
                 // @ts-ignore
-                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
+                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId);
 
-                let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id)
+                let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
 
                 // @ts-ignore
-                let newAlarmJson = {website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency}
+                let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency };
 
-                storessWhichSendingAlarmList[storeIndex].cachedAlarm?.push(newAlarmJson)
+                storesWhichSendingAlarmList[storeIndex].cachedAlarm?.push(newAlarmJson);
             } else {
 
                 // @ts-ignore
-                let todayProductVariant = todayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
+                let todayProductVariant = todayProduct.variants.find(variant => variant.id === priceIdCouple.productId);
                 // @ts-ignore
-                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId)
+                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId);
 
-                let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id)
+                let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
 
-                console.log(productHistory)
+                console.log(productHistory);
                 // @ts-ignore
-                let newAlarmJson = {website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency}
+                let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency };
 
-                let storeModel = await storeService.getStoreByStoreId(storeId)
+                let storeModel = await storeService.getStoreByStoreId(storeId);
 
-                storessWhichSendingAlarmList.push({id: storeId, cachedAlarm: [newAlarmJson], selectedMail: storeModel.selectedMail})
+                storesWhichSendingAlarmList.push({ id: storeId, cachedAlarm: [newAlarmJson], selectedMail: storeModel.selectedMail });
             }
         }
     }

@@ -1,5 +1,5 @@
-import {collections} from "../database.service";
-import EngineHistoryModel from "../model/engineHistoryModel";
+import { collections } from '../database.service';
+import EngineHistoryModel from '../model/engineHistoryModel';
 
 export default class EngineHistoryRepository {
 

@@ -1,5 +1,5 @@
-import MailHistoryModel from "../model/mailHistoryModel";
-import {collections} from "../database.service";
+import MailHistoryModel from '../model/mailHistoryModel';
+import { collections } from '../database.service';
 
 export default class MailHistoryRepository {
 

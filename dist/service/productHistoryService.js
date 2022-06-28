@@ -35,7 +35,7 @@ class ProductHistoryService {
                 while (loopContinue) {
                     try {
                         // @ts-ignore
-                        let readyToRequestUrl = url + "/collections/" + collection.handle + '/products.json?limit=250&page=' + pagination;
+                        let readyToRequestUrl = url + '/collections/' + collection.handle + '/products.json?limit=250&page=' + pagination;
                         let response = yield axios_1.default.get(readyToRequestUrl);
                         let productResponse = response.data;
                         if (productResponse.products.length === 0) {
@@ -52,7 +52,34 @@ class ProductHistoryService {
                                 //date.setDate(date.getDate() - 1);
                                 product.created_date_time = date;
                                 // @ts-ignore
-                                product.url = url + "/collections/" + collection.handle + '/products/' + product.handle;
+                                product.url = url + '/collections/' + collection.handle + '/products/' + product.handle;
+                                try {
+                                    product.published_at = new Date(product.published_at);
+                                    product.created_at = new Date(product.created_at);
+                                    product.updated_at = new Date(product.updated_at);
+                                }
+                                catch (e) {
+                                }
+                                try {
+                                    // @ts-ignore
+                                    product.variants.forEach(variant => {
+                                        if (variant.price) {
+                                            variant.price = parseFloat(variant.price);
+                                        }
+                                        if (variant.compare_at_price) {
+                                            variant.compare_at_price = parseFloat(variant.compare_at_price);
+                                        }
+                                        if (variant.created_at) {
+                                            variant.created_at = new Date(variant.created_at);
+                                        }
+                                        if (variant.updated_at) {
+                                            variant.updated_at = new Date(variant.updated_at);
+                                        }
+                                    });
+                                }
+                                catch (e) {
+                                }
+                                product.search = this.prepareSearchColumn(product);
                             });
                             this.mergeProducts(products, productResponse.products);
                         }
@@ -108,6 +135,71 @@ class ProductHistoryService {
                 mainList.push(item);
             }
         });
+    }
+    prepareSearchColumn(product) {
+        let searchArray = [];
+        if (product.title) {
+            searchArray.push(product.title);
+        }
+        if (product.handle) {
+            searchArray.push(product.handle);
+        }
+        if (product.body_html) {
+            searchArray.push(product.body_html);
+        }
+        if (product.vendor) {
+            searchArray.push(product.vendor);
+        }
+        if (product.product_type) {
+            searchArray.push(product.product_type);
+        }
+        if (product.website) {
+            searchArray.push(product.website);
+        }
+        if (product.url) {
+            searchArray.push(product.url);
+        }
+        if (product.tags) {
+            product.tags.forEach(tag => {
+                if (tag) {
+                    searchArray.push(tag);
+                }
+            });
+        }
+        if (product.collection) {
+            product.collection.forEach(collection => {
+                if (collection) {
+                    searchArray.push(collection);
+                }
+            });
+        }
+        if (product.variants) {
+            product.variants.forEach(variant => {
+                if (variant) {
+                    // @ts-ignore
+                    if (variant.title) {
+                        // @ts-ignore
+                        searchArray.push(variant.title);
+                    }
+                    // @ts-ignore
+                    if (variant.option1) {
+                        // @ts-ignore
+                        searchArray.push(variant.option1);
+                    }
+                    // @ts-ignore
+                    if (variant.option2) {
+                        // @ts-ignore
+                        searchArray.push(variant.option2);
+                    }
+                    // @ts-ignore
+                    if (variant.option3) {
+                        // @ts-ignore
+                        searchArray.push(variant.option3);
+                    }
+                }
+            });
+        }
+        return searchArray.join(' ');
     }
 }
 exports.default = ProductHistoryService;

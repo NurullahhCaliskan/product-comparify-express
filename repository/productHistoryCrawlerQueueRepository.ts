@@ -1,6 +1,6 @@
-import {collections} from "../database.service";
-import ProductHistoryCrawlerQueueModel from "../model/productHistoryCrawlerQueueModel";
-import ProductHistoryService from "../service/productHistoryService";
+import { collections } from '../database.service';
+import ProductHistoryCrawlerQueueModel from '../model/productHistoryCrawlerQueueModel';
+import ProductHistoryService from '../service/productHistoryService';
 
 export default class ProductHistoryCrawlerQueueRepository {
 
@@ -9,23 +9,23 @@ export default class ProductHistoryCrawlerQueueRepository {
      * @param product
      */
     async saveProductPricesFromWebByUrlIfNotExists(product: ProductHistoryCrawlerQueueModel) {
-        let productHistoryService = new ProductHistoryService()
+        let productHistoryService = new ProductHistoryService();
 
-        let isCrawledToday = await productHistoryService.isCrawledTodayByWebsite(product.website)
+        let isCrawledToday = await productHistoryService.isCrawledTodayByWebsite(product.website);
 
         if (isCrawledToday) {
             return;
         }
 
-        let query = {website: product.website};
-        let newRecord = {$set: {website: product.website}};
+        let query = { website: product.website };
+        let newRecord = { $set: { website: product.website } };
 
         // @ts-ignore
-        await collections.productHistoryCrawlerQueueModel.updateOne(query, newRecord, {upsert: true})
+        await collections.productHistoryCrawlerQueueModel.updateOne(query, newRecord, { upsert: true });
     }
 
     async removeProductPricesFromWebByUrl(product: string) {
-        await collections.productHistoryCrawlerQueueModel?.deleteMany({website: product})
+        await collections.productHistoryCrawlerQueueModel?.deleteMany({ website: product });
     }
 
 }

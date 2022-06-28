@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 // @ts-ignore
-import WebsiteModel from "../model/websiteModel";
-import ProductHistoryCrawlerQueueRepository from "../repository/productHistoryCrawlerQueueRepository";
+import WebsiteModel from '../model/websiteModel';
+import ProductHistoryCrawlerQueueRepository from '../repository/productHistoryCrawlerQueueRepository';
 
 export default class ProductHistoryCrawlerQueueService {
 

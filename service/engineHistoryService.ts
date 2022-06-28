@@ -1,5 +1,5 @@
-import EngineHistoryRepository from "../repository/engineHistoryRepository";
-import EngineHistoryModel from "../model/engineHistoryModel";
+import EngineHistoryRepository from '../repository/engineHistoryRepository';
+import EngineHistoryModel from '../model/engineHistoryModel';
 
 export default class EngineHistoryService {
     /***
@@ -7,7 +7,7 @@ export default class EngineHistoryService {
      * @param engineHistoryModel
      */
     async saveEngineHistory(engineHistoryModel: EngineHistoryModel) {
-        let engineHistoryRepository = new EngineHistoryRepository()
+        let engineHistoryRepository = new EngineHistoryRepository();
         await engineHistoryRepository.saveEngineHistory(engineHistoryModel);
     }
 }

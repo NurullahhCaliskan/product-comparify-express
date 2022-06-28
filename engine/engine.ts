@@ -1,100 +1,100 @@
 import schedule from 'node-schedule';
-import StoreWebsitesRelationService from "../service/storeWebsitesRelationService";
-import WebsiteService from "../service/websiteService";
-import ProductHistoryService from "../service/productHistoryService";
-import PriceCollector from "./priceCollector";
-import AlarmService from "./alarmService";
-import {arrayIsEmpty} from "../utility/arrayUtility";
-import MailService from "../mail/mailService";
-import {EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND, GET_MAIN_SCHEDULED_AS_SECOND} from "../utility/cronUtility";
-import EngineHistoryService from "../service/engineHistoryService";
-import EngineHistoryModel from "../model/engineHistoryModel";
-import ProductPriceHistoryService from "../service/productPriceHistoryService";
-import EnginePermissionService from "../service/enginePermissionService";
-import StoreModel from "../model/storeModel";
+import StoreWebsitesRelationService from '../service/storeWebsitesRelationService';
+import WebsiteService from '../service/websiteService';
+import ProductHistoryService from '../service/productHistoryService';
+import PriceCollector from './priceCollector';
+import AlarmService from './alarmService';
+import { arrayIsEmpty } from '../utility/arrayUtility';
+import MailService from '../mail/mailService';
+import { EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND, GET_MAIN_SCHEDULED_AS_SECOND } from '../utility/cronUtility';
+import EngineHistoryService from '../service/engineHistoryService';
+import EngineHistoryModel from '../model/engineHistoryModel';
+import ProductPriceHistoryService from '../service/productPriceHistoryService';
+import EnginePermissionService from '../service/enginePermissionService';
+import StoreModel from '../model/storeModel';
 
 
 export default class Engine {
 
     startEngine() {
-        let enginePermissionService = new EnginePermissionService()
+        let enginePermissionService = new EnginePermissionService();
         let engine = new Engine();
 
         // @ts-ignore
-        const job = schedule.scheduleJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function () {
+        const job = schedule.scheduleJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
 
             //if no available, exit
             if (!(await enginePermissionService.isAvailableRunMainEngine())) {
-                return
+                return;
             }
 
             //set unavailable
-            await enginePermissionService.setUnavailableMainEngine()
+            await enginePermissionService.setUnavailableMainEngine();
 
-            console.log('start engine1')
+            console.log('start engine1');
 
             try {
-                let engineHistoryService = new EngineHistoryService()
+                let engineHistoryService = new EngineHistoryService();
 
-                let engineHistoryModelStart = new EngineHistoryModel(new Date(), "Start Run Engine")
-                await engineHistoryService.saveEngineHistory(engineHistoryModelStart)
+                let engineHistoryModelStart = new EngineHistoryModel(new Date(), 'Start Run Engine');
+                await engineHistoryService.saveEngineHistory(engineHistoryModelStart);
 
-                await engine.collectAllProducts()
+                await engine.collectAllProducts();
 
-                await engine.prepareAlarmToSendMail()
+                await engine.prepareAlarmToSendMail();
 
-                let engineHistoryModelEnd = new EngineHistoryModel(new Date(), "End Run Engine")
-                await engineHistoryService.saveEngineHistory(engineHistoryModelEnd)
+                let engineHistoryModelEnd = new EngineHistoryModel(new Date(), 'End Run Engine');
+                await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
 
             } catch (e) {
-                console.log(e)
+                console.log(e);
             }
 
-            console.log('end engine')
+            console.log('end engine');
             //set available
-            await enginePermissionService.setAvailableMainEngine()
-        })
+            await enginePermissionService.setAvailableMainEngine();
+        });
     }
 
     async collectAllProducts() {
 
-        console.log('start collectAllProducts')
-        let userWebsitesRelationService = new StoreWebsitesRelationService()
-        let websiteService = new WebsiteService()
-        let productHistoryService = new ProductHistoryService()
+        console.log('start collectAllProducts');
+        let userWebsitesRelationService = new StoreWebsitesRelationService();
+        let websiteService = new WebsiteService();
+        let productHistoryService = new ProductHistoryService();
 
-        await productHistoryService.removeTodayProducts()
+        await productHistoryService.removeTodayProducts();
 
-        await this.syncWebsites()
+        await this.syncWebsites();
 
         //get websites for collect data
-        let websites = await websiteService.getWebsites()
+        let websites = await websiteService.getWebsites();
 
         for (const website of websites) {
 
-            await productHistoryService.deleteProductsByWebsite(website.url)
-            await productHistoryService.saveProductsFromWebByUrl(website)
+            await productHistoryService.deleteProductsByWebsite(website.url);
+            await productHistoryService.saveProductsFromWebByUrl(website);
 
         }
     }
 
 
     async prepareAlarmToSendMail() {
-        console.log("prepareAlarmToSendMail")
-        let storeWebsitesRelationService = new StoreWebsitesRelationService()
-        let productHistoryService = new ProductHistoryService()
-        let productPriceHistoryService = new ProductPriceHistoryService()
-        let websiteService = new WebsiteService()
-        let alarmService = new AlarmService()
+        console.log('prepareAlarmToSendMail');
+        let storeWebsitesRelationService = new StoreWebsitesRelationService();
+        let productHistoryService = new ProductHistoryService();
+        let productPriceHistoryService = new ProductPriceHistoryService();
+        let websiteService = new WebsiteService();
+        let alarmService = new AlarmService();
 
-        let storesWhichSendingAlarmList = [] as StoreModel[]
+        let storesWhichSendingAlarmList = [] as StoreModel[];
         let storeWebsitesRelationList = await storeWebsitesRelationService.getUserWebsitesRelations();
-        let websitesList = await websiteService.getWebsites()
+        let websitesList = await websiteService.getWebsites();
 
         //get unique website list
         for (const website of websitesList) {
 
-            let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url)
+            let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
 
             let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
             let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
@@ -105,9 +105,9 @@ export default class Engine {
             }
 
             for (const index in yesterdayProductList) {
-                let priceCollector = new PriceCollector()
+                let priceCollector = new PriceCollector();
 
-                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayProductList[index])
+                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayProductList[index]);
 
                 //find users which cache product alarm
                 await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
@@ -115,32 +115,32 @@ export default class Engine {
             }
         }
 
-        console.log(JSON.stringify(storesWhichSendingAlarmList))
+        console.log(JSON.stringify(storesWhichSendingAlarmList));
 
-        console.log("send mail to users")
-        console.log(storesWhichSendingAlarmList.length)
+        console.log('send mail to users');
+        console.log(storesWhichSendingAlarmList.length);
         for (const storeModel of storesWhichSendingAlarmList) {
-            let mailService = new MailService()
-            await mailService.sendMail(storeModel)
+            let mailService = new MailService();
+            await mailService.sendMail(storeModel);
         }
     }
 
 
     async syncWebsites() {
-        let userWebsitesRelationService = new StoreWebsitesRelationService()
+        let userWebsitesRelationService = new StoreWebsitesRelationService();
         let UserWebsitesRelationList = await userWebsitesRelationService.getUserWebsitesRelations();
         //console.log(UserWebsitesRelationList)
         //get unique website list
-        const uniqueWebsites = [...new Set(UserWebsitesRelationList.map(item => item.website))]
+        const uniqueWebsites = [...new Set(UserWebsitesRelationList.map(item => item.website))];
 
         //upsert collections
-        let websiteService = new WebsiteService()
+        let websiteService = new WebsiteService();
 
-        console.log(uniqueWebsites)
+        console.log(uniqueWebsites);
         for (const website of uniqueWebsites) {
             let collectionResponse = await websiteService.getCollectionByWebsiteNameFromWeb(website);
             if (collectionResponse.length > 0) {
-                await websiteService.upsertWebSitesAllCollections(website, collectionResponse)
+                await websiteService.upsertWebSitesAllCollections(website, collectionResponse);
             }
         }
 

@@ -1,4 +1,4 @@
-import {ObjectId} from "mongodb";
+import { ObjectId } from 'mongodb';
 
 export default class MailHistoryModel {
     constructor(public storeId: number,
