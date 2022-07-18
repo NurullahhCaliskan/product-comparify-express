@@ -1,41 +1,27 @@
-// @ts-ignore
-// @ts-ignore
-// @ts-ignore
-
-import express, {Express, NextFunction, Request, Response} from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import Engine from './engine/engine';
-import {collections} from "./database.service";
-import {mailService} from "./mail.service";
-import * as mongoDB from "mongodb";
-// @ts-ignore
-import nodemailer from "nodemailer";
-// @ts-ignore
-import smtpTransport from "nodemailer-smtp-transport";
-import ProductUploader from "./mail/productUploader";
-import MailService from "./mail/mailService";
-import {callbackify} from "util";
-import {callbackPromise} from "nodemailer/lib/shared";
-import logger from "./logger.middleware";
-import morgan from "morgan";
-import EngineHistoryService from "./service/engineHistoryService";
-import EngineHistoryModel from "./model/engineHistoryModel";
-import WebsiteModel from "./model/websiteModel";
-import {getTodayMidnight, getYesterdayMidnight} from "./utility/dayUtility";
-import EnginePermissionModel from "./model/enginePermissionModel";
-import QueueProductEngine from "./engine/queueProductEngine";
-import StoreService from "./service/storeService";
-import {parseInt} from "lodash";
-import axios from 'axios';
+import { collections } from './database.service';
+import { mailService } from './mail.service';
+import * as mongoDB from 'mongodb';
+import nodemailer from 'nodemailer';
+import MailService from './mail/mailService';
+import logger from './logger.middleware';
+import morgan from 'morgan';
+import EngineHistoryService from './service/engineHistoryService';
+import EngineHistoryModel from './model/engineHistoryModel';
+import QueueProductEngine from './engine/queueProductEngine';
+import StoreService from './service/storeService';
+import { parseInt } from 'lodash';
 import WebsiteService from './service/websiteService';
 
-dotenv.config({path: `.env.${process.env.NODE_ENV}`});
+dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 async function loadDb() {
     try {
 
-        console.log('start log')
-        console.log(process.env.DBHOST)
+        console.log('start log');
+        console.log(process.env.DBHOST);
 
         // @ts-ignore
         const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.DBHOST);
@@ -71,15 +57,13 @@ function initializeMailEngine() {
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
     // create reusable transporter object using the default SMTP transport
-    let transporter = nodemailer.createTransport({
+    mailService.service = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.MAILNAME,
             pass: process.env.MAILPW
         }
     })
-
-    mailService.service = transporter
 }
 
 initializeMailEngine();

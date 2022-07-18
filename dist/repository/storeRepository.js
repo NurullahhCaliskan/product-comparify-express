@@ -11,7 +11,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
 class StoreRepository {
-    getUserByUserId(storeId) {
+    /***
+     * get Store
+     * @param storeId
+     */
+    getStoreByStoreId(storeId) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             // @ts-ignore

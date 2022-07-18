@@ -1,7 +1,4 @@
 "use strict";
-// @ts-ignore
-// @ts-ignore
-// @ts-ignore
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     var desc = Object.getOwnPropertyDescriptor(m, k);
@@ -44,7 +41,6 @@ const engine_1 = __importDefault(require("./engine/engine"));
 const database_service_1 = require("./database.service");
 const mail_service_1 = require("./mail.service");
 const mongoDB = __importStar(require("mongodb"));
-// @ts-ignore
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const mailService_1 = __importDefault(require("./mail/mailService"));
 const logger_middleware_1 = __importDefault(require("./logger.middleware"));
@@ -91,14 +87,13 @@ function initializeMailEngine() {
     // Generate test SMTP service account from ethereal.email
     // Only needed if you don't have a real mail account for testing
     // create reusable transporter object using the default SMTP transport
-    let transporter = nodemailer_1.default.createTransport({
+    mail_service_1.mailService.service = nodemailer_1.default.createTransport({
         service: 'gmail',
         auth: {
             user: process.env.MAILNAME,
             pass: process.env.MAILPW
         }
     });
-    mail_service_1.mailService.service = transporter;
 }
 initializeMailEngine();
 loadDb().then(r => r);

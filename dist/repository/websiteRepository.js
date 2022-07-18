@@ -12,6 +12,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
 const stringUtility_1 = require("../utility/stringUtility");
 class WebsiteRepository {
+    /***
+     * Upser Websites All Colelctions
+     * @param url
+     * @param collection
+     */
     upsertWebSitesAllCollections(url, collection) {
         return __awaiter(this, void 0, void 0, function* () {
             url = (0, stringUtility_1.urlFormatter)(url);
@@ -21,6 +26,11 @@ class WebsiteRepository {
             yield database_service_1.collections.websitesModel.updateOne(query, newRecord, { upsert: true });
         });
     }
+    /***
+     * Upsert websites favicon
+     * @param url
+     * @param faviconUrl
+     */
     upsertWebSitesFavicon(url, faviconUrl) {
         return __awaiter(this, void 0, void 0, function* () {
             url = (0, stringUtility_1.urlFormatter)(url);
@@ -30,6 +40,11 @@ class WebsiteRepository {
             yield database_service_1.collections.websitesModel.updateOne(query, newRecord, { upsert: true });
         });
     }
+    /***
+     * upsert web sites cart
+     * @param url
+     * @param cart
+     */
     upsertWebSitesCart(url, cart) {
         return __awaiter(this, void 0, void 0, function* () {
             url = (0, stringUtility_1.urlFormatter)(url);
@@ -49,6 +64,9 @@ class WebsiteRepository {
             return yield database_service_1.collections.websitesModel.find({}).toArray();
         });
     }
+    /***
+     * get websites from queue
+     */
     getWebsitesFromQueue() {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -65,9 +83,9 @@ class WebsiteRepository {
             ]).toArray());
         });
     }
-    /**
-     * get User websites relations
-     * @return unique website list
+    /***
+     * get website by url
+     * @param url
      */
     getWebsiteByUrl(url) {
         var _a;
@@ -76,9 +94,10 @@ class WebsiteRepository {
             return yield ((_a = database_service_1.collections.websitesModel) === null || _a === void 0 ? void 0 : _a.findOne({ url: url }));
         });
     }
-    /**
-     * get User websites relations
-     * @return unique website list
+    /***
+     * get any property by url
+     * @param match
+     * @param project
      */
     getPropertyByUrl(match, project) {
         var _a;

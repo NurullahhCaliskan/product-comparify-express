@@ -1,14 +1,11 @@
 import { collections } from '../database.service';
-import { getTodayMidnight, getTomorrowMidnight, getYesterdayMidnight } from '../utility/dayUtility';
 import ProductHistoryModel from '../model/productHistoryModel';
-import { urlFormatter } from '../utility/stringUtility';
-import WebsiteModel from '../model/websiteModel';
 import _ from 'lodash';
 
 export default class ProductHistoryRepository {
 
     /***
-     * save Product by url
+     * save product
      * @param products
      */
     async saveProductsFromWebByUrl(products: object[]) {
@@ -22,6 +19,10 @@ export default class ProductHistoryRepository {
         }
     }
 
+    /***
+     * remove Today products
+     * NOTE: minus day information in env file
+     */
     async removeTodayProducts() {
         let start = new Date();
         start.setHours(0, 0, 0, 0);
@@ -36,19 +37,27 @@ export default class ProductHistoryRepository {
         await collections.productHistoryModel?.deleteMany({ created_date_time: { $gte: start, $lt: end } });
     }
 
-    /**
-     * get User websites relations
-     * @return unique website list
+    /***
+     * get Product History By Product Id
+     * @param id
      */
     async getProductHistoryByProductId(id: number): Promise<ProductHistoryModel> {
 
         return await collections.productHistoryModel?.findOne({ id: id }) as ProductHistoryModel;
     }
 
+    /***
+     * delete product
+     * @param website
+     */
     async deleteProductsByWebsite(website: string) {
         await collections.productHistoryModel?.deleteMany({ website: website });
     }
 
+    /***
+     * today crawled check
+     * @param website
+     */
     async isCrawledTodayByWebsite(website: string): Promise<boolean> {
         let start = new Date();
         start.setHours(0, 0, 0, 0);
@@ -58,10 +67,6 @@ export default class ProductHistoryRepository {
 
         let result = await collections.productHistoryModel?.findOne({ created_date_time: { $gte: start, $lt: end }, website: website }) as ProductHistoryModel;
 
-
-        console.log('result');
-        console.log(result);
-        console.log(!_.isEmpty(result));
         return !_.isEmpty(result);
     }
 }

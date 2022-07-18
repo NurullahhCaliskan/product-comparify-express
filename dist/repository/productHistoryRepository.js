@@ -16,7 +16,7 @@ const database_service_1 = require("../database.service");
 const lodash_1 = __importDefault(require("lodash"));
 class ProductHistoryRepository {
     /***
-     * save Product by url
+     * save product
      * @param products
      */
     saveProductsFromWebByUrl(products) {
@@ -32,6 +32,10 @@ class ProductHistoryRepository {
             }
         });
     }
+    /***
+     * remove Today products
+     * NOTE: minus day information in env file
+     */
     removeTodayProducts() {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -46,9 +50,9 @@ class ProductHistoryRepository {
             yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ created_date_time: { $gte: start, $lt: end } }));
         });
     }
-    /**
-     * get User websites relations
-     * @return unique website list
+    /***
+     * get Product History By Product Id
+     * @param id
      */
     getProductHistoryByProductId(id) {
         var _a;
@@ -56,12 +60,20 @@ class ProductHistoryRepository {
             return yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.findOne({ id: id }));
         });
     }
+    /***
+     * delete product
+     * @param website
+     */
     deleteProductsByWebsite(website) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ website: website }));
         });
     }
+    /***
+     * today crawled check
+     * @param website
+     */
     isCrawledTodayByWebsite(website) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
@@ -70,9 +82,6 @@ class ProductHistoryRepository {
             let end = new Date();
             end.setHours(23, 59, 59, 999);
             let result = yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.findOne({ created_date_time: { $gte: start, $lt: end }, website: website }));
-            console.log('result');
-            console.log(result);
-            console.log(!lodash_1.default.isEmpty(result));
             return !lodash_1.default.isEmpty(result);
         });
     }

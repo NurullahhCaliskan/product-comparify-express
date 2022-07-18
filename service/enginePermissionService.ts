@@ -1,20 +1,26 @@
 import EnginePermissionRepository from '../repository/enginePermissionRepository';
 
 export default class EnginePermissionService {
-    /***
-     * save mail history by url
-     * @param mailHistoryModel
+
+    /**
+     * available check
      */
     async isAvailableRunQueueEngine(): Promise<boolean> {
         let enginePermissionRepository = new EnginePermissionRepository();
         return await enginePermissionRepository.isAvailableRunQueueEngine();
     }
 
+    /***
+     * set available check
+     */
     async setAvailableQueueEngine() {
         let enginePermissionRepository = new EnginePermissionRepository();
         await enginePermissionRepository.setAvailableQueueEngine();
     }
 
+    /***
+     * set unavailable check
+     */
     async setUnavailableQueueEngine() {
         let enginePermissionRepository = new EnginePermissionRepository();
         await enginePermissionRepository.setUnavailableQueueEngine();

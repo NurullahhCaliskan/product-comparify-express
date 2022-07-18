@@ -19,10 +19,9 @@ const productPriceHistoryModel_1 = __importDefault(require("../model/productPric
 const websiteService_1 = __importDefault(require("./websiteService"));
 const currencyUtility_1 = require("../utility/currencyUtility");
 class ProductHistoryService {
-    /**
-     * save product history
-     * @param url url
-     * @param collections collection
+    /***
+     * save product
+     * @param website
      */
     saveProductsFromWebByUrl(website) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -30,7 +29,6 @@ class ProductHistoryService {
             let productPriceHistoryService = new productPriceHistoryService_1.default();
             let websiteService = new websiteService_1.default();
             let websiteEntity = yield websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
-            console.log(websiteEntity);
             let currencyRate = (0, currencyUtility_1.getCurrencyRateCorrespondUsd)(websiteEntity);
             let url = website.url;
             let collections = website.collection;
@@ -108,18 +106,30 @@ class ProductHistoryService {
             yield productPriceHistoryService.saveProductPriceHistory(productPrices);
         });
     }
+    /***
+     * get Product History By Product Id
+     * @param id
+     */
     getProductHistoryByProductId(id) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
             return yield productHistoryRepository.getProductHistoryByProductId(id);
         });
     }
+    /***
+     * delete product
+     * @param website
+     */
     deleteProductsByWebsite(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
             yield productHistoryRepository.deleteProductsByWebsite(website);
         });
     }
+    /***
+     * remove Today products
+     * NOTE: minus day information in env file
+     */
     removeTodayProducts() {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
@@ -128,12 +138,21 @@ class ProductHistoryService {
             yield productPriceHistoryRepository.removeTodayProducts();
         });
     }
+    /***
+     * today crawled check
+     * @param website
+     */
     isCrawledTodayByWebsite(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
             return yield productHistoryRepository.isCrawledTodayByWebsite(website);
         });
     }
+    /***
+     * merge product
+     * @param mainList
+     * @param tmpList
+     */
     mergeProducts(mainList, tmpList) {
         tmpList.forEach(item => {
             if (mainList.find(mainItem => mainItem.id === item.id)) {
@@ -145,6 +164,10 @@ class ProductHistoryService {
             }
         });
     }
+    /***
+     * prepare Search Column
+     * @param product
+     */
     prepareSearchColumn(product) {
         let searchArray = [];
         if (product.title) {

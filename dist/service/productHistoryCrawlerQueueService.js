@@ -14,6 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const productHistoryCrawlerQueueRepository_1 = __importDefault(require("../repository/productHistoryCrawlerQueueRepository"));
 class ProductHistoryCrawlerQueueService {
+    /**
+     * Remoce Product Price from web by url
+     * @param website
+     */
     removeProductPricesFromWebByUrl(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryCrawlerQueueRepository = new productHistoryCrawlerQueueRepository_1.default();

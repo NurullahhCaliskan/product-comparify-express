@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const engineHistoryRepository_1 = __importDefault(require("../repository/engineHistoryRepository"));
 class EngineHistoryService {
     /***
-     * save mail history by url
+     * save engine history
      * @param engineHistoryModel
      */
     saveEngineHistory(engineHistoryModel) {

@@ -1,7 +1,4 @@
 import { collections } from '../database.service';
-import { getTodayMidnight, getTomorrowMidnight, getYesterdayMidnight } from '../utility/dayUtility';
-import { urlFormatter } from '../utility/stringUtility';
-import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 import ProductMailHistoryModel from '../model/productMailHistoryModel';
 
 export default class ProductMailHistoryRepository {

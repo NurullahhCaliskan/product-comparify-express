@@ -15,8 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const currencyRepository_1 = __importDefault(require("../repository/currencyRepository"));
 const currenciesList_1 = __importDefault(require("../static/currenciesList"));
 class CurrencyService {
-    /***
-     * save mail history by url
+    /**
+     * Save Currencies with Use API
+     * NOTE: This endpoint working every night 1 time
      */
     saveCurrenciesByApi() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -24,6 +25,10 @@ class CurrencyService {
             yield currencyRepository.saveCurrenciesByApi();
         });
     }
+    /**
+     * Refresh Currencies with Use API
+     * NOTE: This endpoint working every night 1 time
+     */
     refreshCurrencyList() {
         return __awaiter(this, void 0, void 0, function* () {
             let currencyRepository = new currencyRepository_1.default();

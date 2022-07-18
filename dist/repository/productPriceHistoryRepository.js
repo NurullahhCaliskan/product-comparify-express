@@ -62,6 +62,9 @@ class ProductPriceHistoryRepository {
             return yield ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray());
         });
     }
+    /***
+     * remove Today Products
+     */
     removeTodayProducts() {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {

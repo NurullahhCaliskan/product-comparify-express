@@ -3,7 +3,7 @@ import EngineHistoryModel from '../model/engineHistoryModel';
 
 export default class EngineHistoryService {
     /***
-     * save mail history by url
+     * save engine history
      * @param engineHistoryModel
      */
     async saveEngineHistory(engineHistoryModel: EngineHistoryModel) {

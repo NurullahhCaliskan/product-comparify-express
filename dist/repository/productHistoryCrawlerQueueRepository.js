@@ -32,6 +32,10 @@ class ProductHistoryCrawlerQueueRepository {
             yield database_service_1.collections.productHistoryCrawlerQueueModel.updateOne(query, newRecord, { upsert: true });
         });
     }
+    /**
+     * Remoce Product Price from web by url
+     * @param website
+     */
     removeProductPricesFromWebByUrl(product) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {

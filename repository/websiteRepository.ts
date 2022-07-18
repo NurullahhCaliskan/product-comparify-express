@@ -4,6 +4,11 @@ import { urlFormatter } from '../utility/stringUtility';
 
 export default class WebsiteRepository {
 
+    /***
+     * Upser Websites All Colelctions
+     * @param url
+     * @param collection
+     */
     async upsertWebSitesAllCollections(url: string, collection: object) {
         url = urlFormatter(url);
         let query = { url: url };
@@ -12,6 +17,11 @@ export default class WebsiteRepository {
         await collections.websitesModel.updateOne(query, newRecord, { upsert: true });
     }
 
+    /***
+     * Upsert websites favicon
+     * @param url
+     * @param faviconUrl
+     */
     async upsertWebSitesFavicon(url: string, faviconUrl: string | null) {
         url = urlFormatter(url)
         let query = {url: url};
@@ -20,6 +30,11 @@ export default class WebsiteRepository {
         await collections.websitesModel.updateOne(query, newRecord, {upsert: true});
     }
 
+    /***
+     * upsert web sites cart
+     * @param url
+     * @param cart
+     */
     async upsertWebSitesCart(url: string, cart: object) {
         url = urlFormatter(url)
         let query = {url: url};
@@ -37,6 +52,9 @@ export default class WebsiteRepository {
         return await collections.websitesModel.find({}).toArray() as WebsiteModel[]
     }
 
+    /***
+     * get websites from queue
+     */
     async getWebsitesFromQueue(): Promise<WebsiteModel[]> {
         return await collections.websitesModel?.aggregate([
             {
@@ -52,9 +70,9 @@ export default class WebsiteRepository {
         ]).toArray() as WebsiteModel[]
     }
 
-    /**
-     * get User websites relations
-     * @return unique website list
+    /***
+     * get website by url
+     * @param url
      */
     async getWebsiteByUrl(url: string): Promise<WebsiteModel> {
 
@@ -62,9 +80,10 @@ export default class WebsiteRepository {
         return await collections.websitesModel?.findOne({ url: url }) as WebsiteModel;
     }
 
-    /**
-     * get User websites relations
-     * @return unique website list
+    /***
+     * get any property by url
+     * @param match
+     * @param project
      */
     async getPropertyByUrl(match: object, project: object): Promise<WebsiteModel | null> {
 

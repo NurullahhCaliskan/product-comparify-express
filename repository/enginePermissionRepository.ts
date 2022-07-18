@@ -4,9 +4,8 @@ import EnginePermissionModel from '../model/enginePermissionModel';
 
 export default class EnginePermissionRepository {
 
-    /***
-     * save mail history by url
-     * @param mailHistoryModel
+    /**
+     * available check
      */
     async isAvailableRunQueueEngine(): Promise<boolean> {
 
@@ -19,6 +18,9 @@ export default class EnginePermissionRepository {
         return response.length <= 0;
     }
 
+    /***
+     * set available check
+     */
     async setAvailableQueueEngine() {
         let query = { collection: 'product-history-crawler-queue' };
         let newRecord = { $set: { status: 0, last_run_time: new Date() } };
@@ -35,8 +37,7 @@ export default class EnginePermissionRepository {
 
 
     /***
-     * save mail history by url
-     * @param mailHistoryModel
+     * set unavailable check
      */
     async isAvailableRunMainEngine(): Promise<boolean> {
         let findJson = { $and: [{ collection: 'product-history-main' }, { status: 1 }] };

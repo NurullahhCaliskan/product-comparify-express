@@ -14,9 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const enginePermissionRepository_1 = __importDefault(require("../repository/enginePermissionRepository"));
 class EnginePermissionService {
-    /***
-     * save mail history by url
-     * @param mailHistoryModel
+    /**
+     * available check
      */
     isAvailableRunQueueEngine() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -24,12 +23,18 @@ class EnginePermissionService {
             return yield enginePermissionRepository.isAvailableRunQueueEngine();
         });
     }
+    /***
+     * set available check
+     */
     setAvailableQueueEngine() {
         return __awaiter(this, void 0, void 0, function* () {
             let enginePermissionRepository = new enginePermissionRepository_1.default();
             yield enginePermissionRepository.setAvailableQueueEngine();
         });
     }
+    /***
+     * set unavailable check
+     */
     setUnavailableQueueEngine() {
         return __awaiter(this, void 0, void 0, function* () {
             let enginePermissionRepository = new enginePermissionRepository_1.default();

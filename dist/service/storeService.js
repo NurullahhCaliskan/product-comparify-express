@@ -14,10 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const storeRepository_1 = __importDefault(require("../repository/storeRepository"));
 class StoreService {
+    /***
+     * get Store
+     * @param storeId
+     */
     getStoreByStoreId(storeId) {
         return __awaiter(this, void 0, void 0, function* () {
             let storeRepository = new storeRepository_1.default();
-            return yield storeRepository.getUserByUserId(storeId);
+            return yield storeRepository.getStoreByStoreId(storeId);
         });
     }
 }

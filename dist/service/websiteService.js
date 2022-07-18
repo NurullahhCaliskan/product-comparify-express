@@ -17,24 +17,43 @@ const axios_1 = __importDefault(require("axios"));
 // @ts-ignore
 const jssoup_1 = __importDefault(require("jssoup"));
 class WebsiteService {
+    /***
+     * Upser Websites All Colelctions
+     * @param url
+     * @param collections
+     */
     upsertWebSitesAllCollections(url, collections) {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();
             yield websiteRepository.upsertWebSitesAllCollections(url, collections);
         });
     }
+    /***
+     * Upsert websites favicon
+     * @param url
+     * @param collections
+     */
     upsertWebSitesFavicon(url, collections) {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();
             yield websiteRepository.upsertWebSitesFavicon(url, collections);
         });
     }
+    /***
+     * upsert web sites cart
+     * @param url
+     * @param cart
+     */
     upsertWebSitesCart(url, cart) {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();
             yield websiteRepository.upsertWebSitesCart(url, cart);
         });
     }
+    /***
+     * get Collection by website name from web
+     * @param url
+     */
     getCollectionByWebsiteNameFromWeb(url) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -46,6 +65,10 @@ class WebsiteService {
             return [];
         });
     }
+    /***
+     * get cart by website name from web
+     * @param url
+     */
     getCartByWebsiteNameFromWeb(url) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
@@ -57,24 +80,39 @@ class WebsiteService {
             return {};
         });
     }
+    /**
+     * get User websites relations
+     * @return unique website list
+     */
     getWebsites() {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();
             return yield websiteRepository.getWebsites();
         });
     }
+    /***
+     * get websites from queue
+     */
     getWebsitesFromQueue() {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();
             return yield websiteRepository.getWebsitesFromQueue();
         });
     }
+    /***
+     * get website by url
+     * @param url
+     */
     getWebsiteByUrl(url) {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();
             return yield websiteRepository.getWebsiteByUrl(url);
         });
     }
+    /***
+     * get favicon url
+     * @param url
+     */
     getFaviconUrlByWebsiteNameFromWeb(url) {
         return __awaiter(this, void 0, void 0, function* () {
             let result = null;
@@ -93,6 +131,11 @@ class WebsiteService {
             return result;
         });
     }
+    /***
+     * get any property by url
+     * @param url
+     * @param project
+     */
     getPropertyByUrl(url, project) {
         return __awaiter(this, void 0, void 0, function* () {
             let websiteRepository = new websiteRepository_1.default();

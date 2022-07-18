@@ -9,10 +9,10 @@ import { getCurrencyRateCorrespondUsd } from '../utility/currencyUtility';
 
 export default class ProductHistoryService {
 
-    /**
-     * save product history
-     * @param url url
-     * @param collections collection
+
+    /***
+     * save product
+     * @param website
      */
     async saveProductsFromWebByUrl(website: WebsiteModel) {
         let productHistoryRepository = new ProductHistoryRepository();
@@ -20,7 +20,6 @@ export default class ProductHistoryService {
         let websiteService = new WebsiteService();
         let websiteEntity = await websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
 
-        console.log(websiteEntity);
         let currencyRate = getCurrencyRateCorrespondUsd(websiteEntity);
 
         let url = website.url;
@@ -124,16 +123,28 @@ export default class ProductHistoryService {
 
     }
 
+    /***
+     * get Product History By Product Id
+     * @param id
+     */
     async getProductHistoryByProductId(id: number): Promise<ProductHistoryModel> {
         let productHistoryRepository = new ProductHistoryRepository();
         return await productHistoryRepository.getProductHistoryByProductId(id);
     }
 
+    /***
+     * delete product
+     * @param website
+     */
     async deleteProductsByWebsite(website: string) {
         let productHistoryRepository = new ProductHistoryRepository();
         await productHistoryRepository.deleteProductsByWebsite(website);
     }
 
+    /***
+     * remove Today products
+     * NOTE: minus day information in env file
+     */
     async removeTodayProducts() {
         let productHistoryRepository = new ProductHistoryRepository();
         let productPriceHistoryRepository = new ProductPriceHistoryService();
@@ -142,11 +153,20 @@ export default class ProductHistoryService {
         await productPriceHistoryRepository.removeTodayProducts();
     }
 
+    /***
+     * today crawled check
+     * @param website
+     */
     async isCrawledTodayByWebsite(website: string): Promise<boolean> {
         let productHistoryRepository = new ProductHistoryRepository();
         return await productHistoryRepository.isCrawledTodayByWebsite(website);
     }
 
+    /***
+     * merge product
+     * @param mainList
+     * @param tmpList
+     */
     mergeProducts(mainList: ProductHistoryModel[], tmpList: ProductHistoryModel[]) {
         tmpList.forEach(item => {
             if (mainList.find(mainItem => mainItem.id === item.id)) {
@@ -158,6 +178,10 @@ export default class ProductHistoryService {
         });
     }
 
+    /***
+     * prepare Search Column
+     * @param product
+     */
     prepareSearchColumn(product: ProductHistoryModel) {
 
         let searchArray = [];

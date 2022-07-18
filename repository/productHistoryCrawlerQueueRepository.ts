@@ -24,6 +24,10 @@ export default class ProductHistoryCrawlerQueueRepository {
         await collections.productHistoryCrawlerQueueModel.updateOne(query, newRecord, { upsert: true });
     }
 
+    /**
+     * Remoce Product Price from web by url
+     * @param website
+     */
     async removeProductPricesFromWebByUrl(product: string) {
         await collections.productHistoryCrawlerQueueModel?.deleteMany({ website: product });
     }

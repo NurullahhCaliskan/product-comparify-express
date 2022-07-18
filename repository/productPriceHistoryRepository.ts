@@ -55,6 +55,9 @@ export default class ProductPriceHistoryRepository {
         return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray() as ProductPriceHistoryModel[];
     }
 
+    /***
+     * remove Today Products
+     */
     async removeTodayProducts() {
         let start = new Date();
         start.setHours(0, 0, 0, 0);

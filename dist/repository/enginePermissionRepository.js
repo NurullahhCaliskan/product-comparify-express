@@ -12,9 +12,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
 const dayUtility_1 = require("../utility/dayUtility");
 class EnginePermissionRepository {
-    /***
-     * save mail history by url
-     * @param mailHistoryModel
+    /**
+     * available check
      */
     isAvailableRunQueueEngine() {
         var _a;
@@ -25,6 +24,9 @@ class EnginePermissionRepository {
             return response.length <= 0;
         });
     }
+    /***
+     * set available check
+     */
     setAvailableQueueEngine() {
         return __awaiter(this, void 0, void 0, function* () {
             let query = { collection: 'product-history-crawler-queue' };
@@ -42,8 +44,7 @@ class EnginePermissionRepository {
         });
     }
     /***
-     * save mail history by url
-     * @param mailHistoryModel
+     * set unavailable check
      */
     isAvailableRunMainEngine() {
         var _a;
