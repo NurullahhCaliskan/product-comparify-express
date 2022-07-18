@@ -76,5 +76,22 @@ class WebsiteRepository {
             return yield ((_a = database_service_1.collections.websitesModel) === null || _a === void 0 ? void 0 : _a.findOne({ url: url }));
         });
     }
+    /**
+     * get User websites relations
+     * @return unique website list
+     */
+    getPropertyByUrl(match, project) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            let response = yield ((_a = database_service_1.collections.websitesModel) === null || _a === void 0 ? void 0 : _a.aggregate([
+                { $match: match },
+                { $project: project },
+            ]).toArray());
+            if (response && response.length > 0) {
+                return response[0];
+            }
+            return null;
+        });
+    }
 }
 exports.default = WebsiteRepository;

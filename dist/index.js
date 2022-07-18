@@ -51,10 +51,10 @@ const logger_middleware_1 = __importDefault(require("./logger.middleware"));
 const morgan_1 = __importDefault(require("morgan"));
 const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
 const engineHistoryModel_1 = __importDefault(require("./model/engineHistoryModel"));
-const dayUtility_1 = require("./utility/dayUtility");
 const queueProductEngine_1 = __importDefault(require("./engine/queueProductEngine"));
 const storeService_1 = __importDefault(require("./service/storeService"));
 const lodash_1 = require("lodash");
+const websiteService_1 = __importDefault(require("./service/websiteService"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 function loadDb() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -76,6 +76,8 @@ function loadDb() {
             database_service_1.collections.productPriceHistoryModel = db.collection("product-price-history");
             database_service_1.collections.productHistoryCrawlerQueueModel = db.collection("product-history-crawler-queue");
             database_service_1.collections.enginePermissionModel = db.collection("engine-permission");
+            database_service_1.collections.productMailHistoryModel = db.collection("product-mail-history");
+            database_service_1.collections.currency = db.collection("currency");
             console.log('success load db2');
         }
         catch (e) {
@@ -154,13 +156,20 @@ app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* 
     return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
 }));
 app.get('/query/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    console.log("query/test");
-    let yesterdayMidnight = (0, dayUtility_1.getYesterdayMidnight)();
-    let findJson = { $and: [{ collection: "product-history-crawler-queue" }, { status: 1 }, { last_run_time: { $gte: yesterdayMidnight } }] };
-    let response = yield ((_a = database_service_1.collections.enginePermissionModel) === null || _a === void 0 ? void 0 : _a.find(findJson).toArray());
-    console.log(response);
-    return res.send(JSON.stringify(response));
+    //let requestOptions = {
+    //    method: 'GET',
+    //    redirect: 'follow',
+    //    headers: { "apikey":process.env.APILAYER_API_KEY }
+    //};
+    //
+    //let response
+    //// @ts-ignore
+    //response = await axios.get("https://api.apilayer.com/exchangerates_data/latest?base=usd", requestOptions)
+    //
+    //return res.send(JSON.stringify(response.data.rates));
+    let websiteService = new websiteService_1.default();
+    let data = yield websiteService.getPropertyByUrl({ url: "https://partakefoods.com" }, { "cart.currency": 1 });
+    return res.send(JSON.stringify(data));
 }));
 exports.default = app.listen(port, () => {
     console.log(`[server]: Test9 Server is running at https://localhost:${port}`);

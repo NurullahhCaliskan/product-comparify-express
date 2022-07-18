@@ -11,4 +11,6 @@ export let collections: {
     productPriceHistoryModel?: mongoDB.Collection
     productHistoryCrawlerQueueModel?: mongoDB.Collection
     enginePermissionModel?: mongoDB.Collection
+    productMailHistoryModel?: mongoDB.Collection
+    currency?: mongoDB.Collection
 } = {}

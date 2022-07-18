@@ -6,12 +6,15 @@ import PriceCollector from './priceCollector';
 import AlarmService from './alarmService';
 import { arrayIsEmpty } from '../utility/arrayUtility';
 import MailService from '../mail/mailService';
-import { EVERY_SECOND, EVERY_DAY_AT_MIDNIGHT, EVERY_TEN_SECOND, GET_MAIN_SCHEDULED_AS_SECOND } from '../utility/cronUtility';
+import { GET_MAIN_SCHEDULED_AS_SECOND } from '../utility/cronUtility';
 import EngineHistoryService from '../service/engineHistoryService';
 import EngineHistoryModel from '../model/engineHistoryModel';
 import ProductPriceHistoryService from '../service/productPriceHistoryService';
 import EnginePermissionService from '../service/enginePermissionService';
 import StoreModel from '../model/storeModel';
+import ProductMailHistoryService from '../service/productMailHistoryService';
+import ProductMailHistoryModel from '../model/productMailHistoryModel';
+import CurrencyService from '../service/currencyService';
 
 
 export default class Engine {
@@ -62,6 +65,13 @@ export default class Engine {
         let userWebsitesRelationService = new StoreWebsitesRelationService();
         let websiteService = new WebsiteService();
         let productHistoryService = new ProductHistoryService();
+        let currencyService = new CurrencyService();
+        if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
+            await currencyService.saveCurrenciesByApi();
+
+        }
+
+        await currencyService.refreshCurrencyList()
 
         await productHistoryService.removeTodayProducts();
 
@@ -86,6 +96,7 @@ export default class Engine {
         let productPriceHistoryService = new ProductPriceHistoryService();
         let websiteService = new WebsiteService();
         let alarmService = new AlarmService();
+        let productMailHistoryService = new ProductMailHistoryService();
 
         let storesWhichSendingAlarmList = [] as StoreModel[];
         let storeWebsitesRelationList = await storeWebsitesRelationService.getUserWebsitesRelations();
@@ -122,6 +133,13 @@ export default class Engine {
         for (const storeModel of storesWhichSendingAlarmList) {
             let mailService = new MailService();
             await mailService.sendMail(storeModel);
+
+            // @ts-ignore
+            for (const cachedAlarm of storeModel.cachedAlarm) {
+                let productMailHistoryModel = new ProductMailHistoryModel(storeModel.id, cachedAlarm.website, cachedAlarm.url, cachedAlarm.newValue, cachedAlarm.oldValue, cachedAlarm.priceChangeRate, cachedAlarm.productTitle, cachedAlarm.src, cachedAlarm.currency, new Date, storeModel.selectedMail,cachedAlarm.newValueAsUsd,cachedAlarm.oldValueAsUsd );
+
+                await productMailHistoryService.saveProductMailHistory(productMailHistoryModel);
+            }
         }
     }
 

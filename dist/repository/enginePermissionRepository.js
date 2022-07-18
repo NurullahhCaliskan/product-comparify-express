@@ -20,14 +20,14 @@ class EnginePermissionRepository {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let yesterdayMidnight = (0, dayUtility_1.getYesterdayMidnight)();
-            let findJson = { $and: [{ collection: "product-history-crawler-queue" }, { status: 1 }, { last_run_time: { $gte: yesterdayMidnight } }] };
+            let findJson = { $and: [{ collection: 'product-history-crawler-queue' }, { status: 1 }, { last_run_time: { $gte: yesterdayMidnight } }] };
             let response = yield ((_a = database_service_1.collections.enginePermissionModel) === null || _a === void 0 ? void 0 : _a.find(findJson).toArray());
             return response.length <= 0;
         });
     }
     setAvailableQueueEngine() {
         return __awaiter(this, void 0, void 0, function* () {
-            let query = { collection: "product-history-crawler-queue" };
+            let query = { collection: 'product-history-crawler-queue' };
             let newRecord = { $set: { status: 0, last_run_time: new Date() } };
             // @ts-ignore
             yield database_service_1.collections.enginePermissionModel.updateOne(query, newRecord);
@@ -35,7 +35,7 @@ class EnginePermissionRepository {
     }
     setUnavailableQueueEngine() {
         return __awaiter(this, void 0, void 0, function* () {
-            let query = { collection: "product-history-crawler-queue" };
+            let query = { collection: 'product-history-crawler-queue' };
             let newRecord = { $set: { status: 1, last_run_time: new Date() } };
             // @ts-ignore
             yield database_service_1.collections.enginePermissionModel.updateOne(query, newRecord);
@@ -48,14 +48,14 @@ class EnginePermissionRepository {
     isAvailableRunMainEngine() {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            let findJson = { $and: [{ collection: "product-history-main" }, { status: 1 }] };
+            let findJson = { $and: [{ collection: 'product-history-main' }, { status: 1 }] };
             let response = yield ((_a = database_service_1.collections.enginePermissionModel) === null || _a === void 0 ? void 0 : _a.find(findJson).toArray());
             return response.length <= 0;
         });
     }
     setAvailableMainEngine() {
         return __awaiter(this, void 0, void 0, function* () {
-            let query = { collection: "product-history-main" };
+            let query = { collection: 'product-history-main' };
             let newRecord = { $set: { status: 0, last_run_time: new Date() } };
             // @ts-ignore
             yield database_service_1.collections.enginePermissionModel.updateOne(query, newRecord);
@@ -63,7 +63,7 @@ class EnginePermissionRepository {
     }
     setUnavailableMainEngine() {
         return __awaiter(this, void 0, void 0, function* () {
-            let query = { collection: "product-history-main" };
+            let query = { collection: 'product-history-main' };
             let newRecord = { $set: { status: 1, last_run_time: new Date() } };
             // @ts-ignore
             yield database_service_1.collections.enginePermissionModel.updateOne(query, newRecord);

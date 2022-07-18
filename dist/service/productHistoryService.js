@@ -16,6 +16,8 @@ const axios_1 = __importDefault(require("axios"));
 const productHistoryRepository_1 = __importDefault(require("../repository/productHistoryRepository"));
 const productPriceHistoryService_1 = __importDefault(require("./productPriceHistoryService"));
 const productPriceHistoryModel_1 = __importDefault(require("../model/productPriceHistoryModel"));
+const websiteService_1 = __importDefault(require("./websiteService"));
+const currencyUtility_1 = require("../utility/currencyUtility");
 class ProductHistoryService {
     /**
      * save product history
@@ -26,6 +28,10 @@ class ProductHistoryService {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryRepository = new productHistoryRepository_1.default();
             let productPriceHistoryService = new productPriceHistoryService_1.default();
+            let websiteService = new websiteService_1.default();
+            let websiteEntity = yield websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
+            console.log(websiteEntity);
+            let currencyRate = (0, currencyUtility_1.getCurrencyRateCorrespondUsd)(websiteEntity);
             let url = website.url;
             let collections = website.collection;
             let products = [];
@@ -49,7 +55,8 @@ class ProductHistoryService {
                                 product.collection = [collection.handle];
                                 let date = new Date();
                                 //for test yesterday
-                                //date.setDate(date.getDate() - 1);
+                                // @ts-ignore
+                                date.setDate(date.getDate() - process.env.CRAWL_MINUS_TODAY);
                                 product.created_date_time = date;
                                 // @ts-ignore
                                 product.url = url + '/collections/' + collection.handle + '/products/' + product.handle;
@@ -69,6 +76,8 @@ class ProductHistoryService {
                                         if (variant.compare_at_price) {
                                             variant.compare_at_price = parseFloat(variant.compare_at_price);
                                         }
+                                        variant.compare_at_price_usd = Number((variant.price / currencyRate).toFixed(2));
+                                        variant.parent_title = product.title;
                                         if (variant.created_at) {
                                             variant.created_at = new Date(variant.created_at);
                                         }

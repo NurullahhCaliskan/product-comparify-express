@@ -25,6 +25,9 @@ const engineHistoryService_1 = __importDefault(require("../service/engineHistory
 const engineHistoryModel_1 = __importDefault(require("../model/engineHistoryModel"));
 const productPriceHistoryService_1 = __importDefault(require("../service/productPriceHistoryService"));
 const enginePermissionService_1 = __importDefault(require("../service/enginePermissionService"));
+const productMailHistoryService_1 = __importDefault(require("../service/productMailHistoryService"));
+const productMailHistoryModel_1 = __importDefault(require("../model/productMailHistoryModel"));
+const currencyService_1 = __importDefault(require("../service/currencyService"));
 class Engine {
     startEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
@@ -41,11 +44,11 @@ class Engine {
                 console.log('start engine1');
                 try {
                     let engineHistoryService = new engineHistoryService_1.default();
-                    let engineHistoryModelStart = new engineHistoryModel_1.default(new Date(), "Start Run Engine");
+                    let engineHistoryModelStart = new engineHistoryModel_1.default(new Date(), 'Start Run Engine');
                     yield engineHistoryService.saveEngineHistory(engineHistoryModelStart);
                     yield engine.collectAllProducts();
                     yield engine.prepareAlarmToSendMail();
-                    let engineHistoryModelEnd = new engineHistoryModel_1.default(new Date(), "End Run Engine");
+                    let engineHistoryModelEnd = new engineHistoryModel_1.default(new Date(), 'End Run Engine');
                     yield engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
                 }
                 catch (e) {
@@ -63,6 +66,11 @@ class Engine {
             let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
             let websiteService = new websiteService_1.default();
             let productHistoryService = new productHistoryService_1.default();
+            let currencyService = new currencyService_1.default();
+            if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
+                yield currencyService.saveCurrenciesByApi();
+            }
+            yield currencyService.refreshCurrencyList();
             yield productHistoryService.removeTodayProducts();
             yield this.syncWebsites();
             //get websites for collect data
@@ -75,12 +83,13 @@ class Engine {
     }
     prepareAlarmToSendMail() {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("prepareAlarmToSendMail");
+            console.log('prepareAlarmToSendMail');
             let storeWebsitesRelationService = new storeWebsitesRelationService_1.default();
             let productHistoryService = new productHistoryService_1.default();
             let productPriceHistoryService = new productPriceHistoryService_1.default();
             let websiteService = new websiteService_1.default();
             let alarmService = new alarmService_1.default();
+            let productMailHistoryService = new productMailHistoryService_1.default();
             let storesWhichSendingAlarmList = [];
             let storeWebsitesRelationList = yield storeWebsitesRelationService.getUserWebsitesRelations();
             let websitesList = yield websiteService.getWebsites();
@@ -101,11 +110,16 @@ class Engine {
                 }
             }
             console.log(JSON.stringify(storesWhichSendingAlarmList));
-            console.log("send mail to users");
+            console.log('send mail to users');
             console.log(storesWhichSendingAlarmList.length);
             for (const storeModel of storesWhichSendingAlarmList) {
                 let mailService = new mailService_1.default();
                 yield mailService.sendMail(storeModel);
+                // @ts-ignore
+                for (const cachedAlarm of storeModel.cachedAlarm) {
+                    let productMailHistoryModel = new productMailHistoryModel_1.default(storeModel.id, cachedAlarm.website, cachedAlarm.url, cachedAlarm.newValue, cachedAlarm.oldValue, cachedAlarm.priceChangeRate, cachedAlarm.productTitle, cachedAlarm.src, cachedAlarm.currency, new Date, storeModel.selectedMail, cachedAlarm.newValueAsUsd, cachedAlarm.oldValueAsUsd);
+                    yield productMailHistoryService.saveProductMailHistory(productMailHistoryModel);
+                }
             }
         });
     }

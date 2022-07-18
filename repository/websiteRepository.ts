@@ -1,15 +1,15 @@
-import {collections} from "../database.service";
-import WebsiteModel from "../model/websiteModel";
-import {urlFormatter} from "../utility/stringUtility";
+import { collections } from '../database.service';
+import WebsiteModel from '../model/websiteModel';
+import { urlFormatter } from '../utility/stringUtility';
 
 export default class WebsiteRepository {
 
     async upsertWebSitesAllCollections(url: string, collection: object) {
-        url = urlFormatter(url)
-        let query = {url: url};
-        let newRecord = {$set: {url: url, collection: collection}};
+        url = urlFormatter(url);
+        let query = { url: url };
+        let newRecord = { $set: { url: url, collection: collection } };
         // @ts-ignore
-        await collections.websitesModel.updateOne(query, newRecord, {upsert: true});
+        await collections.websitesModel.updateOne(query, newRecord, { upsert: true });
     }
 
     async upsertWebSitesFavicon(url: string, faviconUrl: string | null) {
@@ -58,7 +58,26 @@ export default class WebsiteRepository {
      */
     async getWebsiteByUrl(url: string): Promise<WebsiteModel> {
 
-        console.log(url)
-        return await collections.websitesModel?.findOne({url: url}) as WebsiteModel;
+        console.log(url);
+        return await collections.websitesModel?.findOne({ url: url }) as WebsiteModel;
+    }
+
+    /**
+     * get User websites relations
+     * @return unique website list
+     */
+    async getPropertyByUrl(match: object, project: object): Promise<WebsiteModel | null> {
+
+        let response = await collections.websitesModel?.aggregate([
+            { $match: match },
+            { $project: project },
+        ]).toArray() as WebsiteModel[];
+
+        if (response && response.length > 0) {
+
+            return response[0];
+        }
+
+        return null;
     }
 }

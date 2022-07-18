@@ -4,6 +4,8 @@ import ProductHistoryRepository from '../repository/productHistoryRepository';
 import ProductHistoryModel from '../model/productHistoryModel';
 import ProductPriceHistoryService from './productPriceHistoryService';
 import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
+import WebsiteService from './websiteService';
+import { getCurrencyRateCorrespondUsd } from '../utility/currencyUtility';
 
 export default class ProductHistoryService {
 
@@ -15,6 +17,11 @@ export default class ProductHistoryService {
     async saveProductsFromWebByUrl(website: WebsiteModel) {
         let productHistoryRepository = new ProductHistoryRepository();
         let productPriceHistoryService = new ProductPriceHistoryService();
+        let websiteService = new WebsiteService();
+        let websiteEntity = await websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
+
+        console.log(websiteEntity);
+        let currencyRate = getCurrencyRateCorrespondUsd(websiteEntity);
 
         let url = website.url;
         let collections = website.collection;
@@ -46,7 +53,8 @@ export default class ProductHistoryService {
                             let date = new Date();
 
                             //for test yesterday
-                            //date.setDate(date.getDate() - 1);
+                            // @ts-ignore
+                            date.setDate(date.getDate() - process.env.CRAWL_MINUS_TODAY);
 
                             product.created_date_time = date;
                             // @ts-ignore
@@ -72,6 +80,9 @@ export default class ProductHistoryService {
 
                                         variant.compare_at_price = parseFloat(variant.compare_at_price);
                                     }
+
+                                    variant.compare_at_price_usd = Number((variant.price / currencyRate).toFixed(2));
+                                    variant.parent_title = product.title
 
                                     if (variant.created_at) {
 

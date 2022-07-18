@@ -62,6 +62,11 @@ export default class ProductPriceHistoryRepository {
         let end = new Date();
         end.setHours(23, 59, 59, 999);
 
+
+        // @ts-ignore
+        start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
+        // @ts-ignore
+        end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
         await collections.productPriceHistoryModel?.deleteMany({ created_date_time: { $gte: start, $lt: end } });
 
     }

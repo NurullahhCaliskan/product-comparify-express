@@ -19,8 +19,8 @@ export default class AlarmService {
                 newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => priceRateCoupleEntity.priceRate > entity.value));
 
             }
-            if (priceRateCoupleEntity.priceRate < 0) {
-                newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => priceRateCoupleEntity.priceRate < entity.value));
+            else if (priceRateCoupleEntity.priceRate < 0) {
+                newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => -1*priceRateCoupleEntity.priceRate > entity.value));
             }
 
             if (newUserWebsiteRelationList.length > 0) {
@@ -63,7 +63,7 @@ export default class AlarmService {
                 let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
 
                 // @ts-ignore
-                let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency };
+                let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.parent_title + ' - ' + todayProductVariant.title   , src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency,newValueAsUsd:todayProductVariant.compare_at_price_usd,oldValueAsUsd:yesterdayProductVariant.compare_at_price_usd  };
 
                 storesWhichSendingAlarmList[storeIndex].cachedAlarm?.push(newAlarmJson);
             } else {
@@ -77,7 +77,7 @@ export default class AlarmService {
 
                 console.log(productHistory);
                 // @ts-ignore
-                let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency };
+                let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.parent_title + ' - ' + todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency,newValueAsUsd:todayProductVariant.compare_at_price_usd,oldValueAsUsd:yesterdayProductVariant.compare_at_price_usd };
 
                 let storeModel = await storeService.getStoreByStoreId(storeId);
 

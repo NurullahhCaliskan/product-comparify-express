@@ -93,5 +93,11 @@ class WebsiteService {
             return result;
         });
     }
+    getPropertyByUrl(url, project) {
+        return __awaiter(this, void 0, void 0, function* () {
+            let websiteRepository = new websiteRepository_1.default();
+            return yield websiteRepository.getPropertyByUrl(url, project);
+        });
+    }
 }
 exports.default = WebsiteService;

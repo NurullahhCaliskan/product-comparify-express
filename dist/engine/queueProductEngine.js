@@ -41,7 +41,7 @@ class QueueProductEngine {
             if (!(yield enginePermissionService.isAvailableRunQueueEngine())) {
                 return;
             }
-            console.log("start collectQueueProducts");
+            console.log('start collectQueueProducts');
             //set unavailable
             yield enginePermissionService.setUnavailableQueueEngine();
             console.log('start collect queue products');
@@ -54,18 +54,18 @@ class QueueProductEngine {
             for (const website of websites) {
                 let isCrawledToday = yield productHistoryService.isCrawledTodayByWebsite(website.url);
                 if (isCrawledToday) {
-                    console.log("isCrawledToday entered");
+                    console.log('isCrawledToday entered');
                     yield productHistoryCrawlerQueueService.removeProductPricesFromWebByUrl(website.url);
                     continue;
                 }
-                console.log("isCrawledToday not entered");
+                console.log('isCrawledToday not entered');
                 yield productHistoryService.deleteProductsByWebsite(website.url);
                 yield productHistoryService.saveProductsFromWebByUrl(website);
                 yield productHistoryCrawlerQueueService.removeProductPricesFromWebByUrl(website.url);
             }
             //set available
             yield enginePermissionService.setAvailableQueueEngine();
-            console.log("end collectQueueProducts");
+            console.log('end collectQueueProducts');
         });
     }
 }

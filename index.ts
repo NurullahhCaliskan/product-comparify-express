@@ -26,6 +26,8 @@ import EnginePermissionModel from "./model/enginePermissionModel";
 import QueueProductEngine from "./engine/queueProductEngine";
 import StoreService from "./service/storeService";
 import {parseInt} from "lodash";
+import axios from 'axios';
+import WebsiteService from './service/websiteService';
 
 dotenv.config({path: `.env.${process.env.NODE_ENV}`});
 
@@ -52,6 +54,8 @@ async function loadDb() {
         collections.productPriceHistoryModel = db.collection("product-price-history");
         collections.productHistoryCrawlerQueueModel = db.collection("product-history-crawler-queue");
         collections.enginePermissionModel = db.collection("engine-permission");
+        collections.productMailHistoryModel = db.collection("product-mail-history");
+        collections.currency = db.collection("currency");
 
         console.log('success load db2')
     } catch (e) {
@@ -158,16 +162,22 @@ app.get('/mail/test', async (req: Request, res: Response) => {
 });
 
 app.get('/query/test', async (req: Request, res: Response) => {
-    console.log("query/test")
 
-    let yesterdayMidnight = getYesterdayMidnight()
+    //let requestOptions = {
+    //    method: 'GET',
+    //    redirect: 'follow',
+    //    headers: { "apikey":process.env.APILAYER_API_KEY }
+    //};
+//
+    //let response
+    //// @ts-ignore
+    //response = await axios.get("https://api.apilayer.com/exchangerates_data/latest?base=usd", requestOptions)
+//
+    //return res.send(JSON.stringify(response.data.rates));
 
-    let findJson = {$and: [{collection: "product-history-crawler-queue"}, {status: 1}, {last_run_time: {$gte: yesterdayMidnight}}]}
-
-    let response = await collections.enginePermissionModel?.find(findJson).toArray() as EnginePermissionModel[]
-
-    console.log(response)
-    return res.send(JSON.stringify(response));
+    let websiteService = new WebsiteService()
+    let data =await websiteService.getPropertyByUrl({url:"https://partakefoods.com"},{"cart.currency": 1})
+    return res.send(JSON.stringify(data));
 });
 
 export default app.listen(port, () => {

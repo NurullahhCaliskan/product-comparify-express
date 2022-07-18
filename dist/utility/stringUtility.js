@@ -6,9 +6,9 @@ function urlFormatter(value) {
         return value;
     }
     let formattedValue = value.replace(/\s/g, '');
-    formattedValue = formattedValue.replace(/([^:]\/)\/+/g, "$1");
+    formattedValue = formattedValue.replace(/([^:]\/)\/+/g, '$1');
     let lastLetter = formattedValue.charAt(formattedValue.length - 1);
-    if (lastLetter === "/") {
+    if (lastLetter === '/') {
         formattedValue = formattedValue.substring(0, formattedValue.length - 1);
     }
     return formattedValue;

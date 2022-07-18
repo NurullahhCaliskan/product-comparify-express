@@ -39,6 +39,10 @@ class ProductHistoryRepository {
             start.setHours(0, 0, 0, 0);
             let end = new Date();
             end.setHours(23, 59, 59, 999);
+            // @ts-ignore
+            start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
+            // @ts-ignore
+            end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
             yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ created_date_time: { $gte: start, $lt: end } }));
         });
     }
@@ -66,7 +70,7 @@ class ProductHistoryRepository {
             let end = new Date();
             end.setHours(23, 59, 59, 999);
             let result = yield ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.findOne({ created_date_time: { $gte: start, $lt: end }, website: website }));
-            console.log("result");
+            console.log('result');
             console.log(result);
             console.log(!lodash_1.default.isEmpty(result));
             return !lodash_1.default.isEmpty(result);

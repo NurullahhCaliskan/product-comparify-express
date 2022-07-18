@@ -84,4 +84,10 @@ export default class WebsiteService {
         return result;
     }
 
+    async getPropertyByUrl(url:object,project:object) :Promise<WebsiteModel| null>{
+        let websiteRepository = new WebsiteRepository()
+        return await websiteRepository.getPropertyByUrl(url,project)
+    }
+
+
 }

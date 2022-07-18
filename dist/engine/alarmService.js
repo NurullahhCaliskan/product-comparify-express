@@ -24,8 +24,8 @@ class AlarmService {
                 if (priceRateCoupleEntity.priceRate > 0) {
                     newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => priceRateCoupleEntity.priceRate > entity.value));
                 }
-                if (priceRateCoupleEntity.priceRate < 0) {
-                    newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => priceRateCoupleEntity.priceRate < entity.value));
+                else if (priceRateCoupleEntity.priceRate < 0) {
+                    newUserWebsiteRelationList.push(...userWebsiteRelationList.filter(entity => -1 * priceRateCoupleEntity.priceRate > entity.value));
                 }
                 if (newUserWebsiteRelationList.length > 0) {
                     yield AlarmService.mergeUsersWithNewAlarm(usersWhichSendingAlarmList, newUserWebsiteRelationList, priceRateCoupleEntity, yesterdayProduct, todayProduct);
@@ -33,7 +33,7 @@ class AlarmService {
             }
         });
     }
-    static mergeUsersWithNewAlarm(storessWhichSendingAlarmList, userWebsiteRelationList, priceIdCouple, yesterdayProduct, todayProduct) {
+    static mergeUsersWithNewAlarm(storesWhichSendingAlarmList, userWebsiteRelationList, priceIdCouple, yesterdayProduct, todayProduct) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             let websiteService = new websiteService_1.default();
@@ -43,11 +43,11 @@ class AlarmService {
                 let website = userWebsiteRelation.website;
                 let alarmValue = priceIdCouple.priceRate;
                 let storeId = userWebsiteRelation.storeId;
-                let storeIndex = storessWhichSendingAlarmList.findIndex(user => user.id === storeId);
+                let storeIndex = storesWhichSendingAlarmList.findIndex(user => user.id === storeId);
                 //get website currency
                 let websiteService = new websiteService_1.default();
                 let websiteEntity = yield websiteService.getWebsiteByUrl(website);
-                console.log("storeIndex = " + storeIndex + "  UserId = " + storeId);
+                console.log('storeIndex = ' + storeIndex + '  UserId = ' + storeId);
                 //if user exists
                 if (storeIndex > -1) {
                     // @ts-ignore
@@ -56,8 +56,8 @@ class AlarmService {
                     let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id === priceIdCouple.productId);
                     let productHistory = yield productHistoryService.getProductHistoryByProductId(todayProduct.id);
                     // @ts-ignore
-                    let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: (_a = productHistory === null || productHistory === void 0 ? void 0 : productHistory.images[0]) === null || _a === void 0 ? void 0 : _a.src, currency: websiteEntity.cart.currency };
-                    (_b = storessWhichSendingAlarmList[storeIndex].cachedAlarm) === null || _b === void 0 ? void 0 : _b.push(newAlarmJson);
+                    let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.parent_title + ' - ' + todayProductVariant.title, src: (_a = productHistory === null || productHistory === void 0 ? void 0 : productHistory.images[0]) === null || _a === void 0 ? void 0 : _a.src, currency: websiteEntity.cart.currency, newValueAsUsd: todayProductVariant.compare_at_price_usd, oldValueAsUsd: yesterdayProductVariant.compare_at_price_usd };
+                    (_b = storesWhichSendingAlarmList[storeIndex].cachedAlarm) === null || _b === void 0 ? void 0 : _b.push(newAlarmJson);
                 }
                 else {
                     // @ts-ignore
@@ -67,9 +67,9 @@ class AlarmService {
                     let productHistory = yield productHistoryService.getProductHistoryByProductId(todayProduct.id);
                     console.log(productHistory);
                     // @ts-ignore
-                    let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.title, src: (_c = productHistory === null || productHistory === void 0 ? void 0 : productHistory.images[0]) === null || _c === void 0 ? void 0 : _c.src, currency: websiteEntity.cart.currency };
+                    let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.parent_title + ' - ' + todayProductVariant.title, src: (_c = productHistory === null || productHistory === void 0 ? void 0 : productHistory.images[0]) === null || _c === void 0 ? void 0 : _c.src, currency: websiteEntity.cart.currency, newValueAsUsd: todayProductVariant.compare_at_price_usd, oldValueAsUsd: yesterdayProductVariant.compare_at_price_usd };
                     let storeModel = yield storeService.getStoreByStoreId(storeId);
-                    storessWhichSendingAlarmList.push({ id: storeId, cachedAlarm: [newAlarmJson], selectedMail: storeModel.selectedMail });
+                    storesWhichSendingAlarmList.push({ id: storeId, cachedAlarm: [newAlarmJson], selectedMail: storeModel.selectedMail });
                 }
             }
         });
