@@ -22,6 +22,9 @@ export default class Engine {
     startEngine() {
         let enginePermissionService = new EnginePermissionService();
         let engine = new Engine();
+        let engineHistoryService = new EngineHistoryService();
+
+        let startDate = new Date();
 
         // @ts-ignore
         const job = schedule.scheduleJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
@@ -37,17 +40,9 @@ export default class Engine {
             console.log('start engine1');
 
             try {
-                let engineHistoryService = new EngineHistoryService();
-
-                let engineHistoryModelStart = new EngineHistoryModel(new Date(), 'Start Run Engine');
-                await engineHistoryService.saveEngineHistory(engineHistoryModelStart);
-
                 await engine.collectAllProducts();
 
                 await engine.prepareAlarmToSendMail();
-
-                let engineHistoryModelEnd = new EngineHistoryModel(new Date(), 'End Run Engine');
-                await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
 
             } catch (e) {
                 console.log(e);
@@ -56,6 +51,9 @@ export default class Engine {
             console.log('end engine');
             //set available
             await enginePermissionService.setAvailableMainEngine();
+
+            let engineHistoryModelEnd = new EngineHistoryModel(startDate, new Date());
+            await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
         });
     }
 

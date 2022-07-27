@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class EngineHistoryModel {
-    constructor(createDateTime, result, _id) {
+    constructor(createDateTime, endDateTime, _id) {
         this.createDateTime = createDateTime;
-        this.result = result;
+        this.endDateTime = endDateTime;
         this._id = _id;
     }
 }

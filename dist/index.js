@@ -121,14 +121,13 @@ app.get('/test', initVerify, (req, res) => {
 });
 app.get('/engine/start', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let engine = new engine_1.default();
+    let startDate = new Date();
     console.log('start engine1');
     try {
         let engineHistoryService = new engineHistoryService_1.default();
-        let engineHistoryModelStart = new engineHistoryModel_1.default(new Date(), "Start Run Engine");
-        yield engineHistoryService.saveEngineHistory(engineHistoryModelStart);
         yield engine.collectAllProducts();
         yield engine.prepareAlarmToSendMail();
-        let engineHistoryModelEnd = new engineHistoryModel_1.default(new Date(), "End Run Engine");
+        let engineHistoryModelEnd = new engineHistoryModel_1.default(startDate, new Date());
         yield engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
     }
     catch (e) {

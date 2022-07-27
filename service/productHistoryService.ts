@@ -63,6 +63,9 @@ export default class ProductHistoryService {
                                 product.published_at = new Date(product.published_at);
                                 product.created_at = new Date(product.created_at);
                                 product.updated_at = new Date(product.updated_at);
+                                // @ts-ignore
+                                product.currency = websiteEntity.cart.currency
+
                             } catch (e) {
 
                             }
@@ -116,7 +119,8 @@ export default class ProductHistoryService {
 
         //convert product to product prices
         products.forEach(product => {
-            productPrices.push(new ProductPriceHistoryModel(product.id, product.website, product.created_date_time, product.variants));
+            // @ts-ignore
+            productPrices.push(new ProductPriceHistoryModel(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
         });
 
         await productPriceHistoryService.saveProductPriceHistory(productPrices);

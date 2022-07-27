@@ -62,6 +62,8 @@ class ProductHistoryService {
                                     product.published_at = new Date(product.published_at);
                                     product.created_at = new Date(product.created_at);
                                     product.updated_at = new Date(product.updated_at);
+                                    // @ts-ignore
+                                    product.currency = websiteEntity.cart.currency;
                                 }
                                 catch (e) {
                                 }
@@ -89,13 +91,11 @@ class ProductHistoryService {
                                 product.search = this.prepareSearchColumn(product);
                             });
                             this.mergeProducts(products, productResponse.products);
-                            console.log('1');
                         }
                         pagination++;
                     }
                     catch (e) {
                         loopContinue = false;
-                        console.log(e);
                     }
                 }
             }
@@ -103,7 +103,8 @@ class ProductHistoryService {
             let productPrices = [];
             //convert product to product prices
             products.forEach(product => {
-                productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, product.created_date_time, product.variants));
+                // @ts-ignore
+                productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
             });
             yield productPriceHistoryService.saveProductPriceHistory(productPrices);
         });

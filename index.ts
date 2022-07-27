@@ -103,21 +103,19 @@ app.get('/test', initVerify, (req: Request, res: Response) => {
 app.get('/engine/start', async (req: Request, res: Response) => {
     let engine = new Engine();
 
+    let startDate = new Date();
     console.log('start engine1')
 
     try {
         let engineHistoryService = new EngineHistoryService()
 
-        let engineHistoryModelStart = new EngineHistoryModel(new Date(), "Start Run Engine")
-        await engineHistoryService.saveEngineHistory(engineHistoryModelStart)
 
         await engine.collectAllProducts()
 
         await engine.prepareAlarmToSendMail()
 
-        let engineHistoryModelEnd = new EngineHistoryModel(new Date(), "End Run Engine")
-        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd)
-
+        let engineHistoryModelEnd = new EngineHistoryModel(startDate, new Date());
+        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
     } catch (e) {
         console.log(e)
     }

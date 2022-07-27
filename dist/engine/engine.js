@@ -32,6 +32,8 @@ class Engine {
     startEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
         let engine = new Engine();
+        let engineHistoryService = new engineHistoryService_1.default();
+        let startDate = new Date();
         // @ts-ignore
         const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
@@ -43,13 +45,8 @@ class Engine {
                 yield enginePermissionService.setUnavailableMainEngine();
                 console.log('start engine1');
                 try {
-                    let engineHistoryService = new engineHistoryService_1.default();
-                    let engineHistoryModelStart = new engineHistoryModel_1.default(new Date(), 'Start Run Engine');
-                    yield engineHistoryService.saveEngineHistory(engineHistoryModelStart);
                     yield engine.collectAllProducts();
                     yield engine.prepareAlarmToSendMail();
-                    let engineHistoryModelEnd = new engineHistoryModel_1.default(new Date(), 'End Run Engine');
-                    yield engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
                 }
                 catch (e) {
                     console.log(e);
@@ -57,6 +54,8 @@ class Engine {
                 console.log('end engine');
                 //set available
                 yield enginePermissionService.setAvailableMainEngine();
+                let engineHistoryModelEnd = new engineHistoryModel_1.default(startDate, new Date());
+                yield engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
             });
         });
     }
