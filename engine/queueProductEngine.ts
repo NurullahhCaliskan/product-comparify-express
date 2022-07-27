@@ -54,14 +54,14 @@ export default class QueueProductEngine {
 
             if (isCrawledToday) {
                 console.log('isCrawledToday entered');
-                await productHistoryCrawlerQueueService.removeProductPricesFromWebByUrl(website.url);
+                await productHistoryCrawlerQueueService.removeProductQueueByUrl(website.url);
                 continue;
             }
             console.log('isCrawledToday not entered');
             await productHistoryService.deleteProductsByWebsite(website.url);
             await productHistoryService.saveProductsFromWebByUrl(website);
 
-            await productHistoryCrawlerQueueService.removeProductPricesFromWebByUrl(website.url);
+            await productHistoryCrawlerQueueService.removeProductQueueByUrl(website.url);
         }
 
         //set available

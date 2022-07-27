@@ -18,10 +18,10 @@ class ProductHistoryCrawlerQueueService {
      * Remoce Product Price from web by url
      * @param website
      */
-    removeProductPricesFromWebByUrl(website) {
+    removeProductQueueByUrl(website) {
         return __awaiter(this, void 0, void 0, function* () {
             let productHistoryCrawlerQueueRepository = new productHistoryCrawlerQueueRepository_1.default();
-            yield productHistoryCrawlerQueueRepository.removeProductPricesFromWebByUrl(website);
+            yield productHistoryCrawlerQueueRepository.removeProductQueueByUrl(website);
         });
     }
 }

@@ -89,11 +89,13 @@ class ProductHistoryService {
                                 product.search = this.prepareSearchColumn(product);
                             });
                             this.mergeProducts(products, productResponse.products);
+                            console.log('1');
                         }
                         pagination++;
                     }
                     catch (e) {
                         loopContinue = false;
+                        console.log(e);
                     }
                 }
             }

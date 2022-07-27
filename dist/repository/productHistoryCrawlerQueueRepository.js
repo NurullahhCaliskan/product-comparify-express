@@ -36,7 +36,7 @@ class ProductHistoryCrawlerQueueRepository {
      * Remoce Product Price from web by url
      * @param website
      */
-    removeProductPricesFromWebByUrl(product) {
+    removeProductQueueByUrl(product) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             yield ((_a = database_service_1.collections.productHistoryCrawlerQueueModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ website: product }));

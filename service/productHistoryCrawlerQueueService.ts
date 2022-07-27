@@ -6,9 +6,9 @@ export default class ProductHistoryCrawlerQueueService {
      * Remoce Product Price from web by url
      * @param website
      */
-    async removeProductPricesFromWebByUrl(website: string) {
+    async removeProductQueueByUrl(website: string) {
         let productHistoryCrawlerQueueRepository = new ProductHistoryCrawlerQueueRepository();
-        await productHistoryCrawlerQueueRepository.removeProductPricesFromWebByUrl(website);
+        await productHistoryCrawlerQueueRepository.removeProductQueueByUrl(website);
     }
 
 }

@@ -28,7 +28,7 @@ export default class ProductHistoryCrawlerQueueRepository {
      * Remoce Product Price from web by url
      * @param website
      */
-    async removeProductPricesFromWebByUrl(product: string) {
+    async removeProductQueueByUrl(product: string) {
         await collections.productHistoryCrawlerQueueModel?.deleteMany({ website: product });
     }
 

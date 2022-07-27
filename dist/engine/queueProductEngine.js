@@ -52,16 +52,18 @@ class QueueProductEngine {
             //get websites for collect data
             let websites = yield websiteService.getWebsitesFromQueue();
             for (const website of websites) {
+                console.log(website);
                 let isCrawledToday = yield productHistoryService.isCrawledTodayByWebsite(website.url);
                 if (isCrawledToday) {
                     console.log('isCrawledToday entered');
-                    yield productHistoryCrawlerQueueService.removeProductPricesFromWebByUrl(website.url);
+                    yield productHistoryCrawlerQueueService.removeProductQueueByUrl(website.url);
                     continue;
                 }
                 console.log('isCrawledToday not entered');
                 yield productHistoryService.deleteProductsByWebsite(website.url);
+                console.log("start to save url");
                 yield productHistoryService.saveProductsFromWebByUrl(website);
-                yield productHistoryCrawlerQueueService.removeProductPricesFromWebByUrl(website.url);
+                yield productHistoryCrawlerQueueService.removeProductQueueByUrl(website.url);
             }
             //set available
             yield enginePermissionService.setAvailableQueueEngine();
