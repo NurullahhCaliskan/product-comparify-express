@@ -37,8 +37,10 @@ class Engine {
         // @ts-ignore
         const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
+                console.log('start engine');
                 //if no available, exit
                 if (!(yield enginePermissionService.isAvailableRunMainEngine())) {
+                    console.log('engine is not avaible');
                     return;
                 }
                 //set unavailable

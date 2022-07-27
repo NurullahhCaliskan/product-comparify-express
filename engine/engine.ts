@@ -29,8 +29,10 @@ export default class Engine {
         // @ts-ignore
         const job = schedule.scheduleJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
 
+            console.log('start engine')
             //if no available, exit
             if (!(await enginePermissionService.isAvailableRunMainEngine())) {
+                console.log('engine is not avaible')
                 return;
             }
 
