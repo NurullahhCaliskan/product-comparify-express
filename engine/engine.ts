@@ -24,8 +24,6 @@ export default class Engine {
         let engine = new Engine();
         let engineHistoryService = new EngineHistoryService();
 
-        let startDate = new Date();
-
         // @ts-ignore
         const job = schedule.scheduleJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
 
@@ -36,6 +34,7 @@ export default class Engine {
                 return;
             }
 
+            let startDate = new Date();
             //set unavailable
             await enginePermissionService.setUnavailableMainEngine();
 

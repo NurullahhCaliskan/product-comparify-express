@@ -33,7 +33,6 @@ class Engine {
         let enginePermissionService = new enginePermissionService_1.default();
         let engine = new Engine();
         let engineHistoryService = new engineHistoryService_1.default();
-        let startDate = new Date();
         // @ts-ignore
         const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), function () {
             return __awaiter(this, void 0, void 0, function* () {
@@ -43,6 +42,7 @@ class Engine {
                     console.log('engine is not avaible');
                     return;
                 }
+                let startDate = new Date();
                 //set unavailable
                 yield enginePermissionService.setUnavailableMainEngine();
                 console.log('start engine1');

@@ -6,7 +6,7 @@ import ProductPriceHistoryService from './productPriceHistoryService';
 import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 import WebsiteService from './websiteService';
 import { getCurrencyRateCorrespondUsd } from '../utility/currencyUtility';
-
+import sizeof from 'object-sizeof';
 export default class ProductHistoryService {
 
 
@@ -15,6 +15,10 @@ export default class ProductHistoryService {
      * @param website
      */
     async saveProductsFromWebByUrl(website: WebsiteModel) {
+        console.log("sizeof(12345)")
+        console.log(sizeof(12345))
+
+
         let productHistoryRepository = new ProductHistoryRepository();
         let productPriceHistoryService = new ProductPriceHistoryService();
         let websiteService = new WebsiteService();
@@ -122,6 +126,13 @@ export default class ProductHistoryService {
             // @ts-ignore
             productPrices.push(new ProductPriceHistoryModel(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
         });
+
+
+        console.log("products")
+        console.log(sizeof(products))
+
+        console.log("productPrices")
+        console.log(sizeof(productPrices))
 
         await productPriceHistoryService.saveProductPriceHistory(productPrices);
 
