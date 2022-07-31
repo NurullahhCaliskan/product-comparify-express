@@ -108,30 +108,22 @@ export default class Engine {
             if (arrayIsEmpty(yesterdayProductList) || arrayIsEmpty(todayProductList)) {
                 continue;
             }
-            console.log(yesterdayProductList[0])
-            console.log(todayProductList[0])
 
             for (const index in yesterdayProductList) {
                 let priceCollector = new PriceCollector();
 
                 let id = yesterdayProductList[index].id
 
-                let yesterdayEqualProductList = yesterdayProductList.filter(product => product.id === id)
+                let todayEqualProductList = todayProductList.filter(product => product.id === id)
 
-                console.log(yesterdayEqualProductList)
                 //if not exists, this product not exist yesterday on db
-                if (!yesterdayEqualProductList || yesterdayEqualProductList.length === 0 ){
+                if (!todayEqualProductList || todayEqualProductList.length === 0 ){
                     continue;
                 }
 
-
-                console.log("giridi")
-
-                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayEqualProductList[0]);
-                console.log(priceIdCouple)
-                console.log(yesterdayEqualProductList)
+                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayEqualProductList[0], yesterdayProductList[index]);
                 //find users which cache product alarm
-                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayEqualProductList[0], todayProductList[index]);
+                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayEqualProductList[0]);
 
             }
         }

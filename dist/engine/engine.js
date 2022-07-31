@@ -101,23 +101,17 @@ class Engine {
                 if ((0, arrayUtility_1.arrayIsEmpty)(yesterdayProductList) || (0, arrayUtility_1.arrayIsEmpty)(todayProductList)) {
                     continue;
                 }
-                console.log(yesterdayProductList[0]);
-                console.log(todayProductList[0]);
                 for (const index in yesterdayProductList) {
                     let priceCollector = new priceCollector_1.default();
                     let id = yesterdayProductList[index].id;
-                    let yesterdayEqualProductList = yesterdayProductList.filter(product => product.id === id);
-                    console.log(yesterdayEqualProductList);
+                    let todayEqualProductList = todayProductList.filter(product => product.id === id);
                     //if not exists, this product not exist yesterday on db
-                    if (!yesterdayEqualProductList || yesterdayEqualProductList.length === 0) {
+                    if (!todayEqualProductList || todayEqualProductList.length === 0) {
                         continue;
                     }
-                    console.log("giridi");
-                    let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayEqualProductList[0]);
-                    console.log(priceIdCouple);
-                    console.log(yesterdayEqualProductList);
+                    let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayEqualProductList[0], yesterdayProductList[index]);
                     //find users which cache product alarm
-                    yield alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayEqualProductList[0], todayProductList[index]);
+                    yield alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayEqualProductList[0]);
                 }
             }
             console.log(JSON.stringify(storesWhichSendingAlarmList));
