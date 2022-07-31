@@ -4,20 +4,20 @@ exports.getTomorrowMidnight = exports.getTodayMidnight = exports.getYesterdayMid
 function getYesterdayMidnight() {
     let date = new Date();
     date.setDate(date.getDate() - 1);
-    date.setHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
     return date;
 }
 exports.getYesterdayMidnight = getYesterdayMidnight;
 function getTodayMidnight() {
     let date = new Date();
-    date.setHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
     return date;
 }
 exports.getTodayMidnight = getTodayMidnight;
 function getTomorrowMidnight() {
     let date = new Date();
     date.setDate(date.getDate() + 1);
-    date.setHours(0, 0, 0, 0);
+    date.setUTCHours(0, 0, 0, 0);
     return date;
 }
 exports.getTomorrowMidnight = getTomorrowMidnight;

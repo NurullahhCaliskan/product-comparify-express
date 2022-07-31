@@ -12,6 +12,8 @@ export default class ProductPriceHistoryRepository {
     async saveProductPricesFromWebByUrl(products: object[]) {
         try {
             if (products.length > 0) {
+                // @ts-ignore
+                await this.removeTodayProductsByWebsite(products[0].website)
                 await collections.productPriceHistoryModel?.insertMany(products);
 
             }
@@ -60,10 +62,10 @@ export default class ProductPriceHistoryRepository {
      */
     async removeTodayProducts() {
         let start = new Date();
-        start.setHours(0, 0, 0, 0);
+        start.setUTCHours(0, 0, 0, 0);
 
         let end = new Date();
-        end.setHours(23, 59, 59, 999);
+        end.setUTCHours(23, 59, 59, 999);
 
 
         // @ts-ignore
@@ -71,6 +73,27 @@ export default class ProductPriceHistoryRepository {
         // @ts-ignore
         end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
         await collections.productPriceHistoryModel?.deleteMany({ created_date_time: { $gte: start, $lt: end } });
+
+    }
+
+    /***
+     * remove Today Products
+     */
+    async removeTodayProductsByWebsite(website:string) {
+        let start = new Date();
+        start.setUTCHours(0, 0, 0, 0);
+
+        let end = new Date();
+        end.setUTCHours(23, 59, 59, 999);
+
+
+        // @ts-ignore
+        start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
+        // @ts-ignore
+        end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
+
+        let findJson = { $and: [{ website: website }, { created_date_time: { $gte: start, $lt: end } }] }
+        await collections.productPriceHistoryModel?.deleteMany(findJson);
 
     }
 }

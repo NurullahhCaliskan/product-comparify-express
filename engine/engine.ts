@@ -72,21 +72,15 @@ export default class Engine {
 
         await currencyService.refreshCurrencyList()
 
-        await productHistoryService.removeTodayProducts();
-
         await this.syncWebsites();
 
         //get websites for collect data
         let websites = await websiteService.getWebsites();
 
         for (const website of websites) {
-
-            await productHistoryService.deleteProductsByWebsite(website.url);
             await productHistoryService.saveProductsFromWebByUrl(website);
-
         }
     }
-
 
     async prepareAlarmToSendMail() {
         console.log('prepareAlarmToSendMail');
@@ -109,18 +103,35 @@ export default class Engine {
             let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
             let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
 
+
             //if today or yesterday product lis is empty, go back.
             if (arrayIsEmpty(yesterdayProductList) || arrayIsEmpty(todayProductList)) {
                 continue;
             }
+            console.log(yesterdayProductList[0])
+            console.log(todayProductList[0])
 
             for (const index in yesterdayProductList) {
                 let priceCollector = new PriceCollector();
 
-                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayProductList[index]);
+                let id = yesterdayProductList[index].id
 
+                let yesterdayEqualProductList = yesterdayProductList.filter(product => product.id === id)
+
+                console.log(yesterdayEqualProductList)
+                //if not exists, this product not exist yesterday on db
+                if (!yesterdayEqualProductList || yesterdayEqualProductList.length === 0 ){
+                    continue;
+                }
+
+
+                console.log("giridi")
+
+                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayProductList[index], yesterdayEqualProductList[0]);
+                console.log(priceIdCouple)
+                console.log(yesterdayEqualProductList)
                 //find users which cache product alarm
-                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayProductList[index]);
+                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayEqualProductList[0], todayProductList[index]);
 
             }
         }
@@ -153,7 +164,6 @@ export default class Engine {
         //upsert collections
         let websiteService = new WebsiteService();
 
-        console.log(uniqueWebsites);
         for (const website of uniqueWebsites) {
             let collectionResponse = await websiteService.getCollectionByWebsiteNameFromWeb(website);
             if (collectionResponse.length > 0) {

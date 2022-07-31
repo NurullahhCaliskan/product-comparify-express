@@ -8,7 +8,6 @@ export default class ProductHistoryModel {
                 public url: string,
                 public title: string,
                 public handle: string,
-                public body_html: string,
                 public published_at: Date,
                 public created_at: Date,
                 public updated_at: Date,

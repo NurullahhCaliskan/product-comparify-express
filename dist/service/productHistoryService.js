@@ -18,7 +18,6 @@ const productPriceHistoryService_1 = __importDefault(require("./productPriceHist
 const productPriceHistoryModel_1 = __importDefault(require("../model/productPriceHistoryModel"));
 const websiteService_1 = __importDefault(require("./websiteService"));
 const currencyUtility_1 = require("../utility/currencyUtility");
-const object_sizeof_1 = __importDefault(require("object-sizeof"));
 class ProductHistoryService {
     /***
      * save product
@@ -26,10 +25,9 @@ class ProductHistoryService {
      */
     saveProductsFromWebByUrl(website) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("sizeof(12345)");
-            console.log((0, object_sizeof_1.default)(12345));
             let productHistoryRepository = new productHistoryRepository_1.default();
             let productPriceHistoryService = new productPriceHistoryService_1.default();
+            let productHistoryService = new ProductHistoryService();
             let websiteService = new websiteService_1.default();
             let websiteEntity = yield websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
             let currencyRate = (0, currencyUtility_1.getCurrencyRateCorrespondUsd)(websiteEntity);
@@ -67,6 +65,7 @@ class ProductHistoryService {
                                     product.updated_at = new Date(product.updated_at);
                                     // @ts-ignore
                                     product.currency = websiteEntity.cart.currency;
+                                    delete product['body_html'];
                                 }
                                 catch (e) {
                                 }
@@ -98,21 +97,18 @@ class ProductHistoryService {
                         pagination++;
                     }
                     catch (e) {
+                        console.log(e);
                         loopContinue = false;
                     }
                 }
             }
-            yield productHistoryRepository.saveProductsFromWebByUrl(products);
             let productPrices = [];
             //convert product to product prices
             products.forEach(product => {
                 // @ts-ignore
                 productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
             });
-            console.log("products");
-            console.log((0, object_sizeof_1.default)(products));
-            console.log("productPrices");
-            console.log((0, object_sizeof_1.default)(productPrices));
+            yield productHistoryRepository.saveProductsFromWebByUrl(products);
             yield productPriceHistoryService.saveProductPriceHistory(productPrices);
         });
     }
@@ -185,9 +181,6 @@ class ProductHistoryService {
         }
         if (product.handle) {
             searchArray.push(product.handle);
-        }
-        if (product.body_html) {
-            searchArray.push(product.body_html);
         }
         if (product.vendor) {
             searchArray.push(product.vendor);

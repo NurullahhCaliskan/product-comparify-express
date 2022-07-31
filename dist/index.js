@@ -117,7 +117,7 @@ app.use((0, morgan_1.default)('combined'), logger_middleware_1.default);
 app.get('/test', initVerify, (req, res) => {
     //logger(req,res)
     console.log('test console');
-    res.send('test4');
+    return res.send('test4');
 });
 app.get('/engine/start', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let engine = new engine_1.default();
@@ -134,7 +134,7 @@ app.get('/engine/start', (req, res) => __awaiter(void 0, void 0, void 0, functio
         console.log(e);
     }
     console.log('end engine1');
-    res.send(JSON.stringify({ result: "success" }));
+    return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
 }));
 app.get('/mail/test', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("mail/test");

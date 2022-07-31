@@ -6,7 +6,7 @@ import ProductPriceHistoryService from './productPriceHistoryService';
 import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 import WebsiteService from './websiteService';
 import { getCurrencyRateCorrespondUsd } from '../utility/currencyUtility';
-import sizeof from 'object-sizeof';
+
 export default class ProductHistoryService {
 
 
@@ -15,12 +15,10 @@ export default class ProductHistoryService {
      * @param website
      */
     async saveProductsFromWebByUrl(website: WebsiteModel) {
-        console.log("sizeof(12345)")
-        console.log(sizeof(12345))
-
 
         let productHistoryRepository = new ProductHistoryRepository();
         let productPriceHistoryService = new ProductPriceHistoryService();
+        let productHistoryService = new ProductHistoryService();
         let websiteService = new WebsiteService();
         let websiteEntity = await websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
 
@@ -70,6 +68,7 @@ export default class ProductHistoryService {
                                 // @ts-ignore
                                 product.currency = websiteEntity.cart.currency
 
+                                delete product['body_html'];
                             } catch (e) {
 
                             }
@@ -112,12 +111,12 @@ export default class ProductHistoryService {
                     }
                     pagination++;
                 } catch (e) {
+                    console.log(e);
                     loopContinue = false;
                 }
             }
         }
 
-        await productHistoryRepository.saveProductsFromWebByUrl(products);
 
         let productPrices: ProductPriceHistoryModel[] = [];
 
@@ -127,14 +126,8 @@ export default class ProductHistoryService {
             productPrices.push(new ProductPriceHistoryModel(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
         });
 
-
-        console.log("products")
-        console.log(sizeof(products))
-
-        console.log("productPrices")
-        console.log(sizeof(productPrices))
-
-        await productPriceHistoryService.saveProductPriceHistory(productPrices);
+            await productHistoryRepository.saveProductsFromWebByUrl(products);
+            await productPriceHistoryService.saveProductPriceHistory(productPrices);
 
     }
 
@@ -207,10 +200,6 @@ export default class ProductHistoryService {
 
         if (product.handle) {
             searchArray.push(product.handle);
-        }
-
-        if (product.body_html) {
-            searchArray.push(product.body_html);
         }
 
         if (product.vendor) {

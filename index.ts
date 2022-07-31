@@ -97,7 +97,7 @@ app.get('/test', initVerify, (req: Request, res: Response) => {
     //logger(req,res)
 
     console.log('test console')
-    res.send('test4');
+    return res.send('test4');
 });
 
 app.get('/engine/start', async (req: Request, res: Response) => {
@@ -108,7 +108,6 @@ app.get('/engine/start', async (req: Request, res: Response) => {
 
     try {
         let engineHistoryService = new EngineHistoryService()
-
 
         await engine.collectAllProducts()
 
@@ -121,7 +120,7 @@ app.get('/engine/start', async (req: Request, res: Response) => {
     }
 
     console.log('end engine1')
-    res.send(JSON.stringify({result: "success"}));
+    return res.send(JSON.stringify({result: "Mail Send Successfully"}));
 });
 
 

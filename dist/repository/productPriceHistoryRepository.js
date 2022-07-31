@@ -22,6 +22,8 @@ class ProductPriceHistoryRepository {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if (products.length > 0) {
+                    // @ts-ignore
+                    yield this.removeTodayProductsByWebsite(products[0].website);
                     yield ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
                 }
             }
@@ -69,14 +71,32 @@ class ProductPriceHistoryRepository {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             let start = new Date();
-            start.setHours(0, 0, 0, 0);
+            start.setUTCHours(0, 0, 0, 0);
             let end = new Date();
-            end.setHours(23, 59, 59, 999);
+            end.setUTCHours(23, 59, 59, 999);
             // @ts-ignore
             start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
             // @ts-ignore
             end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
             yield ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ created_date_time: { $gte: start, $lt: end } }));
+        });
+    }
+    /***
+     * remove Today Products
+     */
+    removeTodayProductsByWebsite(website) {
+        var _a;
+        return __awaiter(this, void 0, void 0, function* () {
+            let start = new Date();
+            start.setUTCHours(0, 0, 0, 0);
+            let end = new Date();
+            end.setUTCHours(23, 59, 59, 999);
+            // @ts-ignore
+            start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
+            // @ts-ignore
+            end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
+            let findJson = { $and: [{ website: website }, { created_date_time: { $gte: start, $lt: end } }] };
+            yield ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany(findJson));
         });
     }
 }
