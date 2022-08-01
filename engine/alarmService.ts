@@ -51,8 +51,6 @@ export default class AlarmService {
             let websiteService = new WebsiteService();
             let websiteEntity = await websiteService.getWebsiteByUrl(website);
 
-            console.log('storeIndex = ' + storeIndex + '  UserId = ' + storeId);
-
             //if user exists
             if (storeIndex > -1) {
                 // @ts-ignore
@@ -75,7 +73,6 @@ export default class AlarmService {
 
                 let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
 
-                console.log(productHistory);
                 // @ts-ignore
                 let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceIdCouple.priceRate, productTitle: todayProductVariant.parent_title + ' - ' + todayProductVariant.title, src: productHistory?.images[0]?.src, currency: websiteEntity.cart.currency,newValueAsUsd:todayProductVariant.compare_at_price_usd,oldValueAsUsd:yesterdayProductVariant.compare_at_price_usd };
 

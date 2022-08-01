@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -28,132 +19,147 @@ const enginePermissionService_1 = __importDefault(require("../service/enginePerm
 const productMailHistoryService_1 = __importDefault(require("../service/productMailHistoryService"));
 const productMailHistoryModel_1 = __importDefault(require("../model/productMailHistoryModel"));
 const currencyService_1 = __importDefault(require("../service/currencyService"));
+const propertiesService_1 = __importDefault(require("../service/propertiesService"));
+const piscina_1 = __importDefault(require("piscina"));
+const path_1 = __importDefault(require("path"));
+const engineProperty_1 = require("../static/engineProperty");
 class Engine {
     startEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
         let engine = new Engine();
         let engineHistoryService = new engineHistoryService_1.default();
         // @ts-ignore
-        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                console.log('start engine');
-                //if no available, exit
-                if (!(yield enginePermissionService.isAvailableRunMainEngine())) {
-                    console.log('engine is not avaible');
-                    return;
-                }
-                let startDate = new Date();
-                //set unavailable
-                yield enginePermissionService.setUnavailableMainEngine();
-                console.log('start engine1');
-                try {
-                    yield engine.collectAllProducts();
-                    yield engine.prepareAlarmToSendMail();
-                }
-                catch (e) {
-                    console.log(e);
-                }
-                console.log('end engine');
-                //set available
-                yield enginePermissionService.setAvailableMainEngine();
-                let engineHistoryModelEnd = new engineHistoryModel_1.default(startDate, new Date());
-                yield engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
-            });
+        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), async function () {
+            console.log('start engine');
+            //if no available, exit
+            if (!(await enginePermissionService.isAvailableRunMainEngine())) {
+                console.log('engine is not avaible');
+                return;
+            }
+            (0, engineProperty_1.setEngineStartDate)();
+            //set unavailable
+            await enginePermissionService.setUnavailableMainEngine();
+            console.log('start engine1');
+            try {
+                await engine.collectAllProducts();
+            }
+            catch (e) {
+                console.log(e);
+            }
+            console.log('end engine');
+            //set available
+            await enginePermissionService.setAvailableMainEngine();
         });
     }
-    collectAllProducts() {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('start collectAllProducts');
-            let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
-            let websiteService = new websiteService_1.default();
-            let productHistoryService = new productHistoryService_1.default();
-            let currencyService = new currencyService_1.default();
-            if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
-                yield currencyService.saveCurrenciesByApi();
-            }
-            yield currencyService.refreshCurrencyList();
-            yield this.syncWebsites();
-            //get websites for collect data
-            let websites = yield websiteService.getWebsites();
-            for (const website of websites) {
-                yield productHistoryService.saveProductsFromWebByUrl(website);
-            }
-        });
+    async collectAllProducts() {
+        console.log('start collectAllProducts');
+        let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
+        let websiteService = new websiteService_1.default();
+        let productHistoryService = new productHistoryService_1.default();
+        let currencyService = new currencyService_1.default();
+        if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
+            await currencyService.saveCurrenciesByApi();
+        }
+        await currencyService.refreshCurrencyList();
+        await this.syncWebsites();
+        //get websites for collect data
+        let websites = await websiteService.getWebsites();
+        //for (const website of websites) {
+        //    await productHistoryService.saveProductsFromWebByUrl(website);
+        //}
+        await this.runners(websites);
     }
-    prepareAlarmToSendMail() {
-        return __awaiter(this, void 0, void 0, function* () {
-            console.log('prepareAlarmToSendMail');
-            let storeWebsitesRelationService = new storeWebsitesRelationService_1.default();
-            let productHistoryService = new productHistoryService_1.default();
-            let productPriceHistoryService = new productPriceHistoryService_1.default();
-            let websiteService = new websiteService_1.default();
-            let alarmService = new alarmService_1.default();
-            let productMailHistoryService = new productMailHistoryService_1.default();
-            let storesWhichSendingAlarmList = [];
-            let storeWebsitesRelationList = yield storeWebsitesRelationService.getUserWebsitesRelations();
-            let websitesList = yield websiteService.getWebsites();
-            //get unique website list
-            for (const website of websitesList) {
-                let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
-                let yesterdayProductList = yield productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
-                let todayProductList = yield productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
-                //if today or yesterday product lis is empty, go back.
-                if ((0, arrayUtility_1.arrayIsEmpty)(yesterdayProductList) || (0, arrayUtility_1.arrayIsEmpty)(todayProductList)) {
+    async runners(websites) {
+        let propertiesService = new propertiesService_1.default();
+        let engineHistoryService = new engineHistoryService_1.default();
+        const pool = new piscina_1.default();
+        const options = { filename: path_1.default.resolve(__dirname, 'engineThreadWorker') };
+        console.log(options);
+        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
+        let chunkedWebsites = (0, arrayUtility_1.divideChunks)(websites, chunkedProperties.value);
+        let i = 0;
+        let chunkedTread = [];
+        for (i = 0; i < chunkedProperties.value; i++) {
+            chunkedTread.push(pool.run(chunkedWebsites[i], options));
+        }
+        await Promise.all(chunkedTread);
+        console.log('complete engine');
+        //finish engines
+        await this.prepareAlarmToSendMail();
+        (0, engineProperty_1.setEngineEndDate)();
+        let engineHistoryModelEnd = new engineHistoryModel_1.default(engineProperty_1.startDate, engineProperty_1.endDate);
+        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
+    }
+    async prepareAlarmToSendMail() {
+        console.log('prepareAlarmToSendMail');
+        let storeWebsitesRelationService = new storeWebsitesRelationService_1.default();
+        let productHistoryService = new productHistoryService_1.default();
+        let productPriceHistoryService = new productPriceHistoryService_1.default();
+        let websiteService = new websiteService_1.default();
+        let alarmService = new alarmService_1.default();
+        let productMailHistoryService = new productMailHistoryService_1.default();
+        let storesWhichSendingAlarmList = [];
+        let storeWebsitesRelationList = await storeWebsitesRelationService.getUserWebsitesRelations();
+        let websitesList = await websiteService.getWebsites();
+        //get unique website list
+        for (const website of websitesList) {
+            let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
+            let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
+            let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
+            //if today or yesterday product lis is empty, go back.
+            if ((0, arrayUtility_1.arrayIsEmpty)(yesterdayProductList) || (0, arrayUtility_1.arrayIsEmpty)(todayProductList)) {
+                continue;
+            }
+            for (const index in yesterdayProductList) {
+                let priceCollector = new priceCollector_1.default();
+                let id = yesterdayProductList[index].id;
+                let todayEqualProductList = todayProductList.filter(product => product.id === id);
+                //if not exists, this product not exist yesterday on db
+                if (!todayEqualProductList || todayEqualProductList.length === 0) {
                     continue;
                 }
-                for (const index in yesterdayProductList) {
-                    let priceCollector = new priceCollector_1.default();
-                    let id = yesterdayProductList[index].id;
-                    let todayEqualProductList = todayProductList.filter(product => product.id === id);
-                    //if not exists, this product not exist yesterday on db
-                    if (!todayEqualProductList || todayEqualProductList.length === 0) {
-                        continue;
-                    }
-                    let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayEqualProductList[0], yesterdayProductList[index]);
-                    //find users which cache product alarm
-                    yield alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayEqualProductList[0]);
-                }
+                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayEqualProductList[0], yesterdayProductList[index]);
+                //find users which cache product alarm
+                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayEqualProductList[0]);
             }
-            console.log(JSON.stringify(storesWhichSendingAlarmList));
-            console.log('send mail to users');
-            console.log(storesWhichSendingAlarmList.length);
-            for (const storeModel of storesWhichSendingAlarmList) {
-                let mailService = new mailService_1.default();
-                yield mailService.sendMail(storeModel);
-                // @ts-ignore
-                for (const cachedAlarm of storeModel.cachedAlarm) {
-                    let productMailHistoryModel = new productMailHistoryModel_1.default(storeModel.id, cachedAlarm.website, cachedAlarm.url, cachedAlarm.newValue, cachedAlarm.oldValue, cachedAlarm.priceChangeRate, cachedAlarm.productTitle, cachedAlarm.src, cachedAlarm.currency, new Date, storeModel.selectedMail, cachedAlarm.newValueAsUsd, cachedAlarm.oldValueAsUsd);
-                    yield productMailHistoryService.saveProductMailHistory(productMailHistoryModel);
-                }
+        }
+        console.log(JSON.stringify(storesWhichSendingAlarmList));
+        console.log('send mail to users');
+        console.log(storesWhichSendingAlarmList.length);
+        for (const storeModel of storesWhichSendingAlarmList) {
+            let mailService = new mailService_1.default();
+            await mailService.sendMail(storeModel);
+            // @ts-ignore
+            for (const cachedAlarm of storeModel.cachedAlarm) {
+                let productMailHistoryModel = new productMailHistoryModel_1.default(storeModel.id, cachedAlarm.website, cachedAlarm.url, cachedAlarm.newValue, cachedAlarm.oldValue, cachedAlarm.priceChangeRate, cachedAlarm.productTitle, cachedAlarm.src, cachedAlarm.currency, new Date, storeModel.selectedMail, cachedAlarm.newValueAsUsd, cachedAlarm.oldValueAsUsd);
+                await productMailHistoryService.saveProductMailHistory(productMailHistoryModel);
             }
-        });
+        }
     }
-    syncWebsites() {
-        return __awaiter(this, void 0, void 0, function* () {
-            let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
-            let UserWebsitesRelationList = yield userWebsitesRelationService.getUserWebsitesRelations();
-            //console.log(UserWebsitesRelationList)
-            //get unique website list
-            const uniqueWebsites = [...new Set(UserWebsitesRelationList.map(item => item.website))];
-            //upsert collections
-            let websiteService = new websiteService_1.default();
-            for (const website of uniqueWebsites) {
-                let collectionResponse = yield websiteService.getCollectionByWebsiteNameFromWeb(website);
-                if (collectionResponse.length > 0) {
-                    yield websiteService.upsertWebSitesAllCollections(website, collectionResponse);
-                }
+    async syncWebsites() {
+        let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
+        let UserWebsitesRelationList = await userWebsitesRelationService.getUserWebsitesRelations();
+        //console.log(UserWebsitesRelationList)
+        //get unique website list
+        const uniqueWebsites = [...new Set(UserWebsitesRelationList.map(item => item.website))];
+        //upsert collections
+        let websiteService = new websiteService_1.default();
+        for (const website of uniqueWebsites) {
+            let collectionResponse = await websiteService.getCollectionByWebsiteNameFromWeb(website);
+            if (collectionResponse.length > 0) {
+                await websiteService.upsertWebSitesAllCollections(website, collectionResponse);
             }
-            //load websites favicon
-            for (const website of uniqueWebsites) {
-                let collectionResponse = yield websiteService.getFaviconUrlByWebsiteNameFromWeb(website);
-                yield websiteService.upsertWebSitesFavicon(website, collectionResponse);
-            }
-            //load websites cart
-            for (const website of uniqueWebsites) {
-                let collectionResponse = yield websiteService.getCartByWebsiteNameFromWeb(website);
-                yield websiteService.upsertWebSitesCart(website, collectionResponse);
-            }
-        });
+        }
+        //load websites favicon
+        for (const website of uniqueWebsites) {
+            let collectionResponse = await websiteService.getFaviconUrlByWebsiteNameFromWeb(website);
+            await websiteService.upsertWebSitesFavicon(website, collectionResponse);
+        }
+        //load websites cart
+        for (const website of uniqueWebsites) {
+            let collectionResponse = await websiteService.getCartByWebsiteNameFromWeb(website);
+            await websiteService.upsertWebSitesCart(website, collectionResponse);
+        }
     }
 }
 exports.default = Engine;

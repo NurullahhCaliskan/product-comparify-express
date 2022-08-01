@@ -4,7 +4,7 @@ import WebsiteService from '../service/websiteService';
 import ProductHistoryService from '../service/productHistoryService';
 import PriceCollector from './priceCollector';
 import AlarmService from './alarmService';
-import { arrayIsEmpty } from '../utility/arrayUtility';
+import { arrayIsEmpty, divideChunks } from '../utility/arrayUtility';
 import MailService from '../mail/mailService';
 import { GET_MAIN_SCHEDULED_AS_SECOND } from '../utility/cronUtility';
 import EngineHistoryService from '../service/engineHistoryService';
@@ -15,7 +15,12 @@ import StoreModel from '../model/storeModel';
 import ProductMailHistoryService from '../service/productMailHistoryService';
 import ProductMailHistoryModel from '../model/productMailHistoryModel';
 import CurrencyService from '../service/currencyService';
-
+import PropertiesService from '../service/propertiesService';
+import Piscina from 'piscina';
+import path from 'path';
+import WebsiteModel from '../model/websiteModel';
+import { endDate, setEngineEndDate, setEngineStartDate, startDate } from '../static/engineProperty';
+import scrap from './engineThreadWorker';
 
 export default class Engine {
 
@@ -34,7 +39,7 @@ export default class Engine {
                 return;
             }
 
-            let startDate = new Date();
+            setEngineStartDate();
             //set unavailable
             await enginePermissionService.setUnavailableMainEngine();
 
@@ -42,9 +47,6 @@ export default class Engine {
 
             try {
                 await engine.collectAllProducts();
-
-                await engine.prepareAlarmToSendMail();
-
             } catch (e) {
                 console.log(e);
             }
@@ -53,8 +55,6 @@ export default class Engine {
             //set available
             await enginePermissionService.setAvailableMainEngine();
 
-            let engineHistoryModelEnd = new EngineHistoryModel(startDate, new Date());
-            await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
         });
     }
 
@@ -65,22 +65,58 @@ export default class Engine {
         let websiteService = new WebsiteService();
         let productHistoryService = new ProductHistoryService();
         let currencyService = new CurrencyService();
+
+
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
             await currencyService.saveCurrenciesByApi();
 
         }
 
-        await currencyService.refreshCurrencyList()
+        await currencyService.refreshCurrencyList();
 
         await this.syncWebsites();
 
         //get websites for collect data
         let websites = await websiteService.getWebsites();
 
-        for (const website of websites) {
-            await productHistoryService.saveProductsFromWebByUrl(website);
-        }
+         //for (const website of websites) {
+         //    await productHistoryService.saveProductsFromWebByUrl(website);
+         //}
+
+
+        await this.runners(websites);
+
     }
+
+    async runners(websites: WebsiteModel[]) {
+        let propertiesService = new PropertiesService();
+        let engineHistoryService = new EngineHistoryService();
+
+        const pool = new Piscina();
+        const options = { filename: path.resolve(__dirname, 'engineThreadWorker') };
+
+        console.log(options);
+        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
+
+        let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
+
+        let i = 0;
+
+        let chunkedTread = []
+
+        for (i = 0; i < chunkedProperties.value; i++) {
+            chunkedTread.push(pool.run(chunkedWebsites[i], options));
+        }
+
+        await Promise.all(chunkedTread)
+        console.log('complete engine');
+        //finish engines
+        await this.prepareAlarmToSendMail();
+        setEngineEndDate();
+        let engineHistoryModelEnd = new EngineHistoryModel(startDate, endDate);
+        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
+    }
+
 
     async prepareAlarmToSendMail() {
         console.log('prepareAlarmToSendMail');

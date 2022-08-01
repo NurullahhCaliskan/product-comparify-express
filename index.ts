@@ -14,42 +14,11 @@ import QueueProductEngine from './engine/queueProductEngine';
 import StoreService from './service/storeService';
 import { parseInt } from 'lodash';
 import WebsiteService from './service/websiteService';
+import PropertiesService from './service/propertiesService';
+import { setEngineStartDate, startDate } from './static/engineProperty';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
-async function loadDb() {
-    try {
-
-        console.log('start log');
-        console.log(process.env.DBHOST);
-
-        // @ts-ignore
-        const client: mongoDB.MongoClient = new mongoDB.MongoClient(process.env.DBHOST);
-
-        await client.connect();
-
-        console.log(process.env.DBNAME)
-        const db: mongoDB.Db = client.db(process.env.DBNAME);
-        collections.storeWebsitesRelationModel = db.collection("store-websites-relation");
-        collections.websitesModel = db.collection("websites");
-        collections.productHistoryModel = db.collection("product-history");
-        collections.storeModel = db.collection("store");
-        collections.userSessionModel = db.collection("user-session");
-        collections.mailHistoryModel = db.collection("mail-history");
-        collections.engineHistoryModel = db.collection("engine-history");
-        collections.productPriceHistoryModel = db.collection("product-price-history");
-        collections.productHistoryCrawlerQueueModel = db.collection("product-history-crawler-queue");
-        collections.enginePermissionModel = db.collection("engine-permission");
-        collections.productMailHistoryModel = db.collection("product-mail-history");
-        collections.currency = db.collection("currency");
-
-        console.log('success load db2')
-    } catch (e) {
-        console.log('hata')
-        console.log(e)
-    }
-
-}
 
 //initialize mail engine
 
@@ -67,7 +36,6 @@ function initializeMailEngine() {
 }
 
 initializeMailEngine();
-loadDb().then(r => r)
 
 const engine = new Engine();
 engine.startEngine();
@@ -80,10 +48,6 @@ const port = 3000;
 
 const initVerify = async (req: Request, res: Response, next: NextFunction) => {
     console.log("initVerify")
-    if (!collections.storeWebsitesRelationModel) {
-
-        await loadDb()
-    }
 
     if (!mailService.service) {
         initializeMailEngine()
@@ -103,7 +67,6 @@ app.get('/test', initVerify, (req: Request, res: Response) => {
 app.get('/engine/start', async (req: Request, res: Response) => {
     let engine = new Engine();
 
-    let startDate = new Date();
     console.log('start engine1')
 
     try {
@@ -111,10 +74,7 @@ app.get('/engine/start', async (req: Request, res: Response) => {
 
         await engine.collectAllProducts()
 
-        await engine.prepareAlarmToSendMail()
 
-        let engineHistoryModelEnd = new EngineHistoryModel(startDate, new Date());
-        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
     } catch (e) {
         console.log(e)
     }

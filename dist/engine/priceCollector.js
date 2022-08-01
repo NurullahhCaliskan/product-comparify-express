@@ -21,9 +21,6 @@ class PriceCollector {
             }
         }
         catch (e) {
-            console.log('Error occured1');
-            console.log(todayProduct);
-            console.log(yesterdayProduct);
         }
         // @ts-ignore
         return response;
