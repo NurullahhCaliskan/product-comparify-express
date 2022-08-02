@@ -61,7 +61,7 @@ app.get('/test', initVerify, (req: Request, res: Response) => {
     //logger(req,res)
 
     console.log('test console')
-    return res.send('test4');
+    return res.send('test5');
 });
 
 app.get('/engine/start', async (req: Request, res: Response) => {
@@ -122,5 +122,5 @@ app.get('/query/test', async (req: Request, res: Response) => {
 });
 
 export default app.listen(port, () => {
-    console.log(`[server]: Test9 Server is running at https://localhost:${port}`);
+    console.log(`[server]: Test2 Server is running at https://localhost:${port}`);
 });

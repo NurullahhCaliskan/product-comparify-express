@@ -48,7 +48,7 @@ app.use((0, morgan_1.default)('combined'), logger_middleware_1.default);
 app.get('/test', initVerify, (req, res) => {
     //logger(req,res)
     console.log('test console');
-    return res.send('test4');
+    return res.send('test5');
 });
 app.get('/engine/start', async (req, res) => {
     let engine = new engine_1.default();
@@ -93,5 +93,5 @@ app.get('/query/test', async (req, res) => {
     return res.send(JSON.stringify(data));
 });
 exports.default = app.listen(port, () => {
-    console.log(`[server]: Test9 Server is running at https://localhost:${port}`);
+    console.log(`[server]: Test2 Server is running at https://localhost:${port}`);
 });
