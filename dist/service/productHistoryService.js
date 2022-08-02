@@ -17,7 +17,6 @@ class ProductHistoryService {
     async saveProductsFromWebByUrl(website) {
         let productHistoryRepository = new productHistoryRepository_1.default();
         let productPriceHistoryService = new productPriceHistoryService_1.default();
-        let productHistoryService = new ProductHistoryService();
         let websiteService = new websiteService_1.default();
         let websiteEntity = await websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
         let currencyRate = (0, currencyUtility_1.getCurrencyRateCorrespondUsd)(websiteEntity);

@@ -22,7 +22,6 @@ const currencyService_1 = __importDefault(require("../service/currencyService"))
 const propertiesService_1 = __importDefault(require("../service/propertiesService"));
 const piscina_1 = __importDefault(require("piscina"));
 const path_1 = __importDefault(require("path"));
-const engineProperty_1 = require("../static/engineProperty");
 class Engine {
     startEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
@@ -36,7 +35,6 @@ class Engine {
                 console.log('engine is not avaible');
                 return;
             }
-            (0, engineProperty_1.setEngineStartDate)();
             //set unavailable
             await enginePermissionService.setUnavailableMainEngine();
             console.log('start engine1');
@@ -53,20 +51,17 @@ class Engine {
     }
     async collectAllProducts() {
         console.log('start collectAllProducts');
-        let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
         let websiteService = new websiteService_1.default();
-        let productHistoryService = new productHistoryService_1.default();
+        let engineHistoryService = new engineHistoryService_1.default();
         let currencyService = new currencyService_1.default();
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
             await currencyService.saveCurrenciesByApi();
         }
+        await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 1));
         await currencyService.refreshCurrencyList();
         await this.syncWebsites();
         //get websites for collect data
         let websites = await websiteService.getWebsites();
-        //for (const website of websites) {
-        //    await productHistoryService.saveProductsFromWebByUrl(website);
-        //}
         await this.runners(websites);
     }
     async runners(websites) {
@@ -86,9 +81,7 @@ class Engine {
         console.log('complete engine');
         //finish engines
         await this.prepareAlarmToSendMail();
-        (0, engineProperty_1.setEngineEndDate)();
-        let engineHistoryModelEnd = new engineHistoryModel_1.default(engineProperty_1.startDate, engineProperty_1.endDate);
-        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
+        await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0));
     }
     async prepareAlarmToSendMail() {
         console.log('prepareAlarmToSendMail');

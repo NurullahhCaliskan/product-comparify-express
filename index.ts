@@ -1,21 +1,17 @@
 import express, { Express, NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import Engine from './engine/engine';
-import { collections } from './database.service';
 import { mailService } from './mail.service';
-import * as mongoDB from 'mongodb';
 import nodemailer from 'nodemailer';
 import MailService from './mail/mailService';
 import logger from './logger.middleware';
 import morgan from 'morgan';
-import EngineHistoryService from './service/engineHistoryService';
-import EngineHistoryModel from './model/engineHistoryModel';
 import QueueProductEngine from './engine/queueProductEngine';
 import StoreService from './service/storeService';
 import { parseInt } from 'lodash';
 import WebsiteService from './service/websiteService';
-import PropertiesService from './service/propertiesService';
-import { setEngineStartDate, startDate } from './static/engineProperty';
+import EngineHistoryModel from './model/engineHistoryModel';
+import EngineHistoryService from './service/engineHistoryService';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -70,10 +66,7 @@ app.get('/engine/start', async (req: Request, res: Response) => {
     console.log('start engine1')
 
     try {
-        let engineHistoryService = new EngineHistoryService()
-
         await engine.collectAllProducts()
-
 
     } catch (e) {
         console.log(e)
@@ -103,22 +96,9 @@ app.get('/mail/test', async (req: Request, res: Response) => {
 });
 
 app.get('/query/test', async (req: Request, res: Response) => {
-
-    //let requestOptions = {
-    //    method: 'GET',
-    //    redirect: 'follow',
-    //    headers: { "apikey":process.env.APILAYER_API_KEY }
-    //};
-//
-    //let response
-    //// @ts-ignore
-    //response = await axios.get("https://api.apilayer.com/exchangerates_data/latest?base=usd", requestOptions)
-//
-    //return res.send(JSON.stringify(response.data.rates));
-
-    let websiteService = new WebsiteService()
-    let data =await websiteService.getPropertyByUrl({url:"https://partakefoods.com"},{"cart.currency": 1})
-    return res.send(JSON.stringify(data));
+    let engineHistoryService = new EngineHistoryService();
+    await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0));
+    return res.send(JSON.stringify("dadas"));
 });
 
 export default app.listen(port, () => {

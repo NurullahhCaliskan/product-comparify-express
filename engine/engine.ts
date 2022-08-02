@@ -19,7 +19,6 @@ import PropertiesService from '../service/propertiesService';
 import Piscina from 'piscina';
 import path from 'path';
 import WebsiteModel from '../model/websiteModel';
-import { endDate, setEngineEndDate, setEngineStartDate, startDate } from '../static/engineProperty';
 
 export default class Engine {
 
@@ -38,7 +37,6 @@ export default class Engine {
                 return;
             }
 
-            setEngineStartDate();
             //set unavailable
             await enginePermissionService.setUnavailableMainEngine();
 
@@ -60,16 +58,16 @@ export default class Engine {
     async collectAllProducts() {
 
         console.log('start collectAllProducts');
-        let userWebsitesRelationService = new StoreWebsitesRelationService();
         let websiteService = new WebsiteService();
-        let productHistoryService = new ProductHistoryService();
+        let engineHistoryService = new EngineHistoryService();
         let currencyService = new CurrencyService();
-
 
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
             await currencyService.saveCurrenciesByApi();
 
         }
+
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),1));
 
         await currencyService.refreshCurrencyList();
 
@@ -77,11 +75,6 @@ export default class Engine {
 
         //get websites for collect data
         let websites = await websiteService.getWebsites();
-
-         //for (const website of websites) {
-         //    await productHistoryService.saveProductsFromWebByUrl(website);
-         //}
-
 
         await this.runners(websites);
 
@@ -111,9 +104,7 @@ export default class Engine {
         console.log('complete engine');
         //finish engines
         await this.prepareAlarmToSendMail();
-        setEngineEndDate();
-        let engineHistoryModelEnd = new EngineHistoryModel(startDate, endDate);
-        await engineHistoryService.saveEngineHistory(engineHistoryModelEnd);
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0));
     }
 
 

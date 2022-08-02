@@ -11,11 +11,11 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 const mailService_1 = __importDefault(require("./mail/mailService"));
 const logger_middleware_1 = __importDefault(require("./logger.middleware"));
 const morgan_1 = __importDefault(require("morgan"));
-const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
 const queueProductEngine_1 = __importDefault(require("./engine/queueProductEngine"));
 const storeService_1 = __importDefault(require("./service/storeService"));
 const lodash_1 = require("lodash");
-const websiteService_1 = __importDefault(require("./service/websiteService"));
+const engineHistoryModel_1 = __importDefault(require("./model/engineHistoryModel"));
+const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 //initialize mail engine
 function initializeMailEngine() {
@@ -54,7 +54,6 @@ app.get('/engine/start', async (req, res) => {
     let engine = new engine_1.default();
     console.log('start engine1');
     try {
-        let engineHistoryService = new engineHistoryService_1.default();
         await engine.collectAllProducts();
     }
     catch (e) {
@@ -77,20 +76,9 @@ app.get('/mail/test', async (req, res) => {
     return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
 });
 app.get('/query/test', async (req, res) => {
-    //let requestOptions = {
-    //    method: 'GET',
-    //    redirect: 'follow',
-    //    headers: { "apikey":process.env.APILAYER_API_KEY }
-    //};
-    //
-    //let response
-    //// @ts-ignore
-    //response = await axios.get("https://api.apilayer.com/exchangerates_data/latest?base=usd", requestOptions)
-    //
-    //return res.send(JSON.stringify(response.data.rates));
-    let websiteService = new websiteService_1.default();
-    let data = await websiteService.getPropertyByUrl({ url: "https://partakefoods.com" }, { "cart.currency": 1 });
-    return res.send(JSON.stringify(data));
+    let engineHistoryService = new engineHistoryService_1.default();
+    await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0));
+    return res.send(JSON.stringify("dadas"));
 });
 exports.default = app.listen(port, () => {
     console.log(`[server]: Test2 Server is running at https://localhost:${port}`);

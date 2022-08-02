@@ -18,7 +18,6 @@ export default class ProductHistoryService {
 
         let productHistoryRepository = new ProductHistoryRepository();
         let productPriceHistoryService = new ProductPriceHistoryService();
-        let productHistoryService = new ProductHistoryService();
         let websiteService = new WebsiteService();
         let websiteEntity = await websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
 
@@ -125,8 +124,8 @@ export default class ProductHistoryService {
             productPrices.push(new ProductPriceHistoryModel(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
         });
 
-            await productHistoryRepository.saveProductsFromWebByUrl(products);
-            await productPriceHistoryService.saveProductPriceHistory(productPrices);
+        await productHistoryRepository.saveProductsFromWebByUrl(products);
+        await productPriceHistoryService.saveProductPriceHistory(productPrices);
 
     }
 
