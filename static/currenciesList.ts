@@ -1,5 +1,4 @@
-export let currencyList : [{key:string,value:number}] = [{key:"string",value:1}]
+import { collections } from '../database.service';
 
-export default function setCurrencyList(data : [{key:string,value:number}]) {
-    currencyList = data
-}
+// @ts-ignore
+export let currencyList : [{key:string,value:number}] = collections.currency?.find().toArray();

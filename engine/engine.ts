@@ -19,6 +19,7 @@ import PropertiesService from '../service/propertiesService';
 import Piscina from 'piscina';
 import path from 'path';
 import WebsiteModel from '../model/websiteModel';
+import { currencyList } from '../static/currenciesList';
 
 export default class Engine {
 
@@ -71,7 +72,7 @@ export default class Engine {
 
         await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),1,chunkedProperties.value));
 
-        await currencyService.refreshCurrencyList();
+        //await currencyService.refreshCurrencyList();
 
         await this.syncWebsites();
 

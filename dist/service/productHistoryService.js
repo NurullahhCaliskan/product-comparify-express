@@ -23,11 +23,11 @@ class ProductHistoryService {
         let url = website.url;
         await productHistoryRepository.removeProductsByWebsite(url);
         await productPriceHistoryService.removeTodayProductsByWebsite(url);
-        let products = [];
         let loopContinue = true;
         let pagination = 1;
         while (loopContinue) {
             try {
+                let products = [];
                 // @ts-ignore
                 let readyToRequestUrl = url + '/products.json?limit=250&page=' + pagination;
                 let response = await axios_1.default.get(readyToRequestUrl);
@@ -83,20 +83,20 @@ class ProductHistoryService {
                         products.push(product);
                     });
                 }
+                let productPrices = [];
+                //convert product to product prices
+                products.forEach(product => {
+                    // @ts-ignore
+                    productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
+                });
+                await productHistoryRepository.saveProductsFromWebByUrl(products);
+                await productPriceHistoryService.saveProductPriceHistory(productPrices);
                 pagination++;
             }
             catch (e) {
                 loopContinue = false;
             }
         }
-        let productPrices = [];
-        //convert product to product prices
-        products.forEach(product => {
-            // @ts-ignore
-            productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
-        });
-        await productHistoryRepository.saveProductsFromWebByUrl(products);
-        await productPriceHistoryService.saveProductPriceHistory(productPrices);
     }
     /***
      * get Product History By Product Id

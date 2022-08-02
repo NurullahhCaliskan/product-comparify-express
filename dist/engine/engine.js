@@ -60,7 +60,7 @@ class Engine {
         }
         let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
         await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 1, chunkedProperties.value));
-        await currencyService.refreshCurrencyList();
+        //await currencyService.refreshCurrencyList();
         await this.syncWebsites();
         //get websites for collect data
         let websites = await websiteService.getWebsites();

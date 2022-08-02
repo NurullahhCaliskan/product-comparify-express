@@ -7,7 +7,7 @@ const productHistoryService_1 = __importDefault(require("../service/productHisto
 async function scrap(websites) {
     let productHistoryService = new productHistoryService_1.default();
     for (const website of websites) {
-        //await productHistoryService.saveProductsFromWebByUrl(website);
+        await productHistoryService.saveProductsFromWebByUrl(website);
     }
 }
 exports.default = scrap;
