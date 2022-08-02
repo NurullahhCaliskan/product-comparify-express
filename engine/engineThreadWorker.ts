@@ -5,7 +5,7 @@ export default async function scrap(websites : WebsiteModel[]) {
     let productHistoryService = new ProductHistoryService();
 
     for (const website of websites) {
-        await productHistoryService.saveProductsFromWebByUrl(website);
+        //await productHistoryService.saveProductsFromWebByUrl(website);
     }
 }
 
