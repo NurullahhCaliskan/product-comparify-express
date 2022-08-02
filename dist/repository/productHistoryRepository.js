@@ -15,7 +15,6 @@ class ProductHistoryRepository {
         try {
             if (products.length > 0) {
                 // @ts-ignore
-                await this.removeTodayProductsByWebsite(products[0].website);
                 await ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
             }
         }
@@ -40,20 +39,11 @@ class ProductHistoryRepository {
         await ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ created_date_time: { $gte: start, $lt: end } }));
     }
     /***
-     * remove Today products
-     * NOTE: minus day information in env file
+     * remove   products
      */
-    async removeTodayProductsByWebsite(website) {
+    async removeProductsByWebsite(website) {
         var _a;
-        let start = new Date();
-        start.setUTCHours(0, 0, 0, 0);
-        let end = new Date();
-        end.setUTCHours(23, 59, 59, 999);
-        // @ts-ignore
-        start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
-        // @ts-ignore
-        end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
-        let findJson = { $and: [{ website: website }, { created_date_time: { $gte: start, $lt: end } }] };
+        let findJson = { website: website };
         await ((_a = database_service_1.collections.productHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany(findJson));
     }
     /***

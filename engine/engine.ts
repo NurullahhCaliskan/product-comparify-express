@@ -20,7 +20,6 @@ import Piscina from 'piscina';
 import path from 'path';
 import WebsiteModel from '../model/websiteModel';
 import { endDate, setEngineEndDate, setEngineStartDate, startDate } from '../static/engineProperty';
-import scrap from './engineThreadWorker';
 
 export default class Engine {
 

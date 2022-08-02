@@ -1,11 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 class ProductHistoryModel {
-    constructor(id, website, created_date_time, collection, url, title, handle, published_at, created_at, updated_at, vendor, product_type, tags, variants, images, options, search, _id) {
+    constructor(id, website, created_date_time, url, title, handle, published_at, created_at, updated_at, vendor, product_type, tags, variants, images, options, search, _id) {
         this.id = id;
         this.website = website;
         this.created_date_time = created_date_time;
-        this.collection = collection;
         this.url = url;
         this.title = title;
         this.handle = handle;

@@ -22,73 +22,72 @@ class ProductHistoryService {
         let websiteEntity = await websiteService.getPropertyByUrl({ url: website.url }, { 'cart.currency': 1 });
         let currencyRate = (0, currencyUtility_1.getCurrencyRateCorrespondUsd)(websiteEntity);
         let url = website.url;
-        let collections = website.collection;
+        await productHistoryRepository.removeProductsByWebsite(url);
+        await productPriceHistoryService.removeTodayProductsByWebsite(url);
         let products = [];
-        for (const collection of collections) {
-            let loopContinue = true;
-            let pagination = 1;
-            while (loopContinue) {
-                try {
-                    // @ts-ignore
-                    let readyToRequestUrl = url + '/collections/' + collection.handle + '/products.json?limit=250&page=' + pagination;
-                    let response = await axios_1.default.get(readyToRequestUrl);
-                    let productResponse = response.data;
-                    if (productResponse.products.length === 0) {
-                        loopContinue = false;
-                    }
-                    else {
-                        // @ts-ignore
-                        productResponse.products.forEach(product => {
-                            product.website = url;
-                            // @ts-ignore
-                            product.collection = [collection.handle];
-                            let date = new Date();
-                            //for test yesterday
-                            // @ts-ignore
-                            date.setDate(date.getDate() - process.env.CRAWL_MINUS_TODAY);
-                            product.created_date_time = date;
-                            // @ts-ignore
-                            product.url = url + '/collections/' + collection.handle + '/products/' + product.handle;
-                            try {
-                                product.published_at = new Date(product.published_at);
-                                product.created_at = new Date(product.created_at);
-                                product.updated_at = new Date(product.updated_at);
-                                // @ts-ignore
-                                product.currency = websiteEntity.cart.currency;
-                                delete product['body_html'];
-                            }
-                            catch (e) {
-                            }
-                            try {
-                                // @ts-ignore
-                                product.variants.forEach(variant => {
-                                    if (variant.price) {
-                                        variant.price = parseFloat(variant.price);
-                                    }
-                                    if (variant.compare_at_price) {
-                                        variant.compare_at_price = parseFloat(variant.compare_at_price);
-                                    }
-                                    variant.compare_at_price_usd = Number((variant.price / currencyRate).toFixed(2));
-                                    variant.parent_title = product.title;
-                                    if (variant.created_at) {
-                                        variant.created_at = new Date(variant.created_at);
-                                    }
-                                    if (variant.updated_at) {
-                                        variant.updated_at = new Date(variant.updated_at);
-                                    }
-                                });
-                            }
-                            catch (e) {
-                            }
-                            product.search = this.prepareSearchColumn(product);
-                        });
-                        this.mergeProducts(products, productResponse.products);
-                    }
-                    pagination++;
-                }
-                catch (e) {
+        let loopContinue = true;
+        let pagination = 1;
+        while (loopContinue) {
+            try {
+                // @ts-ignore
+                let readyToRequestUrl = url + '/products.json?limit=250&page=' + pagination;
+                let response = await axios_1.default.get(readyToRequestUrl);
+                let productResponse = response.data;
+                if (productResponse.products.length === 0) {
                     loopContinue = false;
                 }
+                else {
+                    // @ts-ignore
+                    productResponse.products.forEach(product => {
+                        product.website = url;
+                        let date = new Date();
+                        //for test yesterday
+                        // @ts-ignore
+                        date.setDate(date.getDate() - process.env.CRAWL_MINUS_TODAY);
+                        product.created_date_time = date;
+                        // @ts-ignore
+                        product.url = url + '/products/' + product.handle;
+                        try {
+                            product.published_at = new Date(product.published_at);
+                            product.created_at = new Date(product.created_at);
+                            product.updated_at = new Date(product.updated_at);
+                            // @ts-ignore
+                            product.currency = websiteEntity.cart.currency;
+                            delete product['body_html'];
+                        }
+                        catch (e) {
+                        }
+                        try {
+                            // @ts-ignore
+                            product.variants.forEach(variant => {
+                                if (variant.price) {
+                                    variant.price = parseFloat(variant.price);
+                                }
+                                if (variant.compare_at_price) {
+                                    variant.compare_at_price = parseFloat(variant.compare_at_price);
+                                }
+                                variant.compare_at_price_usd = Number((variant.price / currencyRate).toFixed(2));
+                                variant.parent_title = product.title;
+                                if (variant.created_at) {
+                                    variant.created_at = new Date(variant.created_at);
+                                }
+                                if (variant.updated_at) {
+                                    variant.updated_at = new Date(variant.updated_at);
+                                }
+                            });
+                        }
+                        catch (e) {
+                            console.log('hata1');
+                            console.log(e);
+                        }
+                        product.search = this.prepareSearchColumn(product);
+                        products.push(product);
+                    });
+                }
+                pagination++;
+            }
+            catch (e) {
+                loopContinue = false;
             }
         }
         let productPrices = [];
@@ -135,22 +134,6 @@ class ProductHistoryService {
         return await productHistoryRepository.isCrawledTodayByWebsite(website);
     }
     /***
-     * merge product
-     * @param mainList
-     * @param tmpList
-     */
-    mergeProducts(mainList, tmpList) {
-        tmpList.forEach(item => {
-            if (mainList.find(mainItem => mainItem.id === item.id)) {
-                // @ts-ignore
-                mainList.find(mainItem => mainItem.id === item.id).collection.push(item.collection[0]);
-            }
-            else {
-                mainList.push(item);
-            }
-        });
-    }
-    /***
      * prepare Search Column
      * @param product
      */
@@ -178,13 +161,6 @@ class ProductHistoryService {
             product.tags.forEach(tag => {
                 if (tag) {
                     searchArray.push(tag);
-                }
-            });
-        }
-        if (product.collection) {
-            product.collection.forEach(collection => {
-                if (collection) {
-                    searchArray.push(collection);
                 }
             });
         }

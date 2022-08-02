@@ -25,31 +25,30 @@ export default class ProductHistoryService {
         let currencyRate = getCurrencyRateCorrespondUsd(websiteEntity);
 
         let url = website.url;
-        let collections = website.collection;
+
+        await productHistoryRepository.removeProductsByWebsite(url);
+        await productPriceHistoryService.removeTodayProductsByWebsite(url);
 
         let products: ProductHistoryModel[] = [];
 
-        for (const collection of collections) {
-            let loopContinue = true;
-            let pagination = 1;
-            while (loopContinue) {
-                try {
+        let loopContinue = true;
+        let pagination = 1;
+        while (loopContinue) {
+            try {
+                // @ts-ignore
+                let readyToRequestUrl = url + '/products.json?limit=250&page=' + pagination;
+
+                let response = await axios.get(readyToRequestUrl);
+
+                let productResponse = response.data;
+
+                if (productResponse.products.length === 0) {
+                    loopContinue = false;
+                } else {
+
                     // @ts-ignore
-                    let readyToRequestUrl = url + '/collections/' + collection.handle + '/products.json?limit=250&page=' + pagination;
-
-                    let response = await axios.get(readyToRequestUrl);
-
-                    let productResponse = response.data;
-
-                    if (productResponse.products.length === 0) {
-                        loopContinue = false;
-                    } else {
-
-                        // @ts-ignore
                         productResponse.products.forEach(product => {
                             product.website = url;
-                            // @ts-ignore
-                            product.collection = [collection.handle];
 
                             let date = new Date();
 
@@ -59,7 +58,7 @@ export default class ProductHistoryService {
 
                             product.created_date_time = date;
                             // @ts-ignore
-                            product.url = url + '/collections/' + collection.handle + '/products/' + product.handle;
+                            product.url = url + '/products/' + product.handle;
 
                             try {
                                 product.published_at = new Date(product.published_at);
@@ -100,21 +99,22 @@ export default class ProductHistoryService {
                                     }
                                 });
                             } catch (e) {
-
+                                console.log('hata1');
+                                console.log(e);
                             }
 
                             product.search = this.prepareSearchColumn(product);
 
+                            products.push(product);
+
                         });
 
-                        this.mergeProducts(products, productResponse.products);
                     }
                     pagination++;
                 } catch (e) {
                     loopContinue = false;
                 }
             }
-        }
 
 
         let productPrices: ProductPriceHistoryModel[] = [];
@@ -170,22 +170,6 @@ export default class ProductHistoryService {
     }
 
     /***
-     * merge product
-     * @param mainList
-     * @param tmpList
-     */
-    mergeProducts(mainList: ProductHistoryModel[], tmpList: ProductHistoryModel[]) {
-        tmpList.forEach(item => {
-            if (mainList.find(mainItem => mainItem.id === item.id)) {
-                // @ts-ignore
-                mainList.find(mainItem => mainItem.id === item.id).collection.push(item.collection[0]);
-            } else {
-                mainList.push(item);
-            }
-        });
-    }
-
-    /***
      * prepare Search Column
      * @param product
      */
@@ -222,15 +206,6 @@ export default class ProductHistoryService {
                 if (tag) {
 
                     searchArray.push(tag);
-                }
-            });
-        }
-
-        if (product.collection) {
-            product.collection.forEach(collection => {
-                if (collection) {
-
-                    searchArray.push(collection);
                 }
             });
         }

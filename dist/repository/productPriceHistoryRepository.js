@@ -13,7 +13,6 @@ class ProductPriceHistoryRepository {
         try {
             if (products.length > 0) {
                 // @ts-ignore
-                await this.removeTodayProductsByWebsite(products[0].website);
                 await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
             }
         }

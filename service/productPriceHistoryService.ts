@@ -33,5 +33,11 @@ export default class ProductPriceHistoryService {
 
         await productHistoryRepository.removeTodayProducts();
     }
+
+    async removeTodayProductsByWebsite(website:string) {
+        let productHistoryRepository = new ProductPriceHistoryRepository();
+
+        await productHistoryRepository.removeTodayProductsByWebsite(website);
+    }
 }
 

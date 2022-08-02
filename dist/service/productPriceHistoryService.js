@@ -29,5 +29,9 @@ class ProductPriceHistoryService {
         let productHistoryRepository = new productPriceHistoryRepository_1.default();
         await productHistoryRepository.removeTodayProducts();
     }
+    async removeTodayProductsByWebsite(website) {
+        let productHistoryRepository = new productPriceHistoryRepository_1.default();
+        await productHistoryRepository.removeTodayProductsByWebsite(website);
+    }
 }
 exports.default = ProductPriceHistoryService;

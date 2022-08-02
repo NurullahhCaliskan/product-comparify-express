@@ -13,7 +13,6 @@ export default class ProductPriceHistoryRepository {
         try {
             if (products.length > 0) {
                 // @ts-ignore
-                await this.removeTodayProductsByWebsite(products[0].website)
                 await collections.productPriceHistoryModel?.insertMany(products);
 
             }
