@@ -1,4 +1,5 @@
 import CurrencyRepository from '../repository/currencyRepository';
+import setCurrencyList from '../static/currenciesList';
 
 export default class CurrencyService {
 

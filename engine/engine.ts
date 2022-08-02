@@ -72,7 +72,7 @@ export default class Engine {
 
         await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),1,chunkedProperties.value));
 
-        //await currencyService.refreshCurrencyList();
+        await currencyService.refreshCurrencyList();
 
         await this.syncWebsites();
 
