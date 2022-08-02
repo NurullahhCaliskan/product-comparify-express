@@ -9,13 +9,11 @@ export default class EngineHistoryRepository {
      * @param engineHistoryModel
      */
     async saveEngineHistory(engineHistoryModel: EngineHistoryModel) {
-        let propertiesService = new PropertiesService();
-        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
 
         if (engineHistoryModel.status === 1) {
             await collections.engineHistoryModel?.insertOne(engineHistoryModel);
         } else {
-            let query = { endDateTime: engineHistoryModel.endDateTime, status: 0, threadCount: chunkedProperties.value };
+            let query = { endDateTime: engineHistoryModel.endDateTime, status: 0  };
             let newRecord = { $set: query };
             await collections.engineHistoryModel.updateOne({ status: 1 }, newRecord);
         }

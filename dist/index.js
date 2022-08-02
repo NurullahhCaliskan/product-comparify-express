@@ -77,7 +77,7 @@ app.get('/mail/test', async (req, res) => {
 });
 app.get('/query/test', async (req, res) => {
     let engineHistoryService = new engineHistoryService_1.default();
-    await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0));
+    await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0, 0));
     return res.send(JSON.stringify("dadas"));
 });
 exports.default = app.listen(port, () => {

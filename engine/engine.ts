@@ -61,13 +61,15 @@ export default class Engine {
         let websiteService = new WebsiteService();
         let engineHistoryService = new EngineHistoryService();
         let currencyService = new CurrencyService();
+        let propertiesService = new PropertiesService();
 
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
             await currencyService.saveCurrenciesByApi();
 
         }
+        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
 
-        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),1));
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),1,chunkedProperties.value));
 
         await currencyService.refreshCurrencyList();
 
@@ -104,7 +106,7 @@ export default class Engine {
         console.log('complete engine');
         //finish engines
         await this.prepareAlarmToSendMail();
-        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0));
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0,0));
     }
 
 
