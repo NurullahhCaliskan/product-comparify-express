@@ -105,6 +105,8 @@ export default class Engine {
         await Promise.all(chunkedTread)
         console.log('complete engine');
         //finish engines
+
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),2,0));
         await this.prepareAlarmToSendMail();
         await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0,0));
     }
