@@ -108,8 +108,17 @@ export default class Engine {
         //finish engines
 
         await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),2,0));
+        try{
+
         await this.prepareAlarmToSendMail();
-        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0,0));
+            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0,0));
+        }catch (e) {
+            let date = new Date()
+            date.setFullYear(2000)
+            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), date,0,0));
+
+        }
+
     }
 
 

@@ -83,8 +83,15 @@ class Engine {
         console.log('complete engine');
         //finish engines
         await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 2, 0));
-        await this.prepareAlarmToSendMail();
-        await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0, 0));
+        try {
+            await this.prepareAlarmToSendMail();
+            await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0, 0));
+        }
+        catch (e) {
+            let date = new Date();
+            date.setFullYear(2000);
+            await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), date, 0, 0));
+        }
     }
     async prepareAlarmToSendMail() {
         console.log('prepareAlarmToSendMail');
