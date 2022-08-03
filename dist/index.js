@@ -48,7 +48,7 @@ app.use((0, morgan_1.default)('combined'), logger_middleware_1.default);
 app.get('/test', initVerify, (req, res) => {
     //logger(req,res)
     console.log('test console');
-    return res.send('test5');
+    return res.send('test6');
 });
 app.get('/engine/start', async (req, res) => {
     let engine = new engine_1.default();

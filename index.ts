@@ -57,7 +57,7 @@ app.get('/test', initVerify, (req: Request, res: Response) => {
     //logger(req,res)
 
     console.log('test console')
-    return res.send('test5');
+    return res.send('test6');
 });
 
 app.get('/engine/start', async (req: Request, res: Response) => {
