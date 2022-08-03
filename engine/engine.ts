@@ -20,6 +20,7 @@ import Piscina from 'piscina';
 import path from 'path';
 import WebsiteModel from '../model/websiteModel';
 import { currencyList } from '../static/currenciesList';
+import sizeof from 'object-sizeof';
 
 export default class Engine {
 
@@ -70,7 +71,7 @@ export default class Engine {
         }
         let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
 
-        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),1,chunkedProperties.value));
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),new Date(),1,chunkedProperties.value));
 
         await currencyService.refreshCurrencyList();
 
@@ -107,15 +108,16 @@ export default class Engine {
         console.log('complete engine');
         //finish engines
 
-        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),2,0));
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(),new Date(), new Date(),2,0));
         try{
 
         await this.prepareAlarmToSendMail();
-            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0,0));
+            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(),new Date(), new Date(),0,0));
         }catch (e) {
+            console.log(e)
             let date = new Date()
             date.setFullYear(2000)
-            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), date,0,0));
+            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(),new Date(), date,0,0));
 
         }
 
@@ -139,6 +141,10 @@ export default class Engine {
         for (const website of websitesList) {
 
             let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
+
+            if(relevantUserByWebsite.length === 0){
+                continue;
+            }
 
             let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
             let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);

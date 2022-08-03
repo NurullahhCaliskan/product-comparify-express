@@ -76,7 +76,6 @@ export default class WebsiteRepository {
      */
     async getWebsiteByUrl(url: string): Promise<WebsiteModel> {
 
-        console.log(url);
         return await collections.websitesModel?.findOne({ url: url }) as WebsiteModel;
     }
 

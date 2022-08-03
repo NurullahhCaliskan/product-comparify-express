@@ -8,7 +8,7 @@ class StoreWebsitesRelationRepository {
      */
     async getStoreWebsitesRelations() {
         // @ts-ignore
-        return await database_service_1.collections.storeWebsitesRelationModel.find({}).toArray();
+        return await database_service_1.collections.storeWebsitesRelationModel.find({ alarm: true }).toArray();
     }
 }
 exports.default = StoreWebsitesRelationRepository;

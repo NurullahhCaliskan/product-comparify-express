@@ -13,7 +13,7 @@ export default class EngineHistoryRepository {
         if (engineHistoryModel.status === 1) {
             await collections.engineHistoryModel?.insertOne(engineHistoryModel);
         } else if (engineHistoryModel.status === 2)  {
-            let query = { endDateTime: engineHistoryModel.endDateTime, status: 2  };
+            let query = { firstDateTime: engineHistoryModel.firstDateTime, status: 2  };
             let newRecord = { $set: query };
             await collections.engineHistoryModel.updateOne({ status: 1 }, newRecord);
         }else{

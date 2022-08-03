@@ -14,8 +14,6 @@ const morgan_1 = __importDefault(require("morgan"));
 const queueProductEngine_1 = __importDefault(require("./engine/queueProductEngine"));
 const storeService_1 = __importDefault(require("./service/storeService"));
 const lodash_1 = require("lodash");
-const engineHistoryModel_1 = __importDefault(require("./model/engineHistoryModel"));
-const engineHistoryService_1 = __importDefault(require("./service/engineHistoryService"));
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 //initialize mail engine
 function initializeMailEngine() {
@@ -76,8 +74,6 @@ app.get('/mail/test', async (req, res) => {
     return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
 });
 app.get('/query/test', async (req, res) => {
-    let engineHistoryService = new engineHistoryService_1.default();
-    await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0, 0));
     return res.send(JSON.stringify("dadas"));
 });
 exports.default = app.listen(port, () => {

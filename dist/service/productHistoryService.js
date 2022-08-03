@@ -32,7 +32,8 @@ class ProductHistoryService {
                 let readyToRequestUrl = url + '/products.json?limit=250&page=' + pagination;
                 let response = await axios_1.default.get(readyToRequestUrl);
                 let productResponse = response.data;
-                if (productResponse.products.length === 0) {
+                //limited 30k product
+                if (productResponse.products.length === 0 || pagination >= 120) {
                     loopContinue = false;
                 }
                 else {

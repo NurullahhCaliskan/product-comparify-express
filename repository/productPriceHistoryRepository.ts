@@ -35,7 +35,7 @@ export default class ProductPriceHistoryRepository {
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: yesterdayMidnight, $lt: todayMidnight } }] };
 
         // @ts-ignore
-        return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray() as ProductPriceHistoryModel[];
+        return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray() as ProductPriceHistoryModel[];
     }
 
     /***
@@ -53,7 +53,7 @@ export default class ProductPriceHistoryRepository {
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: todayMidnight, $lt: tomorrowMidnight } }] };
 
         // @ts-ignore
-        return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray() as ProductPriceHistoryModel[];
+        return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray() as ProductPriceHistoryModel[];
     }
 
     /***

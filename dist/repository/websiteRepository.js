@@ -70,7 +70,6 @@ class WebsiteRepository {
      */
     async getWebsiteByUrl(url) {
         var _a;
-        console.log(url);
         return await ((_a = database_service_1.collections.websitesModel) === null || _a === void 0 ? void 0 : _a.findOne({ url: url }));
     }
     /***

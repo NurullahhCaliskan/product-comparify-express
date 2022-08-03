@@ -43,7 +43,9 @@ export default class ProductHistoryService {
 
                 let productResponse = response.data;
 
-                if (productResponse.products.length === 0) {
+
+                //limited 30k product
+                if (productResponse.products.length === 0 || pagination >= 120) {
                     loopContinue = false;
                 } else {
 

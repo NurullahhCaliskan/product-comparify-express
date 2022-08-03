@@ -59,7 +59,7 @@ class Engine {
             await currencyService.saveCurrenciesByApi();
         }
         let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
-        await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 1, chunkedProperties.value));
+        await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 1, chunkedProperties.value));
         await currencyService.refreshCurrencyList();
         await this.syncWebsites();
         //get websites for collect data
@@ -82,15 +82,16 @@ class Engine {
         await Promise.all(chunkedTread);
         console.log('complete engine');
         //finish engines
-        await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 2, 0));
+        await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 2, 0));
         try {
             await this.prepareAlarmToSendMail();
-            await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), 0, 0));
+            await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 0, 0));
         }
         catch (e) {
+            console.log(e);
             let date = new Date();
             date.setFullYear(2000);
-            await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), date, 0, 0));
+            await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), date, 0, 0));
         }
     }
     async prepareAlarmToSendMail() {
@@ -107,6 +108,9 @@ class Engine {
         //get unique website list
         for (const website of websitesList) {
             let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
+            if (relevantUserByWebsite.length === 0) {
+                continue;
+            }
             let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
             let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
             //if today or yesterday product lis is empty, go back.

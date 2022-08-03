@@ -13,7 +13,7 @@ class EngineHistoryRepository {
             await ((_a = database_service_1.collections.engineHistoryModel) === null || _a === void 0 ? void 0 : _a.insertOne(engineHistoryModel));
         }
         else if (engineHistoryModel.status === 2) {
-            let query = { endDateTime: engineHistoryModel.endDateTime, status: 2 };
+            let query = { firstDateTime: engineHistoryModel.firstDateTime, status: 2 };
             let newRecord = { $set: query };
             await database_service_1.collections.engineHistoryModel.updateOne({ status: 1 }, newRecord);
         }

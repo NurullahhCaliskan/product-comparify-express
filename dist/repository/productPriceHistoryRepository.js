@@ -31,7 +31,7 @@ class ProductPriceHistoryRepository {
         let todayMidnight = (0, dayUtility_1.getTodayMidnight)();
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: yesterdayMidnight, $lt: todayMidnight } }] };
         // @ts-ignore
-        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray());
+        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray());
     }
     /***
      * get Product History By days and website
@@ -46,7 +46,7 @@ class ProductPriceHistoryRepository {
         let tomorrowMidnight = (0, dayUtility_1.getTomorrowMidnight)();
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: todayMidnight, $lt: tomorrowMidnight } }] };
         // @ts-ignore
-        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).toArray());
+        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray());
     }
     /***
      * remove Today Products

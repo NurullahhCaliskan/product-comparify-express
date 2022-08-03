@@ -10,6 +10,6 @@ export default class StoreWebsitesRelationRepository {
     async getStoreWebsitesRelations(): Promise<StoreWebsitesRelationModel[]> {
 
         // @ts-ignore
-        return await collections.storeWebsitesRelationModel.find({}).toArray() as StoreWebsitesRelationModel[];
+        return await collections.storeWebsitesRelationModel.find({alarm:true}).toArray() as StoreWebsitesRelationModel[];
     }
 }

@@ -96,8 +96,6 @@ app.get('/mail/test', async (req: Request, res: Response) => {
 });
 
 app.get('/query/test', async (req: Request, res: Response) => {
-    let engineHistoryService = new EngineHistoryService();
-    await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),0,0));
     return res.send(JSON.stringify("dadas"));
 });
 
