@@ -9,6 +9,7 @@ const productPriceHistoryService_1 = __importDefault(require("./productPriceHist
 const productPriceHistoryModel_1 = __importDefault(require("../model/productPriceHistoryModel"));
 const websiteService_1 = __importDefault(require("./websiteService"));
 const currencyUtility_1 = require("../utility/currencyUtility");
+const logUtility_1 = require("../utility/logUtility");
 class ProductHistoryService {
     /***
      * save product
@@ -56,6 +57,7 @@ class ProductHistoryService {
                             delete product['body_html'];
                         }
                         catch (e) {
+                            logUtility_1.logger.error(__filename + 'catch4' + e + " url:" + url);
                         }
                         try {
                             // @ts-ignore
@@ -77,7 +79,7 @@ class ProductHistoryService {
                             });
                         }
                         catch (e) {
-                            console.log('hata1');
+                            logUtility_1.logger.error(__filename + 'catch2' + e + " url:" + url);
                             console.log(e);
                         }
                         product.search = this.prepareSearchColumn(product);
@@ -95,6 +97,7 @@ class ProductHistoryService {
                 pagination++;
             }
             catch (e) {
+                logUtility_1.logger.error(__filename + +'catch1' + e);
                 loopContinue = false;
             }
         }

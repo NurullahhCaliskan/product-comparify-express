@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTomorrowMidnight = exports.getTodayMidnight = exports.getYesterdayMidnight = void 0;
+exports.formatDate = exports.getTomorrowMidnight = exports.getTodayMidnight = exports.getYesterdayMidnight = void 0;
 function getYesterdayMidnight() {
     let date = new Date();
     date.setDate(date.getDate() - 1);
@@ -21,3 +21,8 @@ function getTomorrowMidnight() {
     return date;
 }
 exports.getTomorrowMidnight = getTomorrowMidnight;
+function formatDate() {
+    let d = new Date();
+    return [d.getFullYear(), d.getMonth(), d.getDay()].join('-');
+}
+exports.formatDate = formatDate;

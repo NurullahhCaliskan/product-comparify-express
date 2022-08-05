@@ -22,6 +22,7 @@ const currencyService_1 = __importDefault(require("../service/currencyService"))
 const propertiesService_1 = __importDefault(require("../service/propertiesService"));
 const piscina_1 = __importDefault(require("piscina"));
 const path_1 = __importDefault(require("path"));
+const logUtility_1 = require("../utility/logUtility");
 class Engine {
     startEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
@@ -50,12 +51,13 @@ class Engine {
         });
     }
     async collectAllProducts() {
-        console.log('start collectAllProducts');
+        logUtility_1.logger.info(__filename + 'start collectAllProducts');
         let websiteService = new websiteService_1.default();
         let engineHistoryService = new engineHistoryService_1.default();
         let currencyService = new currencyService_1.default();
         let propertiesService = new propertiesService_1.default();
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
+            logUtility_1.logger.info(__filename + 'start save currencies by api');
             await currencyService.saveCurrenciesByApi();
         }
         let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
@@ -71,7 +73,6 @@ class Engine {
         let engineHistoryService = new engineHistoryService_1.default();
         const pool = new piscina_1.default();
         const options = { filename: path_1.default.resolve(__dirname, 'engineThreadWorker') };
-        console.log(options);
         let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
         let chunkedWebsites = (0, arrayUtility_1.divideChunks)(websites, chunkedProperties.value);
         let i = 0;
@@ -80,15 +81,16 @@ class Engine {
             chunkedTread.push(pool.run(chunkedWebsites[i], options));
         }
         await Promise.all(chunkedTread);
-        console.log('complete engine');
+        logUtility_1.logger.info(__filename + ' complete collect');
         //finish engines
         await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 2, 0));
         try {
             await this.prepareAlarmToSendMail();
             await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 0, 0));
+            logUtility_1.logger.info(__filename + ' complete engine');
         }
         catch (e) {
-            console.log(e);
+            logUtility_1.logger.error(__filename + 'catch3' + e);
             let date = new Date();
             date.setFullYear(2000);
             await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), date, 0, 0));

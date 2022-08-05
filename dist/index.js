@@ -9,11 +9,10 @@ const engine_1 = __importDefault(require("./engine/engine"));
 const mail_service_1 = require("./mail.service");
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const mailService_1 = __importDefault(require("./mail/mailService"));
-const logger_middleware_1 = __importDefault(require("./logger.middleware"));
-const morgan_1 = __importDefault(require("morgan"));
 const queueProductEngine_1 = __importDefault(require("./engine/queueProductEngine"));
 const storeService_1 = __importDefault(require("./service/storeService"));
 const lodash_1 = require("lodash");
+const logUtility_1 = require("./utility/logUtility");
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 //initialize mail engine
 function initializeMailEngine() {
@@ -36,20 +35,25 @@ queueProductEngine.startEngine();
 const app = (0, express_1.default)();
 const port = 3000;
 const initVerify = async (req, res, next) => {
-    console.log("initVerify");
+    console.log('initVerify');
     if (!mail_service_1.mailService.service) {
         initializeMailEngine();
     }
     next();
 };
-app.use((0, morgan_1.default)('combined'), logger_middleware_1.default);
 app.get('/test', initVerify, (req, res) => {
-    //logger(req,res)
+    let data = null;
     console.log('test console');
-    return res.send('test6');
+    logUtility_1.logger.info('hehehehe2');
+    console.log('test console');
+    return res.status(500).send('test6');
 });
 app.get('/engine/start', async (req, res) => {
     let engine = new engine_1.default();
+    if (req.headers.api_key !== process.env.ENGINE_START_API_KEY) {
+        return res.send(JSON.stringify({ result: 'fail' }));
+    }
+    console.log(req.headers);
     console.log('start engine1');
     try {
         await engine.collectAllProducts();
@@ -58,7 +62,7 @@ app.get('/engine/start', async (req, res) => {
         console.log(e);
     }
     console.log('end engine1');
-    return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
+    return res.send(JSON.stringify({ result: 'Mail Send Successfully' }));
 });
 app.get('/mail/test', async (req, res) => {
     console.log("mail/test");
@@ -71,11 +75,13 @@ app.get('/mail/test', async (req, res) => {
     }
     // @ts-ignore
     await mailService.sendTestMail((0, lodash_1.parseInt)(req.query.id));
-    return res.send(JSON.stringify({ result: "Mail Send Successfully" }));
+    return res.send(JSON.stringify({ result: 'Mail Send Successfully' }));
 });
 app.get('/query/test', async (req, res) => {
-    return res.send(JSON.stringify("dadas"));
+    return res.send(JSON.stringify('dadas'));
 });
+app.use(logUtility_1.logRequest);
+app.use(logUtility_1.logError);
 exports.default = app.listen(port, () => {
     console.log(`[server]: Test2 Server is running at https://localhost:${port}`);
 });
