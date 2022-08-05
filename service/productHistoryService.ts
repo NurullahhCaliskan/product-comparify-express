@@ -6,6 +6,7 @@ import ProductPriceHistoryService from './productPriceHistoryService';
 import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 import WebsiteService from './websiteService';
 import { getCurrencyRateCorrespondUsd } from '../utility/currencyUtility';
+import { logger } from '../utility/logUtility';
 
 export default class ProductHistoryService {
 
@@ -27,8 +28,6 @@ export default class ProductHistoryService {
 
         await productHistoryRepository.removeProductsByWebsite(url);
         await productPriceHistoryService.removeTodayProductsByWebsite(url);
-
-
 
         let loopContinue = true;
         let pagination = 1;
@@ -72,7 +71,7 @@ export default class ProductHistoryService {
 
                                 delete product['body_html'];
                             } catch (e) {
-
+                                logger.error(__filename +  'catch4' + e + " url:" + url);
                             }
 
                             try {
@@ -102,7 +101,7 @@ export default class ProductHistoryService {
                                     }
                                 });
                             } catch (e) {
-                                console.log('hata1');
+                                logger.error(__filename +  'catch2' + e + " url:" + url);
                                 console.log(e);
                             }
 
@@ -126,12 +125,10 @@ export default class ProductHistoryService {
                 await productPriceHistoryService.saveProductPriceHistory(productPrices);
                 pagination++;
             } catch (e) {
-                    loopContinue = false;
+                logger.error(__filename + +'catch1' + e);
+                loopContinue = false;
                 }
             }
-
-
-
     }
 
     /***

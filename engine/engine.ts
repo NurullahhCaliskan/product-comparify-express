@@ -19,8 +19,7 @@ import PropertiesService from '../service/propertiesService';
 import Piscina from 'piscina';
 import path from 'path';
 import WebsiteModel from '../model/websiteModel';
-import { currencyList } from '../static/currenciesList';
-import sizeof from 'object-sizeof';
+import { logger } from '../utility/logUtility';
 
 export default class Engine {
 
@@ -58,17 +57,18 @@ export default class Engine {
     }
 
     async collectAllProducts() {
-
-        console.log('start collectAllProducts');
+        logger.info(__filename + 'start collectAllProducts');
         let websiteService = new WebsiteService();
         let engineHistoryService = new EngineHistoryService();
         let currencyService = new CurrencyService();
         let propertiesService = new PropertiesService();
 
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
+            logger.info(__filename + 'start save currencies by api');
             await currencyService.saveCurrenciesByApi();
 
         }
+
         let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
 
         await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(),new Date(),1,chunkedProperties.value));
@@ -91,38 +91,38 @@ export default class Engine {
         const pool = new Piscina();
         const options = { filename: path.resolve(__dirname, 'engineThreadWorker') };
 
-        console.log(options);
+
         let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
 
         let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
 
         let i = 0;
 
-        let chunkedTread = []
+        let chunkedTread = [];
 
         for (i = 0; i < chunkedProperties.value; i++) {
             chunkedTread.push(pool.run(chunkedWebsites[i], options));
         }
 
-        await Promise.all(chunkedTread)
-        console.log('complete engine');
+        await Promise.all(chunkedTread);
+        logger.info(__filename + ' complete collect');
         //finish engines
 
-        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(),new Date(), new Date(),2,0));
-        try{
+        await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(), new Date(), 2, 0));
+        try {
 
-        await this.prepareAlarmToSendMail();
-            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(),new Date(), new Date(),0,0));
-        }catch (e) {
-            console.log(e)
-            let date = new Date()
+            await this.prepareAlarmToSendMail();
+            await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(), new Date(), new Date(), 0, 0));
+            logger.info(__filename + ' complete engine');
+        } catch (e) {
+            logger.error(__filename + 'catch3' + e);
+            let date = new Date();
             date.setFullYear(2000)
             await engineHistoryService.saveEngineHistory(new EngineHistoryModel(new Date(),new Date(), date,0,0));
 
         }
 
     }
-
 
     async prepareAlarmToSendMail() {
         console.log('prepareAlarmToSendMail');

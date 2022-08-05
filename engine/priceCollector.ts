@@ -3,33 +3,24 @@ import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 
 export default class PriceCollector {
 
-    getPriceChangeVariantListByProduct(todayProduct: ProductPriceHistoryModel, yesterdayProduct: ProductPriceHistoryModel): [{ productId: number, priceRate: number }] {
-
-        let response = [];
+    getPriceChangeVariantListByProduct(todayProduct: ProductPriceHistoryModel, yesterdayProduct: ProductPriceHistoryModel):   number {
 
         try {
-            for (const todayProductEntity of todayProduct.variants) {
-                // @ts-ignore
-                let id = todayProductEntity.id as number;
+            let todayProductEntity =todayProduct.variants[0]
 
-                // @ts-ignore
-                let yesterdayProductEntity = yesterdayProduct.variants.find(variant => variant.id == id);
+            // @ts-ignore
+            let yesterdayProductEntity = yesterdayProduct.variants.find(variant => variant.id == todayProductEntity.id);
 
-                //if yesterday is not exists, this product added new
-                if (!yesterdayProductEntity) {
-                    console.log('yesterdayProductEntity');
-                    continue;
-                }
-
-                // @ts-ignore
-                let priceRate = rateAsPercentage(todayProductEntity.price, yesterdayProductEntity.price) as number;
-
-                response.push({ productId: id, priceRate: priceRate });
+            if (!yesterdayProductEntity) {
+                return 0;
             }
+
+            // @ts-ignore
+            return rateAsPercentage(todayProductEntity.price, yesterdayProductEntity.price) as number;
 
         } catch (e) {
         }
         // @ts-ignore
-        return response;
+        return 0;
     }
 }
