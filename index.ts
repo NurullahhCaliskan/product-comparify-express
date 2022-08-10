@@ -10,7 +10,7 @@ import { parseInt } from 'lodash';
 import { logError, logger, logRequest } from './utility/logUtility';
 import schedule from 'node-schedule';
 import { CronJob } from 'cron';
-import { GET_MAIN_SCHEDULED_AS_SECOND } from './utility/cronUtility';
+import { GET_MAIN_SCHEDULED_AS_SECOND, GET_QUEUE_SCHEDULED_AS_SECOND } from './utility/cronUtility';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -40,7 +40,7 @@ const mainJob = new CronJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
 });
 
 // @ts-ignore
-const queueJob = new CronJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
+const queueJob = new CronJob(GET_QUEUE_SCHEDULED_AS_SECOND(), async function() {
     await queueProductEngine.runEngine();
 });
 

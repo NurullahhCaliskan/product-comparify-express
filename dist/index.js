@@ -38,7 +38,7 @@ const mainJob = new cron_1.CronJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECON
     await engine.runEngine();
 });
 // @ts-ignore
-const queueJob = new cron_1.CronJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), async function () {
+const queueJob = new cron_1.CronJob((0, cronUtility_1.GET_QUEUE_SCHEDULED_AS_SECOND)(), async function () {
     await queueProductEngine.runEngine();
 });
 mainJob.start();
