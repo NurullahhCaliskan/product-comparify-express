@@ -8,6 +8,9 @@ import QueueProductEngine from './engine/queueProductEngine';
 import StoreService from './service/storeService';
 import { parseInt } from 'lodash';
 import { logError, logger, logRequest } from './utility/logUtility';
+import schedule from 'node-schedule';
+import { CronJob } from 'cron';
+import { GET_MAIN_SCHEDULED_AS_SECOND } from './utility/cronUtility';
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -21,7 +24,7 @@ function initializeMailEngine() {
         service: 'gmail',
         auth: {
             user: process.env.MAILNAME,
-            pass: process.env.MAILPW
+            pass: process.env.MAILPW,
         }
     })
 }
@@ -29,10 +32,21 @@ function initializeMailEngine() {
 initializeMailEngine();
 
 const engine = new Engine();
-engine.startEngine();
-
 const queueProductEngine = new QueueProductEngine();
-queueProductEngine.startEngine();
+
+// @ts-ignore
+const mainJob = new CronJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
+    await engine.runEngine();
+});
+
+// @ts-ignore
+const queueJob = new CronJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
+    await queueProductEngine.runEngine();
+});
+
+mainJob.start();
+queueJob.start();
+
 
 const app: Express = express();
 const port = 3000;
@@ -49,7 +63,7 @@ const initVerify = async (req: Request, res: Response, next: NextFunction) => {
 
 app.get('/test', initVerify, (req: Request, res: Response) => {
     let data = null;
-
+    console.log(schedule.scheduledJobs);
     console.log('test console');
 
 

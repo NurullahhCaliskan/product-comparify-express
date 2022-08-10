@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const node_schedule_1 = __importDefault(require("node-schedule"));
 const storeWebsitesRelationService_1 = __importDefault(require("../service/storeWebsitesRelationService"));
 const websiteService_1 = __importDefault(require("../service/websiteService"));
 const productHistoryService_1 = __importDefault(require("../service/productHistoryService"));
@@ -11,7 +10,6 @@ const priceCollector_1 = __importDefault(require("./priceCollector"));
 const alarmService_1 = __importDefault(require("./alarmService"));
 const arrayUtility_1 = require("../utility/arrayUtility");
 const mailService_1 = __importDefault(require("../mail/mailService"));
-const cronUtility_1 = require("../utility/cronUtility");
 const engineHistoryService_1 = __importDefault(require("../service/engineHistoryService"));
 const engineHistoryModel_1 = __importDefault(require("../model/engineHistoryModel"));
 const productPriceHistoryService_1 = __importDefault(require("../service/productPriceHistoryService"));
@@ -24,31 +22,28 @@ const piscina_1 = __importDefault(require("piscina"));
 const path_1 = __importDefault(require("path"));
 const logUtility_1 = require("../utility/logUtility");
 class Engine {
-    startEngine() {
+    async runEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
         let engine = new Engine();
         let engineHistoryService = new engineHistoryService_1.default();
-        // @ts-ignore
-        const job = node_schedule_1.default.scheduleJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), async function () {
-            console.log('start engine');
-            //if no available, exit
-            if (!(await enginePermissionService.isAvailableRunMainEngine())) {
-                console.log('engine is not avaible');
-                return;
-            }
-            //set unavailable
-            await enginePermissionService.setUnavailableMainEngine();
-            console.log('start engine1');
-            try {
-                await engine.collectAllProducts();
-            }
-            catch (e) {
-                console.log(e);
-            }
-            console.log('end engine');
-            //set available
-            await enginePermissionService.setAvailableMainEngine();
-        });
+        console.log('start engine');
+        //if no available, exit
+        if (!(await enginePermissionService.isAvailableRunMainEngine())) {
+            console.log('engine is not avaible');
+            return;
+        }
+        //set unavailable
+        await enginePermissionService.setUnavailableMainEngine();
+        console.log('start engine1');
+        try {
+            await engine.collectAllProducts();
+        }
+        catch (e) {
+            console.log(e);
+        }
+        console.log('end engine');
+        //set available
+        await enginePermissionService.setAvailableMainEngine();
     }
     async collectAllProducts() {
         logUtility_1.logger.info(__filename + 'start collectAllProducts');

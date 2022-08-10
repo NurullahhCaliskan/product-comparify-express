@@ -1,4 +1,3 @@
-import schedule from 'node-schedule';
 import StoreWebsitesRelationService from '../service/storeWebsitesRelationService';
 import WebsiteService from '../service/websiteService';
 import ProductHistoryService from '../service/productHistoryService';
@@ -23,37 +22,33 @@ import { logger } from '../utility/logUtility';
 
 export default class Engine {
 
-    startEngine() {
+    async runEngine(){
         let enginePermissionService = new EnginePermissionService();
         let engine = new Engine();
         let engineHistoryService = new EngineHistoryService();
 
-        // @ts-ignore
-        const job = schedule.scheduleJob(GET_MAIN_SCHEDULED_AS_SECOND(), async function() {
+        console.log('start engine')
+        //if no available, exit
+        if (!(await enginePermissionService.isAvailableRunMainEngine())) {
+            console.log('engine is not avaible')
+            return;
+        }
 
-            console.log('start engine')
-            //if no available, exit
-            if (!(await enginePermissionService.isAvailableRunMainEngine())) {
-                console.log('engine is not avaible')
-                return;
-            }
+        //set unavailable
+        await enginePermissionService.setUnavailableMainEngine();
 
-            //set unavailable
-            await enginePermissionService.setUnavailableMainEngine();
+        console.log('start engine1');
 
-            console.log('start engine1');
+        try {
+            await engine.collectAllProducts();
+        } catch (e) {
+            console.log(e);
+        }
 
-            try {
-                await engine.collectAllProducts();
-            } catch (e) {
-                console.log(e);
-            }
+        console.log('end engine');
+        //set available
+        await enginePermissionService.setAvailableMainEngine();
 
-            console.log('end engine');
-            //set available
-            await enginePermissionService.setAvailableMainEngine();
-
-        });
     }
 
     async collectAllProducts() {

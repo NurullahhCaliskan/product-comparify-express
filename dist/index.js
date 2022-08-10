@@ -13,6 +13,9 @@ const queueProductEngine_1 = __importDefault(require("./engine/queueProductEngin
 const storeService_1 = __importDefault(require("./service/storeService"));
 const lodash_1 = require("lodash");
 const logUtility_1 = require("./utility/logUtility");
+const node_schedule_1 = __importDefault(require("node-schedule"));
+const cron_1 = require("cron");
+const cronUtility_1 = require("./utility/cronUtility");
 dotenv_1.default.config({ path: `.env.${process.env.NODE_ENV}` });
 //initialize mail engine
 function initializeMailEngine() {
@@ -23,15 +26,23 @@ function initializeMailEngine() {
         service: 'gmail',
         auth: {
             user: process.env.MAILNAME,
-            pass: process.env.MAILPW
+            pass: process.env.MAILPW,
         }
     });
 }
 initializeMailEngine();
 const engine = new engine_1.default();
-engine.startEngine();
 const queueProductEngine = new queueProductEngine_1.default();
-queueProductEngine.startEngine();
+// @ts-ignore
+const mainJob = new cron_1.CronJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), async function () {
+    await engine.runEngine();
+});
+// @ts-ignore
+const queueJob = new cron_1.CronJob((0, cronUtility_1.GET_MAIN_SCHEDULED_AS_SECOND)(), async function () {
+    await queueProductEngine.runEngine();
+});
+mainJob.start();
+queueJob.start();
 const app = (0, express_1.default)();
 const port = 3000;
 const initVerify = async (req, res, next) => {
@@ -43,6 +54,7 @@ const initVerify = async (req, res, next) => {
 };
 app.get('/test', initVerify, (req, res) => {
     let data = null;
+    console.log(node_schedule_1.default.scheduledJobs);
     console.log('test console');
     logUtility_1.logger.info('hehehehe2');
     console.log('test console');
