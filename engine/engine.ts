@@ -15,10 +15,10 @@ import ProductMailHistoryService from '../service/productMailHistoryService';
 import ProductMailHistoryModel from '../model/productMailHistoryModel';
 import CurrencyService from '../service/currencyService';
 import PropertiesService from '../service/propertiesService';
-import Piscina from 'piscina';
 import path from 'path';
 import WebsiteModel from '../model/websiteModel';
 import { logger } from '../utility/logUtility';
+import scrap from './engineThreadWorker';
 
 export default class Engine {
 
@@ -83,23 +83,25 @@ export default class Engine {
         let propertiesService = new PropertiesService();
         let engineHistoryService = new EngineHistoryService();
 
-        const pool = new Piscina();
-        const options = { filename: path.resolve(__dirname, 'engineThreadWorker') };
+        //const pool = new Piscina();
+        //const options = { filename: path.resolve(__dirname, 'engineThreadWorker') };
 
 
-        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
+        //let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
 
-        let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
+        //let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
+
+        await scrap(websites);
 
         let i = 0;
 
         let chunkedTread = [];
 
-        for (i = 0; i < chunkedProperties.value; i++) {
-            chunkedTread.push(pool.run(chunkedWebsites[i], options));
-        }
+        //for (i = 0; i < chunkedProperties.value; i++) {
+        //    chunkedTread.push(pool.run(chunkedWebsites[i], options));
+        //}
 
-        await Promise.all(chunkedTread);
+        //await Promise.all(chunkedTread);
         logger.info(__filename + ' complete collect');
         //finish engines
 

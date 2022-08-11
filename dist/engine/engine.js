@@ -18,9 +18,8 @@ const productMailHistoryService_1 = __importDefault(require("../service/productM
 const productMailHistoryModel_1 = __importDefault(require("../model/productMailHistoryModel"));
 const currencyService_1 = __importDefault(require("../service/currencyService"));
 const propertiesService_1 = __importDefault(require("../service/propertiesService"));
-const piscina_1 = __importDefault(require("piscina"));
-const path_1 = __importDefault(require("path"));
 const logUtility_1 = require("../utility/logUtility");
+const engineThreadWorker_1 = __importDefault(require("./engineThreadWorker"));
 class Engine {
     async runEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
@@ -66,16 +65,17 @@ class Engine {
     async runners(websites) {
         let propertiesService = new propertiesService_1.default();
         let engineHistoryService = new engineHistoryService_1.default();
-        const pool = new piscina_1.default();
-        const options = { filename: path_1.default.resolve(__dirname, 'engineThreadWorker') };
-        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
-        let chunkedWebsites = (0, arrayUtility_1.divideChunks)(websites, chunkedProperties.value);
+        //const pool = new Piscina();
+        //const options = { filename: path.resolve(__dirname, 'engineThreadWorker') };
+        //let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
+        //let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
+        await (0, engineThreadWorker_1.default)(websites);
         let i = 0;
         let chunkedTread = [];
-        for (i = 0; i < chunkedProperties.value; i++) {
-            chunkedTread.push(pool.run(chunkedWebsites[i], options));
-        }
-        await Promise.all(chunkedTread);
+        //for (i = 0; i < chunkedProperties.value; i++) {
+        //    chunkedTread.push(pool.run(chunkedWebsites[i], options));
+        //}
+        //await Promise.all(chunkedTread);
         logUtility_1.logger.info(__filename + ' complete collect');
         //finish engines
         await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 2, 0));
