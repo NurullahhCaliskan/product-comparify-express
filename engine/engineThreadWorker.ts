@@ -1,8 +1,10 @@
 import ProductHistoryService from '../service/productHistoryService';
 import WebsiteModel from '../model/websiteModel';
 import CurrencyService from '../service/currencyService';
+import { expose } from 'threads/worker';
+import { logger } from '../utility/logUtility';
 
-export default async function scrap(websites : WebsiteModel[]) {
+expose(async function scrap(websites: WebsiteModel[]) {
     let productHistoryService = new ProductHistoryService();
     let currencyService = new CurrencyService();
 
@@ -10,7 +12,7 @@ export default async function scrap(websites : WebsiteModel[]) {
     for (const website of websites) {
         await productHistoryService.saveProductsFromWebByUrl(website);
     }
-}
+});
 
 
 

@@ -19,7 +19,7 @@ const productMailHistoryModel_1 = __importDefault(require("../model/productMailH
 const currencyService_1 = __importDefault(require("../service/currencyService"));
 const propertiesService_1 = __importDefault(require("../service/propertiesService"));
 const logUtility_1 = require("../utility/logUtility");
-const engineThreadWorker_1 = __importDefault(require("./engineThreadWorker"));
+const threads_1 = require("threads");
 class Engine {
     async runEngine() {
         let enginePermissionService = new enginePermissionService_1.default();
@@ -65,17 +65,20 @@ class Engine {
     async runners(websites) {
         let propertiesService = new propertiesService_1.default();
         let engineHistoryService = new engineHistoryService_1.default();
-        //const pool = new Piscina();
-        //const options = { filename: path.resolve(__dirname, 'engineThreadWorker') };
-        //let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
-        //let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
-        await (0, engineThreadWorker_1.default)(websites);
-        let i = 0;
-        let chunkedTread = [];
-        //for (i = 0; i < chunkedProperties.value; i++) {
-        //    chunkedTread.push(pool.run(chunkedWebsites[i], options));
-        //}
-        //await Promise.all(chunkedTread);
+        const pool = (0, threads_1.Pool)(() => (0, threads_1.spawn)(new threads_1.Worker('engineThreadWorker')));
+        const myTasks = [];
+        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
+        let chunkedWebsites = (0, arrayUtility_1.divideChunks)(websites, chunkedProperties.value);
+        try {
+            for (let input = 0; input < chunkedProperties.value; input++) {
+                myTasks.push(pool.queue(worker => worker(chunkedWebsites[input])));
+            }
+        }
+        catch (e) {
+            logUtility_1.logger.info(__filename + e);
+        }
+        await Promise.all(myTasks);
+        await pool.terminate(true);
         logUtility_1.logger.info(__filename + ' complete collect');
         //finish engines
         await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 2, 0));
@@ -108,23 +111,18 @@ class Engine {
             if (relevantUserByWebsite.length === 0) {
                 continue;
             }
-            let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
-            let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
+            let productsWithCompareList = await productPriceHistoryService.getProductHistoryWithCompare(website.url);
             //if today or yesterday product lis is empty, go back.
-            if ((0, arrayUtility_1.arrayIsEmpty)(yesterdayProductList) || (0, arrayUtility_1.arrayIsEmpty)(todayProductList)) {
+            if ((0, arrayUtility_1.arrayIsEmpty)(productsWithCompareList)) {
                 continue;
             }
-            for (const index in yesterdayProductList) {
+            for (const index in productsWithCompareList) {
                 let priceCollector = new priceCollector_1.default();
-                let id = yesterdayProductList[index].id;
-                let todayEqualProductList = todayProductList.filter(product => product.id === id);
-                //if not exists, this product not exist yesterday on db
-                if (!todayEqualProductList || todayEqualProductList.length === 0) {
-                    continue;
-                }
-                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayEqualProductList[0], yesterdayProductList[index]);
-                //find users which cache product alarm
-                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayEqualProductList[0]);
+                let id = productsWithCompareList[index].today_id;
+                // @ts-ignore
+                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(productsWithCompareList[index].today_variant.price, productsWithCompareList[index].yesterday_variant.price);
+                let [today, yesterday] = (0, arrayUtility_1.convertCompareToDayProductPrices)(productsWithCompareList[index]);
+                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterday, today);
             }
         }
         console.log(JSON.stringify(storesWhichSendingAlarmList));

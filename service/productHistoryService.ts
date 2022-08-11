@@ -7,6 +7,7 @@ import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 import WebsiteService from './websiteService';
 import { getCurrencyRateCorrespondUsd } from '../utility/currencyUtility';
 import { logger } from '../utility/logUtility';
+import { getTodayAsNumber } from '../utility/dayUtility';
 
 export default class ProductHistoryService {
 
@@ -118,7 +119,7 @@ export default class ProductHistoryService {
                 //convert product to product prices
                 products.forEach(product => {
                     // @ts-ignore
-                    productPrices.push(new ProductPriceHistoryModel(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
+                    productPrices.push(new ProductPriceHistoryModel(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants, getTodayAsNumber()));
                 });
 
                 await productHistoryRepository.saveProductsFromWebByUrl(products);

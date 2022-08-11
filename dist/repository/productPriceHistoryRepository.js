@@ -49,6 +49,49 @@ class ProductPriceHistoryRepository {
         return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray());
     }
     /***
+     * get Product History By days and website
+     * @param website website
+     */
+    async getProductHistoryWithCompare(website) {
+        var _a;
+        let today = (0, dayUtility_1.getTodayAsNumber)();
+        let yesterday = (0, dayUtility_1.getYesterdayAsNumber)();
+        // @ts-ignore
+        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.aggregate([
+            { $match: { $and: [{ website: website }, { timestamp_id: today }] } },
+            {
+                $lookup: {
+                    from: 'product-price-history',
+                    localField: 'id',
+                    foreignField: 'id',
+                    as: 'productPriceHistoryYesterday',
+                },
+            },
+            { $unwind: '$productPriceHistoryYesterday' },
+            { $match: { 'productPriceHistoryYesterday.timestamp_id': yesterday } },
+            {
+                $project: {
+                    today_id: '$id',
+                    today_website: '$website',
+                    today_currency: '$currency',
+                    today_created_date_time: '$created_date_time',
+                    today_timestamp_id: '$timestamp_id',
+                    today_variant: { $arrayElemAt: ['$variants', 0] },
+                    yesterday_id: '$productPriceHistoryYesterday.id',
+                    yesterday_website: '$productPriceHistoryYesterday.website',
+                    yesterday_currency: '$productPriceHistoryYesterday.currency',
+                    yesterday_created_date_time: '$productPriceHistoryYesterday.created_date_time',
+                    yesterday_timestamp_id: '$productPriceHistoryYesterday.timestamp_id',
+                    yesterday_variant: { $arrayElemAt: ['$productPriceHistoryYesterday.variants', 0] },
+                },
+            },
+            { $match: { $expr: { $ne: ['$today_variant.price', '$yesterday_variant.price'] } } },
+            { $limit: 50 },
+        ], {
+            allowDiskUse: true,
+        }).toArray());
+    }
+    /***
      * remove Today Products
      */
     async removeTodayProducts() {

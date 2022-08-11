@@ -1,5 +1,6 @@
 import ProductPriceHistoryRepository from '../repository/productPriceHistoryRepository';
 import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
+import ProductPriceHistoryWithCompareModel from '../model/productPriceHistoryWithCompareModel';
 
 export default class ProductPriceHistoryService {
 
@@ -21,6 +22,16 @@ export default class ProductPriceHistoryService {
         let productHistoryRepository = new ProductPriceHistoryRepository();
 
         return await productHistoryRepository.getProductHistoryByDaysAndWebsiteToday(website);
+    }
+
+    /***
+     * get Product History data
+     * @param website website
+     */
+    async getProductHistoryWithCompare(website: string): Promise<ProductPriceHistoryWithCompareModel[]> {
+        let productHistoryRepository = new ProductPriceHistoryRepository();
+
+        return await productHistoryRepository.getProductHistoryWithCompare(website);
     }
 
     async saveProductPriceHistory(website: ProductPriceHistoryModel[]) {

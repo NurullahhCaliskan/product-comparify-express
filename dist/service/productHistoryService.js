@@ -10,6 +10,7 @@ const productPriceHistoryModel_1 = __importDefault(require("../model/productPric
 const websiteService_1 = __importDefault(require("./websiteService"));
 const currencyUtility_1 = require("../utility/currencyUtility");
 const logUtility_1 = require("../utility/logUtility");
+const dayUtility_1 = require("../utility/dayUtility");
 class ProductHistoryService {
     /***
      * save product
@@ -90,7 +91,7 @@ class ProductHistoryService {
                 //convert product to product prices
                 products.forEach(product => {
                     // @ts-ignore
-                    productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants));
+                    productPrices.push(new productPriceHistoryModel_1.default(product.id, product.website, websiteEntity.cart.currency, product.created_date_time, product.variants, (0, dayUtility_1.getTodayAsNumber)()));
                 });
                 await productHistoryRepository.saveProductsFromWebByUrl(products);
                 await productPriceHistoryService.saveProductPriceHistory(productPrices);

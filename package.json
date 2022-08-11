@@ -27,8 +27,8 @@
     "nodemailer": "^6.7.5",
     "nodemailer-smtp-transport": "^2.4.2",
     "object-sizeof": "^1.6.3",
-    "piscina": "^3.2.0",
     "rotating-file-stream": "^3.0.4",
+    "threads": "^1.7.0",
     "uuid": "^8.3.2",
     "winston": "^3.8.1",
     "winston-mongodb": "^5.0.7"

@@ -56,18 +56,18 @@ export default class WebsiteRepository {
      * get websites from queue
      */
     async getWebsitesFromQueue(): Promise<WebsiteModel[]> {
-        return await collections.websitesModel?.aggregate([
-            {
-                $lookup: {
-                    from: 'product-history-crawler-queue',
-                    localField: 'url',
-                    foreignField: 'website',
-                    as: 'websiteData'
-                }
-            },
-            {$match: {websiteData: {$not: {$size: 0}}}}
+            return await collections.websitesModel?.aggregate([
+                {
+                    $lookup: {
+                        from: 'product-history-crawler-queue',
+                        localField: 'url',
+                        foreignField: 'website',
+                        as: 'websiteData'
+                    }
+                },
+                {$match: {websiteData: {$not: {$size: 0}}}}
 
-        ]).toArray() as WebsiteModel[]
+            ]).toArray() as WebsiteModel[]
     }
 
     /***

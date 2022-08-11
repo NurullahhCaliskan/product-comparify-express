@@ -3,20 +3,12 @@ import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
 
 export default class PriceCollector {
 
-    getPriceChangeVariantListByProduct(todayProduct: ProductPriceHistoryModel, yesterdayProduct: ProductPriceHistoryModel):   number {
+    getPriceChangeVariantListByProduct(todayPrice: number, yesterdayPrice: number):   number {
 
         try {
-            let todayProductEntity =todayProduct.variants[0]
 
             // @ts-ignore
-            let yesterdayProductEntity = yesterdayProduct.variants.find(variant => variant.id == todayProductEntity.id);
-
-            if (!yesterdayProductEntity) {
-                return 0;
-            }
-
-            // @ts-ignore
-            return rateAsPercentage(todayProductEntity.price, yesterdayProductEntity.price) as number;
+            return rateAsPercentage(todayPrice, yesterdayPrice) as number;
 
         } catch (e) {
         }

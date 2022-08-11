@@ -1,7 +1,8 @@
 import { collections } from '../database.service';
-import { getTodayMidnight, getTomorrowMidnight, getYesterdayMidnight } from '../utility/dayUtility';
+import { getTodayAsNumber, getTodayMidnight, getTomorrowMidnight, getYesterdayAsNumber, getYesterdayMidnight } from '../utility/dayUtility';
 import { urlFormatter } from '../utility/stringUtility';
 import ProductPriceHistoryModel from '../model/productPriceHistoryModel';
+import ProductPriceHistoryWithCompareModel from '../model/productPriceHistoryWithCompareModel';
 
 export default class ProductPriceHistoryRepository {
 
@@ -54,6 +55,50 @@ export default class ProductPriceHistoryRepository {
 
         // @ts-ignore
         return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray() as ProductPriceHistoryModel[];
+    }
+
+    /***
+     * get Product History By days and website
+     * @param website website
+     */
+    async getProductHistoryWithCompare(website: string): Promise<ProductPriceHistoryWithCompareModel[]> {
+        let today = getTodayAsNumber();
+        let yesterday = getYesterdayAsNumber();
+        // @ts-ignore
+        return await collections.productPriceHistoryModel?.aggregate([
+            { $match: { $and: [{ website: website }, { timestamp_id: today }] } },
+            {
+                $lookup: {
+                    from: 'product-price-history',
+                    localField: 'id',
+                    foreignField: 'id',
+                    as: 'productPriceHistoryYesterday',
+
+                },
+            },
+            { $unwind: '$productPriceHistoryYesterday' },
+            { $match: { 'productPriceHistoryYesterday.timestamp_id': yesterday } },
+            {
+                $project: {
+                    today_id: '$id',
+                    today_website: '$website',
+                    today_currency: '$currency',
+                    today_created_date_time: '$created_date_time',
+                    today_timestamp_id: '$timestamp_id',
+                    today_variant: { $arrayElemAt: ['$variants', 0] },
+                    yesterday_id: '$productPriceHistoryYesterday.id',
+                    yesterday_website: '$productPriceHistoryYesterday.website',
+                    yesterday_currency: '$productPriceHistoryYesterday.currency',
+                    yesterday_created_date_time: '$productPriceHistoryYesterday.created_date_time',
+                    yesterday_timestamp_id: '$productPriceHistoryYesterday.timestamp_id',
+                    yesterday_variant: { $arrayElemAt: ['$productPriceHistoryYesterday.variants', 0] },
+                },
+            },
+            { $match: { $expr: { $ne: ['$today_variant.price', '$yesterday_variant.price'] } } },
+            { $limit: 50 },
+        ], {
+            allowDiskUse: true,
+        }).toArray();
     }
 
     /***

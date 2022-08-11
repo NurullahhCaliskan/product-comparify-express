@@ -3,9 +3,8 @@ import WebsiteService from '../service/websiteService';
 import ProductHistoryService from '../service/productHistoryService';
 import PriceCollector from './priceCollector';
 import AlarmService from './alarmService';
-import { arrayIsEmpty, divideChunks } from '../utility/arrayUtility';
+import { arrayIsEmpty, convertCompareToDayProductPrices, divideChunks } from '../utility/arrayUtility';
 import MailService from '../mail/mailService';
-import { GET_MAIN_SCHEDULED_AS_SECOND } from '../utility/cronUtility';
 import EngineHistoryService from '../service/engineHistoryService';
 import EngineHistoryModel from '../model/engineHistoryModel';
 import ProductPriceHistoryService from '../service/productPriceHistoryService';
@@ -15,10 +14,9 @@ import ProductMailHistoryService from '../service/productMailHistoryService';
 import ProductMailHistoryModel from '../model/productMailHistoryModel';
 import CurrencyService from '../service/currencyService';
 import PropertiesService from '../service/propertiesService';
-import path from 'path';
 import WebsiteModel from '../model/websiteModel';
 import { logger } from '../utility/logUtility';
-import scrap from './engineThreadWorker';
+import { Pool, spawn, Worker } from 'threads';
 
 export default class Engine {
 
@@ -83,25 +81,24 @@ export default class Engine {
         let propertiesService = new PropertiesService();
         let engineHistoryService = new EngineHistoryService();
 
-        //const pool = new Piscina();
-        //const options = { filename: path.resolve(__dirname, 'engineThreadWorker') };
+        const pool = Pool(() => spawn(new Worker('engineThreadWorker')));
 
+        const myTasks = [];
 
-        //let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
+        let chunkedProperties = await propertiesService.getPropertiesByText('scrap-chunk-count');
 
-        //let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
+        let chunkedWebsites = divideChunks(websites, chunkedProperties.value);
 
-        await scrap(websites);
+        try {
 
-        let i = 0;
-
-        let chunkedTread = [];
-
-        //for (i = 0; i < chunkedProperties.value; i++) {
-        //    chunkedTread.push(pool.run(chunkedWebsites[i], options));
-        //}
-
-        //await Promise.all(chunkedTread);
+            for (let input = 0; input < chunkedProperties.value; input++) {
+                myTasks.push(pool.queue(worker => worker(chunkedWebsites[input])));
+            }
+        } catch (e) {
+            logger.info(__filename + e);
+        }
+        await Promise.all(myTasks);
+        await pool.terminate(true);
         logger.info(__filename + ' complete collect');
         //finish engines
 
@@ -143,32 +140,27 @@ export default class Engine {
                 continue;
             }
 
-            let yesterdayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteYesterday(website.url);
-            let todayProductList = await productPriceHistoryService.getProductHistoryByDaysAndWebsiteToday(website.url);
+            let productsWithCompareList = await productPriceHistoryService.getProductHistoryWithCompare(website.url);
 
 
             //if today or yesterday product lis is empty, go back.
-            if (arrayIsEmpty(yesterdayProductList) || arrayIsEmpty(todayProductList)) {
+            if (arrayIsEmpty(productsWithCompareList)) {
                 continue;
             }
 
-            for (const index in yesterdayProductList) {
+            for (const index in productsWithCompareList) {
                 let priceCollector = new PriceCollector();
+                let id = productsWithCompareList[index].today_id;
 
-                let id = yesterdayProductList[index].id
+                // @ts-ignore
+                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(productsWithCompareList[index].today_variant.price, productsWithCompareList[index].yesterday_variant.price);
 
-                let todayEqualProductList = todayProductList.filter(product => product.id === id)
+                let [today, yesterday] = convertCompareToDayProductPrices(productsWithCompareList[index]);
 
-                //if not exists, this product not exist yesterday on db
-                if (!todayEqualProductList || todayEqualProductList.length === 0 ){
-                    continue;
-                }
-
-                let priceIdCouple = priceCollector.getPriceChangeVariantListByProduct(todayEqualProductList[0], yesterdayProductList[index]);
-                //find users which cache product alarm
-                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterdayProductList[index], todayEqualProductList[0]);
+                await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterday, today);
 
             }
+
         }
 
         console.log(JSON.stringify(storesWhichSendingAlarmList));
