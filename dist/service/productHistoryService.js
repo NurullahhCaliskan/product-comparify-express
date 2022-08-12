@@ -24,7 +24,6 @@ class ProductHistoryService {
         let currencyRate = (0, currencyUtility_1.getCurrencyRateCorrespondUsd)(websiteEntity);
         let url = website.url;
         await productHistoryRepository.removeProductsByWebsite(url);
-        await productPriceHistoryService.removeTodayProductsByWebsite(url);
         let loopContinue = true;
         let pagination = 1;
         while (loopContinue) {

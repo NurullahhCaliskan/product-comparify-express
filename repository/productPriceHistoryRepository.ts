@@ -14,7 +14,7 @@ export default class ProductPriceHistoryRepository {
         try {
             if (products.length > 0) {
                 // @ts-ignore
-                await collections.productPriceHistoryModel?.insertMany(products);
+                await collections.productPriceHistoryTodayModel?.insertMany(products);
 
             }
         } catch (e) {
@@ -36,7 +36,7 @@ export default class ProductPriceHistoryRepository {
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: yesterdayMidnight, $lt: todayMidnight } }] };
 
         // @ts-ignore
-        return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray() as ProductPriceHistoryModel[];
+        return await collections.productPriceHistoryTodayModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray() as ProductPriceHistoryModel[];
     }
 
     /***
@@ -54,7 +54,25 @@ export default class ProductPriceHistoryRepository {
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: todayMidnight, $lt: tomorrowMidnight } }] };
 
         // @ts-ignore
-        return await collections.productPriceHistoryModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray() as ProductPriceHistoryModel[];
+        return await collections.productPriceHistoryTodayModel?.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray() as ProductPriceHistoryModel[];
+    }
+
+    /***
+     * 1)Remove yesterday except yesterday
+     * 2)Copy yesterday products from today to yesterday
+     * 3)Remove today all
+     */
+    async syncPricesHistoryBeforeStartEngine() {
+
+        await collections.productPriceHistoryYesterdayModel?.deleteMany({ 'timestamp_id': { $ne: getYesterdayAsNumber() } });
+
+        if (await collections.productPriceHistoryYesterdayModel?.count({}) === 0) {
+
+            await collections.productPriceHistoryTodayModel?.aggregate([{ $match: { timestamp_id: getYesterdayAsNumber() } }, { $out: 'product-price-history-yesterday' }]).toArray();
+        }
+
+        await collections.productPriceHistoryTodayModel?.deleteMany({});
+
     }
 
     /***
@@ -62,14 +80,12 @@ export default class ProductPriceHistoryRepository {
      * @param website website
      */
     async getProductHistoryWithCompare(website: string): Promise<ProductPriceHistoryWithCompareModel[]> {
-        let today = getTodayAsNumber();
-        let yesterday = getYesterdayAsNumber();
         // @ts-ignore
-        return await collections.productPriceHistoryModel?.aggregate([
-            { $match: { $and: [{ website: website }, { timestamp_id: today }] } },
+        return await collections.productPriceHistoryTodayModel?.aggregate([
+            { $match: { website: website } },
             {
                 $lookup: {
-                    from: 'product-price-history',
+                    from: 'product-price-history-yesterday',
                     localField: 'id',
                     foreignField: 'id',
                     as: 'productPriceHistoryYesterday',
@@ -77,7 +93,6 @@ export default class ProductPriceHistoryRepository {
                 },
             },
             { $unwind: '$productPriceHistoryYesterday' },
-            { $match: { 'productPriceHistoryYesterday.timestamp_id': yesterday } },
             {
                 $project: {
                     today_id: '$id',
@@ -116,7 +131,7 @@ export default class ProductPriceHistoryRepository {
         start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
         // @ts-ignore
         end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
-        await collections.productPriceHistoryModel?.deleteMany({ created_date_time: { $gte: start, $lt: end } });
+        await collections.productPriceHistoryTodayModel?.deleteMany({ created_date_time: { $gte: start, $lt: end } });
 
     }
 
@@ -124,20 +139,9 @@ export default class ProductPriceHistoryRepository {
      * remove Today Products
      */
     async removeTodayProductsByWebsite(website:string) {
-        let start = new Date();
-        start.setUTCHours(0, 0, 0, 0);
 
-        let end = new Date();
-        end.setUTCHours(23, 59, 59, 999);
-
-
-        // @ts-ignore
-        start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
-        // @ts-ignore
-        end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
-
-        let findJson = { $and: [{ website: website }, { created_date_time: { $gte: start, $lt: end } }] }
-        await collections.productPriceHistoryModel?.deleteMany(findJson);
+        let findJson = { $and: [{ website: website }, { timestamp_id: getTodayAsNumber }] };
+        await collections.productPriceHistoryTodayModel?.deleteMany(findJson);
 
     }
 }

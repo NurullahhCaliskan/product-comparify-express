@@ -29,6 +29,10 @@ class ProductPriceHistoryService {
         let productHistoryRepository = new productPriceHistoryRepository_1.default();
         return await productHistoryRepository.getProductHistoryWithCompare(website);
     }
+    async syncPricesHistoryBeforeStartEngine() {
+        let productHistoryRepository = new productPriceHistoryRepository_1.default();
+        return await productHistoryRepository.syncPricesHistoryBeforeStartEngine();
+    }
     async saveProductPriceHistory(website) {
         let productHistoryRepository = new productPriceHistoryRepository_1.default();
         await productHistoryRepository.saveProductPricesFromWebByUrl(website);

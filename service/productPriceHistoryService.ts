@@ -34,6 +34,11 @@ export default class ProductPriceHistoryService {
         return await productHistoryRepository.getProductHistoryWithCompare(website);
     }
 
+    async syncPricesHistoryBeforeStartEngine(){
+        let productHistoryRepository = new ProductPriceHistoryRepository();
+        return await productHistoryRepository.syncPricesHistoryBeforeStartEngine();
+    }
+
     async saveProductPriceHistory(website: ProductPriceHistoryModel[]) {
         let productHistoryRepository = new ProductPriceHistoryRepository();
         await productHistoryRepository.saveProductPricesFromWebByUrl(website);

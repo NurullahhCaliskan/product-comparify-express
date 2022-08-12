@@ -55,7 +55,7 @@ export default class Engine {
         let engineHistoryService = new EngineHistoryService();
         let currencyService = new CurrencyService();
         let propertiesService = new PropertiesService();
-
+        let productHistoryService = new ProductPriceHistoryService();
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
             logger.info(__filename + 'start save currencies by api');
             await currencyService.saveCurrenciesByApi();
@@ -69,6 +69,7 @@ export default class Engine {
         await currencyService.refreshCurrencyList();
 
         await this.syncWebsites();
+        await productHistoryService.syncPricesHistoryBeforeStartEngine();
 
         //get websites for collect data
         let websites = await websiteService.getWebsites();

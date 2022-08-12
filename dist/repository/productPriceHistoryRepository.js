@@ -13,7 +13,7 @@ class ProductPriceHistoryRepository {
         try {
             if (products.length > 0) {
                 // @ts-ignore
-                await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
+                await ((_a = database_service_1.collections.productPriceHistoryTodayModel) === null || _a === void 0 ? void 0 : _a.insertMany(products));
             }
         }
         catch (e) {
@@ -31,7 +31,7 @@ class ProductPriceHistoryRepository {
         let todayMidnight = (0, dayUtility_1.getTodayMidnight)();
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: yesterdayMidnight, $lt: todayMidnight } }] };
         // @ts-ignore
-        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray());
+        return await ((_a = database_service_1.collections.productPriceHistoryTodayModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray());
     }
     /***
      * get Product History By days and website
@@ -46,7 +46,20 @@ class ProductPriceHistoryRepository {
         let tomorrowMidnight = (0, dayUtility_1.getTomorrowMidnight)();
         let findJson = { $and: [{ website: website }, { created_date_time: { $gte: todayMidnight, $lt: tomorrowMidnight } }] };
         // @ts-ignore
-        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray());
+        return await ((_a = database_service_1.collections.productPriceHistoryTodayModel) === null || _a === void 0 ? void 0 : _a.find(findJson).sort({ id: 1, created_date_time: -1 }).allowDiskUse().toArray());
+    }
+    /***
+     * 1)Remove yesterday except yesterday
+     * 2)Copy yesterday products from today to yesterday
+     * 3)Remove today all
+     */
+    async syncPricesHistoryBeforeStartEngine() {
+        var _a, _b, _c, _d;
+        await ((_a = database_service_1.collections.productPriceHistoryYesterdayModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ 'timestamp_id': { $ne: (0, dayUtility_1.getYesterdayAsNumber)() } }));
+        if (await ((_b = database_service_1.collections.productPriceHistoryYesterdayModel) === null || _b === void 0 ? void 0 : _b.count({})) === 0) {
+            await ((_c = database_service_1.collections.productPriceHistoryTodayModel) === null || _c === void 0 ? void 0 : _c.aggregate([{ $match: { timestamp_id: (0, dayUtility_1.getYesterdayAsNumber)() } }, { $out: 'product-price-history-yesterday' }]).toArray());
+        }
+        await ((_d = database_service_1.collections.productPriceHistoryTodayModel) === null || _d === void 0 ? void 0 : _d.deleteMany({}));
     }
     /***
      * get Product History By days and website
@@ -54,21 +67,18 @@ class ProductPriceHistoryRepository {
      */
     async getProductHistoryWithCompare(website) {
         var _a;
-        let today = (0, dayUtility_1.getTodayAsNumber)();
-        let yesterday = (0, dayUtility_1.getYesterdayAsNumber)();
         // @ts-ignore
-        return await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.aggregate([
-            { $match: { $and: [{ website: website }, { timestamp_id: today }] } },
+        return await ((_a = database_service_1.collections.productPriceHistoryTodayModel) === null || _a === void 0 ? void 0 : _a.aggregate([
+            { $match: { website: website } },
             {
                 $lookup: {
-                    from: 'product-price-history',
+                    from: 'product-price-history-yesterday',
                     localField: 'id',
                     foreignField: 'id',
                     as: 'productPriceHistoryYesterday',
                 },
             },
             { $unwind: '$productPriceHistoryYesterday' },
-            { $match: { 'productPriceHistoryYesterday.timestamp_id': yesterday } },
             {
                 $project: {
                     today_id: '$id',
@@ -104,23 +114,15 @@ class ProductPriceHistoryRepository {
         start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
         // @ts-ignore
         end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
-        await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ created_date_time: { $gte: start, $lt: end } }));
+        await ((_a = database_service_1.collections.productPriceHistoryTodayModel) === null || _a === void 0 ? void 0 : _a.deleteMany({ created_date_time: { $gte: start, $lt: end } }));
     }
     /***
      * remove Today Products
      */
     async removeTodayProductsByWebsite(website) {
         var _a;
-        let start = new Date();
-        start.setUTCHours(0, 0, 0, 0);
-        let end = new Date();
-        end.setUTCHours(23, 59, 59, 999);
-        // @ts-ignore
-        start.setDate(start.getDate() - process.env.CRAWL_MINUS_TODAY);
-        // @ts-ignore
-        end.setDate(end.getDate() - process.env.CRAWL_MINUS_TODAY);
-        let findJson = { $and: [{ website: website }, { created_date_time: { $gte: start, $lt: end } }] };
-        await ((_a = database_service_1.collections.productPriceHistoryModel) === null || _a === void 0 ? void 0 : _a.deleteMany(findJson));
+        let findJson = { $and: [{ website: website }, { timestamp_id: dayUtility_1.getTodayAsNumber }] };
+        await ((_a = database_service_1.collections.productPriceHistoryTodayModel) === null || _a === void 0 ? void 0 : _a.deleteMany(findJson));
     }
 }
 exports.default = ProductPriceHistoryRepository;

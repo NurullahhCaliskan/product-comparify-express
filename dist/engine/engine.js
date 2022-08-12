@@ -50,6 +50,7 @@ class Engine {
         let engineHistoryService = new engineHistoryService_1.default();
         let currencyService = new currencyService_1.default();
         let propertiesService = new propertiesService_1.default();
+        let productHistoryService = new productPriceHistoryService_1.default();
         if (process.env.PERMISSION_CONVERT_CURRENCY === 'true') {
             logUtility_1.logger.info(__filename + 'start save currencies by api');
             await currencyService.saveCurrenciesByApi();
@@ -58,6 +59,7 @@ class Engine {
         await engineHistoryService.saveEngineHistory(new engineHistoryModel_1.default(new Date(), new Date(), new Date(), 1, chunkedProperties.value));
         await currencyService.refreshCurrencyList();
         await this.syncWebsites();
+        await productHistoryService.syncPricesHistoryBeforeStartEngine();
         //get websites for collect data
         let websites = await websiteService.getWebsites();
         await this.runners(websites);

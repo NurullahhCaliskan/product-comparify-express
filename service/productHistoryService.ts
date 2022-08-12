@@ -28,7 +28,6 @@ export default class ProductHistoryService {
         let url = website.url;
 
         await productHistoryRepository.removeProductsByWebsite(url);
-        await productPriceHistoryService.removeTodayProductsByWebsite(url);
 
         let loopContinue = true;
         let pagination = 1;
