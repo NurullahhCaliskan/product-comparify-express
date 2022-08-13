@@ -32,20 +32,20 @@ class AlarmService {
             //get website currency
             let websiteService = new websiteService_1.default();
             let websiteEntity = await websiteService.getWebsiteByUrl(website);
+            // @ts-ignore
+            if (todayProduct.variants[0].id !== yesterdayProduct.variants[0].id) {
+                continue;
+            }
+            let todayProductVariant = todayProduct.variants[0];
+            let yesterdayProductVariant = yesterdayProduct.variants[0];
             //if user exists
             if (storeIndex > -1) {
-                let todayProductVariant = todayProduct.variants[0];
-                // @ts-ignore
-                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id == todayProductVariant.id);
                 let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
                 // @ts-ignore
                 let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceRate, productTitle: todayProductVariant.parent_title + ' - ' + todayProductVariant.title, src: (_a = productHistory === null || productHistory === void 0 ? void 0 : productHistory.images[0]) === null || _a === void 0 ? void 0 : _a.src, currency: websiteEntity.cart.currency, newValueAsUsd: todayProductVariant.compare_at_price_usd, oldValueAsUsd: yesterdayProductVariant.compare_at_price_usd };
                 (_b = storesWhichSendingAlarmList[storeIndex].cachedAlarm) === null || _b === void 0 ? void 0 : _b.push(newAlarmJson);
             }
             else {
-                let todayProductVariant = todayProduct.variants[0];
-                // @ts-ignore
-                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id == todayProductVariant.id);
                 let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
                 // @ts-ignore
                 let newAlarmJson = { website: website, url: productHistory.url, newValue: todayProductVariant.price, oldValue: yesterdayProductVariant.price, priceChangeRate: priceRate, productTitle: todayProductVariant.parent_title + ' - ' + todayProductVariant.title, src: (_c = productHistory === null || productHistory === void 0 ? void 0 : productHistory.images[0]) === null || _c === void 0 ? void 0 : _c.src, currency: websiteEntity.cart.currency, newValueAsUsd: todayProductVariant.compare_at_price_usd, oldValueAsUsd: yesterdayProductVariant.compare_at_price_usd };

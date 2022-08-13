@@ -107,8 +107,11 @@ class Engine {
         let storesWhichSendingAlarmList = [];
         let storeWebsitesRelationList = await storeWebsitesRelationService.getUserWebsitesRelations();
         let websitesList = await websiteService.getWebsites();
+        let i = 0;
         //get unique website list
         for (const website of websitesList) {
+            i += 1;
+            console.log(i);
             let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
             if (relevantUserByWebsite.length === 0) {
                 continue;

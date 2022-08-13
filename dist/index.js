@@ -68,7 +68,7 @@ app.get('/engine/start', async (req, res) => {
     console.log(req.headers);
     console.log('start engine1');
     try {
-        await engine.collectAllProducts();
+        await engine.prepareAlarmToSendMail();
     }
     catch (e) {
         console.log(e);

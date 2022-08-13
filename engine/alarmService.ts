@@ -51,13 +51,17 @@ export default class AlarmService {
             let websiteService = new WebsiteService();
             let websiteEntity = await websiteService.getWebsiteByUrl(website);
 
+
+            // @ts-ignore
+            if (todayProduct.variants[0].id !== yesterdayProduct.variants[0].id) {
+                continue;
+            }
+
+            let todayProductVariant = todayProduct.variants[0];
+            let yesterdayProductVariant = yesterdayProduct.variants[0];
+
             //if user exists
             if (storeIndex > -1) {
-
-                let todayProductVariant = todayProduct.variants[0]
-
-                // @ts-ignore
-                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id == todayProductVariant.id);
 
                 let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
 
@@ -66,11 +70,6 @@ export default class AlarmService {
 
                 storesWhichSendingAlarmList[storeIndex].cachedAlarm?.push(newAlarmJson);
             } else {
-
-                let todayProductVariant = todayProduct.variants[0]
-
-                // @ts-ignore
-                let yesterdayProductVariant = yesterdayProduct.variants.find(variant => variant.id == todayProductVariant.id);
 
                 let productHistory = await productHistoryService.getProductHistoryByProductId(todayProduct.id);
 
