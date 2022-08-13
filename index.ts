@@ -67,7 +67,6 @@ app.get('/test', initVerify, (req: Request, res: Response) => {
     console.log('test console');
 
 
-
     logger.info('hehehehe2');
     console.log('test console');
     return res.status(500).send('test6');
