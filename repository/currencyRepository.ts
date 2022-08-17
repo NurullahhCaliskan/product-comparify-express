@@ -1,11 +1,12 @@
 import { collections } from '../database.service';
 import axios from 'axios';
+import { logger } from '../utility/logUtility';
 
 export default class CurrencyRepository {
 
     async saveCurrenciesByApi() {
         try {
-            console.log('saveCurrenciesByApi');
+            logger.info(__filename + 'saveCurrenciesByApi');
 
             let curArray: { key: string; value: unknown; }[] = [];
 
@@ -28,10 +29,9 @@ export default class CurrencyRepository {
 
             await collections.currency?.deleteMany({});
             await collections.currency?.insertMany(curArray);
-            console.log('successCur');
+            logger.info(__filename + 'successCur');
         } catch (e) {
-            console.log(e);
-            console.log('failCur');
+            logger.error(__filename + 'fail cur' + e);
         }
     }
 

@@ -1,6 +1,7 @@
 import { collections } from '../database.service';
 import ProductHistoryModel from '../model/productHistoryModel';
 import _ from 'lodash';
+import { logger } from '../utility/logUtility';
 
 export default class ProductHistoryRepository {
 
@@ -17,7 +18,7 @@ export default class ProductHistoryRepository {
             }
 
         } catch (e) {
-            console.log(e);
+            logger.info(__filename + e  );
         }
     }
 

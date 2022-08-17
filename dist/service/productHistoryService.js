@@ -80,7 +80,6 @@ class ProductHistoryService {
                         }
                         catch (e) {
                             logUtility_1.logger.error(__filename + 'catch2' + e + " url:" + url);
-                            console.log(e);
                         }
                         product.search = this.prepareSearchColumn(product);
                         products.push(product);

@@ -1,9 +1,10 @@
-import ProductUploader from "./productUploader";
-import {mailService} from "../mail.service";
-import MailHistoryModel from "../model/mailHistoryModel";
-import MailHistoryService from "../service/mailHistoryService";
-import StoreModel from "../model/storeModel";
-import StoreService from "../service/storeService";
+import ProductUploader from './productUploader';
+import { mailService } from '../mail.service';
+import MailHistoryModel from '../model/mailHistoryModel';
+import MailHistoryService from '../service/mailHistoryService';
+import StoreModel from '../model/storeModel';
+import StoreService from '../service/storeService';
+import { logger } from '../utility/logUtility';
 
 export default class MailService {
 
@@ -11,9 +12,9 @@ export default class MailService {
         try {
 
 
-            let productUploader = new ProductUploader()
+            let productUploader = new ProductUploader();
             // @ts-ignore
-            let mailTemplate = productUploader.getMailResult(storeModel.cachedAlarm)
+            let mailTemplate = productUploader.getMailResult(storeModel.cachedAlarm);
 
             // @ts-ignore
             let info = await mailService.service.sendMail({
@@ -30,7 +31,7 @@ export default class MailService {
             let mailHistoryService = new MailHistoryService();
             await mailHistoryService.saveMailHistory(mailHistoryModel);
         } catch (e) {
-            console.log(e)
+            logger.error(__filename + e);
         }
     }
 
@@ -40,7 +41,6 @@ export default class MailService {
         let storeModel = await storeService.getStoreByStoreId(storeId)
 
         if (!storeModel) {
-            console.log("user mode yok")
             return;
         }
 

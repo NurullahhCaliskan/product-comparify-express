@@ -1,12 +1,14 @@
 version: "3"
 services:
   start-app:
+    restart: always
     build: .
     ports:
       - "3000:3000"
     links:
       - mongo
   mongo:
+    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: butterfly123root
       MONGO_INITDB_ROOT_PASSWORD: Vvnp9j27sroot

@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
 const lodash_1 = __importDefault(require("lodash"));
+const logUtility_1 = require("../utility/logUtility");
 class ProductHistoryRepository {
     /***
      * save product
@@ -19,7 +20,7 @@ class ProductHistoryRepository {
             }
         }
         catch (e) {
-            console.log(e);
+            logUtility_1.logger.info(__filename + e);
         }
     }
     /***

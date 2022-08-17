@@ -102,7 +102,6 @@ export default class ProductHistoryService {
                                 });
                             } catch (e) {
                                 logger.error(__filename +  'catch2' + e + " url:" + url);
-                                console.log(e);
                             }
 
                             product.search = this.prepareSearchColumn(product);

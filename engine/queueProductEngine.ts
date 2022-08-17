@@ -3,6 +3,7 @@ import StoreWebsitesRelationService from '../service/storeWebsitesRelationServic
 import WebsiteService from '../service/websiteService';
 import ProductHistoryService from '../service/productHistoryService';
 import ProductHistoryCrawlerQueueService from '../service/productHistoryCrawlerQueueService';
+import { logger } from '../utility/logUtility';
 
 export default class QueueProductEngine {
 
@@ -16,12 +17,9 @@ export default class QueueProductEngine {
                 return;
             }
 
-            console.log('start collectQueueProducts');
-
             //set unavailable
             await enginePermissionService.setUnavailableQueueEngine();
 
-            console.log('start collect queue products');
             let userWebsitesRelationService = new StoreWebsitesRelationService();
             let websiteService = new WebsiteService();
             let productHistoryService = new ProductHistoryService();
@@ -37,11 +35,9 @@ export default class QueueProductEngine {
                     let isCrawledToday = await productHistoryService.isCrawledTodayByWebsite(website.url);
 
                     if (isCrawledToday) {
-                        console.log('isCrawledToday entered');
                         await productHistoryCrawlerQueueService.removeProductQueueByUrl(website.url);
                         continue;
                     }
-                    console.log('isCrawledToday not entered');
                     await productHistoryService.deleteProductsByWebsite(website.url);
                     await productHistoryService.saveProductsFromWebByUrl(website);
 
@@ -53,8 +49,6 @@ export default class QueueProductEngine {
 
             //set available
             await enginePermissionService.setAvailableQueueEngine();
-
-            console.log('end collectQueueProducts');
 
         } catch (e) {
 

@@ -16,10 +16,8 @@ class QueueProductEngine {
             if (!(await enginePermissionService.isAvailableRunQueueEngine())) {
                 return;
             }
-            console.log('start collectQueueProducts');
             //set unavailable
             await enginePermissionService.setUnavailableQueueEngine();
-            console.log('start collect queue products');
             let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
             let websiteService = new websiteService_1.default();
             let productHistoryService = new productHistoryService_1.default();
@@ -30,11 +28,9 @@ class QueueProductEngine {
                 try {
                     let isCrawledToday = await productHistoryService.isCrawledTodayByWebsite(website.url);
                     if (isCrawledToday) {
-                        console.log('isCrawledToday entered');
                         await productHistoryCrawlerQueueService.removeProductQueueByUrl(website.url);
                         continue;
                     }
-                    console.log('isCrawledToday not entered');
                     await productHistoryService.deleteProductsByWebsite(website.url);
                     await productHistoryService.saveProductsFromWebByUrl(website);
                     await productHistoryCrawlerQueueService.removeProductQueueByUrl(website.url);
@@ -44,7 +40,6 @@ class QueueProductEngine {
             }
             //set available
             await enginePermissionService.setAvailableQueueEngine();
-            console.log('end collectQueueProducts');
         }
         catch (e) {
         }

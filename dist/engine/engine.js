@@ -25,22 +25,21 @@ class Engine {
         let enginePermissionService = new enginePermissionService_1.default();
         let engine = new Engine();
         let engineHistoryService = new engineHistoryService_1.default();
-        console.log('start engine');
+        logUtility_1.logger.info(__filename + 'start engine');
         //if no available, exit
         if (!(await enginePermissionService.isAvailableRunMainEngine())) {
-            console.log('engine is not avaible');
             return;
         }
         //set unavailable
         await enginePermissionService.setUnavailableMainEngine();
-        console.log('start engine1');
+        logUtility_1.logger.info(__filename + 'start engine1');
         try {
             await engine.collectAllProducts();
         }
         catch (e) {
-            console.log(e);
+            logUtility_1.logger.info(__filename + e);
         }
-        console.log('end engine');
+        logUtility_1.logger.info(__filename + 'end engine');
         //set available
         await enginePermissionService.setAvailableMainEngine();
     }
@@ -97,7 +96,7 @@ class Engine {
         }
     }
     async prepareAlarmToSendMail() {
-        console.log('prepareAlarmToSendMail');
+        logUtility_1.logger.info(__filename + 'prepareAlarmToSendMail');
         let storeWebsitesRelationService = new storeWebsitesRelationService_1.default();
         let productHistoryService = new productHistoryService_1.default();
         let productPriceHistoryService = new productPriceHistoryService_1.default();
@@ -111,7 +110,6 @@ class Engine {
         //get unique website list
         for (const website of websitesList) {
             i += 1;
-            console.log(i);
             let relevantUserByWebsite = storeWebsitesRelationService.getStoreFilterWebsiteAndAlarmStatus(storeWebsitesRelationList, website.url);
             if (relevantUserByWebsite.length === 0) {
                 continue;
@@ -130,9 +128,8 @@ class Engine {
                 await alarmService.setToUserCachedAlarm(storesWhichSendingAlarmList, relevantUserByWebsite, priceIdCouple, yesterday, today);
             }
         }
-        console.log(JSON.stringify(storesWhichSendingAlarmList));
-        console.log('send mail to users');
-        console.log(storesWhichSendingAlarmList.length);
+        logUtility_1.logger.info(__filename + JSON.stringify(storesWhichSendingAlarmList));
+        logUtility_1.logger.info(__filename + storesWhichSendingAlarmList.length);
         for (const storeModel of storesWhichSendingAlarmList) {
             let mailService = new mailService_1.default();
             await mailService.sendMail(storeModel);
@@ -146,7 +143,6 @@ class Engine {
     async syncWebsites() {
         let userWebsitesRelationService = new storeWebsitesRelationService_1.default();
         let UserWebsitesRelationList = await userWebsitesRelationService.getUserWebsitesRelations();
-        //console.log(UserWebsitesRelationList)
         //get unique website list
         const uniqueWebsites = [...new Set(UserWebsitesRelationList.map(item => item.website))];
         //upsert collections

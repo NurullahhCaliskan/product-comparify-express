@@ -5,11 +5,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const database_service_1 = require("../database.service");
 const axios_1 = __importDefault(require("axios"));
+const logUtility_1 = require("../utility/logUtility");
 class CurrencyRepository {
     async saveCurrenciesByApi() {
         var _a, _b;
         try {
-            console.log('saveCurrenciesByApi');
+            logUtility_1.logger.info(__filename + 'saveCurrenciesByApi');
             let curArray = [];
             let requestOptions = {
                 method: 'GET',
@@ -26,11 +27,10 @@ class CurrencyRepository {
             });
             await ((_a = database_service_1.collections.currency) === null || _a === void 0 ? void 0 : _a.deleteMany({}));
             await ((_b = database_service_1.collections.currency) === null || _b === void 0 ? void 0 : _b.insertMany(curArray));
-            console.log('successCur');
+            logUtility_1.logger.info(__filename + 'successCur');
         }
         catch (e) {
-            console.log(e);
-            console.log('failCur');
+            logUtility_1.logger.error(__filename + 'fail cur' + e);
         }
     }
     async getAllCurrencies() {

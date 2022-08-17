@@ -8,6 +8,7 @@ const mail_service_1 = require("../mail.service");
 const mailHistoryModel_1 = __importDefault(require("../model/mailHistoryModel"));
 const mailHistoryService_1 = __importDefault(require("../service/mailHistoryService"));
 const storeService_1 = __importDefault(require("../service/storeService"));
+const logUtility_1 = require("../utility/logUtility");
 class MailService {
     async sendMail(storeModel) {
         try {
@@ -27,7 +28,7 @@ class MailService {
             await mailHistoryService.saveMailHistory(mailHistoryModel);
         }
         catch (e) {
-            console.log(e);
+            logUtility_1.logger.error(__filename + e);
         }
     }
     async sendTestMail(storeId) {
@@ -35,7 +36,6 @@ class MailService {
         let storeService = new storeService_1.default();
         let storeModel = await storeService.getStoreByStoreId(storeId);
         if (!storeModel) {
-            console.log("user mode yok");
             return;
         }
         let mockData = [
